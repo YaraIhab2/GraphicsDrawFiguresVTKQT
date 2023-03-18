@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="D:\HEM\Graphics\PointPicker (1)\PointPicker\CMakeFiles\8f439fe21ef1118df2d3fbaf7e26c31c\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{B6A7848D-49B4-35C8-A2A5-027B8927DACD}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

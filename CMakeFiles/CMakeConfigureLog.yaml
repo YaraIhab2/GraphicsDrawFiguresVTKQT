@@ -1,0 +1,467 @@
+
+---
+events:
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/share/cmake-3.26/Modules/CMakeDetermineSystem.cmake:204 (message)"
+      - "CMakeLists.txt:4 (project)"
+    message: |
+      The system is: Windows - 10.0.22000 - AMD64
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/share/cmake-3.26/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "D:/share/cmake-3.26/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/share/cmake-3.26/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:4 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+      Compiler:  
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      MSBuild version 17.5.0+6f08c67f3 for .NET Framework
+      Build started 15/03/2023 11:11:15 PM.
+      Included response file: D:\\VS community\\MSBuild\\Current\\Bin\\amd64\\MSBuild.rsp
+      
+      Project "D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\3.26.0-rc4\\CompilerIdC\\CompilerIdC.vcxproj" on node 1 (default targets).
+      PrepareForBuild:
+        Creating directory "Debug\\".
+        Creating directory "Debug\\CompilerIdC.tlog\\".
+      InitializeBuildStatus:
+        Creating "Debug\\CompilerIdC.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+      ClCompile:
+        D:\\VS community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\CL.exe /c /nologo /W0 /WX- /diagnostics:column /Od /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\\\" /Fd"Debug\\vc143.pdb" /external:W0 /Gd /TC /FC /errorReport:queue CMakeCCompilerId.c
+        CMakeCCompilerId.c
+      Link:
+        D:\\VS community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:".\\CompilerIdC.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:".\\CompilerIdC.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\\CompilerIdC.lib" /MACHINE:X64 Debug\\CMakeCCompilerId.obj
+        CompilerIdC.vcxproj -> D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\3.26.0-rc4\\CompilerIdC\\CompilerIdC.exe
+      PostBuildEvent:
+        for %%i in (cl.exe) do @echo CMAKE_C_COMPILER=%%~$PATH:i
+        :VCEnd
+        CMAKE_C_COMPILER=D:\\VS community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\Hostx64\\x64\\cl.exe
+      FinalizeBuildStatus:
+        Deleting file "Debug\\CompilerIdC.tlog\\unsuccessfulbuild".
+        Touching "Debug\\CompilerIdC.tlog\\CompilerIdC.lastbuildstate".
+      Done Building Project "D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\3.26.0-rc4\\CompilerIdC\\CompilerIdC.vcxproj" (default targets).
+      
+      Build succeeded.
+          0 Warning(s)
+          0 Error(s)
+      
+      Time Elapsed 00:00:02.93
+      
+      
+      Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CompilerIdC.exe"
+      
+      Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CompilerIdC.vcxproj"
+      
+      The C compiler identification is MSVC, found in:
+        D:/HEM/Graphics/PointPicker (1)/PointPicker/CMakeFiles/3.26.0-rc4/CompilerIdC/CompilerIdC.exe
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "D:/share/cmake-3.26/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "D:/share/cmake-3.26/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "D:/share/cmake-3.26/Modules/CMakeDetermineCXXCompiler.cmake:126 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:4 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+      Compiler:  
+      Build flags: 
+      Id flags:  
+      
+      The output was:
+      0
+      MSBuild version 17.5.0+6f08c67f3 for .NET Framework
+      Build started 15/03/2023 11:11:19 PM.
+      Included response file: D:\\VS community\\MSBuild\\Current\\Bin\\amd64\\MSBuild.rsp
+      
+      Project "D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\3.26.0-rc4\\CompilerIdCXX\\CompilerIdCXX.vcxproj" on node 1 (default targets).
+      PrepareForBuild:
+        Creating directory "Debug\\".
+        Creating directory "Debug\\CompilerIdCXX.tlog\\".
+      InitializeBuildStatus:
+        Creating "Debug\\CompilerIdCXX.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+      ClCompile:
+        D:\\VS community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\CL.exe /c /nologo /W0 /WX- /diagnostics:column /Od /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\\\" /Fd"Debug\\vc143.pdb" /external:W0 /Gd /TP /FC /errorReport:queue CMakeCXXCompilerId.cpp
+        CMakeCXXCompilerId.cpp
+      Link:
+        D:\\VS community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:".\\CompilerIdCXX.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:".\\CompilerIdCXX.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\\CompilerIdCXX.lib" /MACHINE:X64 Debug\\CMakeCXXCompilerId.obj
+        CompilerIdCXX.vcxproj -> D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\3.26.0-rc4\\CompilerIdCXX\\CompilerIdCXX.exe
+      PostBuildEvent:
+        for %%i in (cl.exe) do @echo CMAKE_CXX_COMPILER=%%~$PATH:i
+        :VCEnd
+        CMAKE_CXX_COMPILER=D:\\VS community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\Hostx64\\x64\\cl.exe
+      FinalizeBuildStatus:
+        Deleting file "Debug\\CompilerIdCXX.tlog\\unsuccessfulbuild".
+        Touching "Debug\\CompilerIdCXX.tlog\\CompilerIdCXX.lastbuildstate".
+      Done Building Project "D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\3.26.0-rc4\\CompilerIdCXX\\CompilerIdCXX.vcxproj" (default targets).
+      
+      Build succeeded.
+          0 Warning(s)
+          0 Error(s)
+      
+      Time Elapsed 00:00:01.52
+      
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.exe"
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.vcxproj"
+      
+      The CXX compiler identification is MSVC, found in:
+        D:/HEM/Graphics/PointPicker (1)/PointPicker/CMakeFiles/3.26.0-rc4/CompilerIdCXX/CompilerIdCXX.exe
+      
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "D:/share/cmake-3.26/Modules/CMakeDetermineCompilerABI.cmake:57 (try_compile)"
+      - "D:/share/cmake-3.26/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:4 (project)"
+    checks:
+      - "Detecting C compiler ABI info"
+    directories:
+      source: "D:/HEM/Graphics/PointPicker (1)/PointPicker/CMakeFiles/CMakeScratch/TryCompile-4re09r"
+      binary: "D:/HEM/Graphics/PointPicker (1)/PointPicker/CMakeFiles/CMakeScratch/TryCompile-4re09r"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3"
+      CMAKE_C_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+    buildResult:
+      variable: "CMAKE_C_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: D:/HEM/Graphics/PointPicker (1)/PointPicker/CMakeFiles/CMakeScratch/TryCompile-4re09r
+        
+        Run Build Command(s):D:/VS community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_af63b.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n && MSBuild version 17.5.0+6f08c67f3 for .NET Framework
+        Build started 15/03/2023 11:11:21 PM.
+        Included response file: D:\\VS community\\MSBuild\\Current\\Bin\\amd64\\MSBuild.rsp
+        
+        Project "D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-4re09r\\cmTC_af63b.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_af63b.dir\\Debug\\".
+          Creating directory "D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-4re09r\\Debug\\".
+          Creating directory "cmTC_af63b.dir\\Debug\\cmTC_af63b.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_af63b.dir\\Debug\\cmTC_af63b.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        ClCompile:
+          D:\\VS community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_af63b.dir\\Debug\\\\" /Fd"cmTC_af63b.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "D:\\share\\cmake-3.26\\Modules\\CMakeCCompilerABI.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.35.32215 for x64
+          CMakeCCompilerABI.c
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_af63b.dir\\Debug\\\\" /Fd"cmTC_af63b.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "D:\\share\\cmake-3.26\\Modules\\CMakeCCompilerABI.c"
+        Link:
+          D:\\VS community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-4re09r\\Debug\\cmTC_af63b.exe" /INCREMENTAL /ILK:"cmTC_af63b.dir\\Debug\\cmTC_af63b.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:/HEM/Graphics/PointPicker (1)/PointPicker/CMakeFiles/CMakeScratch/TryCompile-4re09r/Debug/cmTC_af63b.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:/HEM/Graphics/PointPicker (1)/PointPicker/CMakeFiles/CMakeScratch/TryCompile-4re09r/Debug/cmTC_af63b.lib" /MACHINE:X64  /machine:x64 cmTC_af63b.dir\\Debug\\CMakeCCompilerABI.obj
+          cmTC_af63b.vcxproj -> D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-4re09r\\Debug\\cmTC_af63b.exe
+        FinalizeBuildStatus:
+          Deleting file "cmTC_af63b.dir\\Debug\\cmTC_af63b.tlog\\unsuccessfulbuild".
+          Touching "cmTC_af63b.dir\\Debug\\cmTC_af63b.tlog\\cmTC_af63b.lastbuildstate".
+        Done Building Project "D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-4re09r\\cmTC_af63b.vcxproj" (default targets).
+        
+        Build succeeded.
+            0 Warning(s)
+            0 Error(s)
+        
+        Time Elapsed 00:00:01.36
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "D:/share/cmake-3.26/Modules/CMakeDetermineCompilerABI.cmake:57 (try_compile)"
+      - "D:/share/cmake-3.26/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:4 (project)"
+    checks:
+      - "Detecting CXX compiler ABI info"
+    directories:
+      source: "D:/HEM/Graphics/PointPicker (1)/PointPicker/CMakeFiles/CMakeScratch/TryCompile-ajqsba"
+      binary: "D:/HEM/Graphics/PointPicker (1)/PointPicker/CMakeFiles/CMakeScratch/TryCompile-ajqsba"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "/DWIN32 /D_WINDOWS /W3 /GR /EHsc"
+      CMAKE_CXX_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+    buildResult:
+      variable: "CMAKE_CXX_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: D:/HEM/Graphics/PointPicker (1)/PointPicker/CMakeFiles/CMakeScratch/TryCompile-ajqsba
+        
+        Run Build Command(s):D:/VS community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_279d8.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n && MSBuild version 17.5.0+6f08c67f3 for .NET Framework
+        Build started 15/03/2023 11:11:23 PM.
+        Included response file: D:\\VS community\\MSBuild\\Current\\Bin\\amd64\\MSBuild.rsp
+        
+        Project "D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-ajqsba\\cmTC_279d8.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_279d8.dir\\Debug\\".
+          Creating directory "D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-ajqsba\\Debug\\".
+          Creating directory "cmTC_279d8.dir\\Debug\\cmTC_279d8.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_279d8.dir\\Debug\\cmTC_279d8.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        ClCompile:
+          D:\\VS community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_279d8.dir\\Debug\\\\" /Fd"cmTC_279d8.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TP /errorReport:queue "D:\\share\\cmake-3.26\\Modules\\CMakeCXXCompilerABI.cpp"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.35.32215 for x64
+          CMakeCXXCompilerABI.cpp
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_279d8.dir\\Debug\\\\" /Fd"cmTC_279d8.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TP /errorReport:queue "D:\\share\\cmake-3.26\\Modules\\CMakeCXXCompilerABI.cpp"
+        Link:
+          D:\\VS community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-ajqsba\\Debug\\cmTC_279d8.exe" /INCREMENTAL /ILK:"cmTC_279d8.dir\\Debug\\cmTC_279d8.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:/HEM/Graphics/PointPicker (1)/PointPicker/CMakeFiles/CMakeScratch/TryCompile-ajqsba/Debug/cmTC_279d8.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:/HEM/Graphics/PointPicker (1)/PointPicker/CMakeFiles/CMakeScratch/TryCompile-ajqsba/Debug/cmTC_279d8.lib" /MACHINE:X64  /machine:x64 cmTC_279d8.dir\\Debug\\CMakeCXXCompilerABI.obj
+          cmTC_279d8.vcxproj -> D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-ajqsba\\Debug\\cmTC_279d8.exe
+        FinalizeBuildStatus:
+          Deleting file "cmTC_279d8.dir\\Debug\\cmTC_279d8.tlog\\unsuccessfulbuild".
+          Touching "cmTC_279d8.dir\\Debug\\cmTC_279d8.tlog\\cmTC_279d8.lastbuildstate".
+        Done Building Project "D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-ajqsba\\cmTC_279d8.vcxproj" (default targets).
+        
+        Build succeeded.
+            0 Warning(s)
+            0 Error(s)
+        
+        Time Elapsed 00:00:01.28
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "D:/share/cmake-3.26/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "D:/share/cmake-3.26/Modules/CheckCSourceCompiles.cmake:76 (cmake_check_source_compiles)"
+      - "D:/share/cmake-3.26/Modules/FindThreads.cmake:97 (CHECK_C_SOURCE_COMPILES)"
+      - "D:/share/cmake-3.26/Modules/FindThreads.cmake:163 (_threads_check_libc)"
+      - "C:/Program Files (x86)/VTK/lib/cmake/vtk-9.2/VTK-vtk-module-find-packages.cmake:162 (find_package)"
+      - "C:/Program Files (x86)/VTK/lib/cmake/vtk-9.2/vtk-config.cmake:152 (include)"
+      - "CMakeLists.txt:7 (find_package)"
+    checks:
+      - "Performing Test CMAKE_HAVE_LIBC_PTHREAD"
+    directories:
+      source: "D:/HEM/Graphics/PointPicker (1)/PointPicker/CMakeFiles/CMakeScratch/TryCompile-zur2yn"
+      binary: "D:/HEM/Graphics/PointPicker (1)/PointPicker/CMakeFiles/CMakeScratch/TryCompile-zur2yn"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3"
+      CMAKE_C_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Program Files (x86)/VTK/lib/cmake/vtk-9.2/patches/99;C:/Program Files (x86)/VTK/lib/cmake/vtk-9.2"
+    buildResult:
+      variable: "CMAKE_HAVE_LIBC_PTHREAD"
+      cached: true
+      stdout: |
+        Change Dir: D:/HEM/Graphics/PointPicker (1)/PointPicker/CMakeFiles/CMakeScratch/TryCompile-zur2yn
+        
+        Run Build Command(s):D:/VS community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_61079.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n && MSBuild version 17.5.0+6f08c67f3 for .NET Framework
+        Build started 15/03/2023 11:11:25 PM.
+        Included response file: D:\\VS community\\MSBuild\\Current\\Bin\\amd64\\MSBuild.rsp
+        
+        Project "D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-zur2yn\\cmTC_61079.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_61079.dir\\Debug\\".
+          Creating directory "D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-zur2yn\\Debug\\".
+          Creating directory "cmTC_61079.dir\\Debug\\cmTC_61079.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_61079.dir\\Debug\\cmTC_61079.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        ClCompile:
+          D:\\VS community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CMAKE_HAVE_LIBC_PTHREAD /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_61079.dir\\Debug\\\\" /Fd"cmTC_61079.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-zur2yn\\src.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.35.32215 for x64
+          src.c
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CMAKE_HAVE_LIBC_PTHREAD /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_61079.dir\\Debug\\\\" /Fd"cmTC_61079.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-zur2yn\\src.c"
+        D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-zur2yn\\src.c(1,10): fatal  error C1083: Cannot open include file: 'pthread.h': No such file or directory [D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-zur2yn\\cmTC_61079.vcxproj]
+        Done Building Project "D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-zur2yn\\cmTC_61079.vcxproj" (default targets) -- FAILED.
+        
+        Build FAILED.
+        
+        "D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-zur2yn\\cmTC_61079.vcxproj" (default target) (1) ->
+        (ClCompile target) -> 
+          D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-zur2yn\\src.c(1,10): fatal  error C1083: Cannot open include file: 'pthread.h': No such file or directory [D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-zur2yn\\cmTC_61079.vcxproj]
+        
+            0 Warning(s)
+            1 Error(s)
+        
+        Time Elapsed 00:00:00.66
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "D:/share/cmake-3.26/Modules/CheckLibraryExists.cmake:71 (try_compile)"
+      - "D:/share/cmake-3.26/Modules/FindThreads.cmake:112 (CHECK_LIBRARY_EXISTS)"
+      - "D:/share/cmake-3.26/Modules/FindThreads.cmake:175 (_threads_check_lib)"
+      - "C:/Program Files (x86)/VTK/lib/cmake/vtk-9.2/VTK-vtk-module-find-packages.cmake:162 (find_package)"
+      - "C:/Program Files (x86)/VTK/lib/cmake/vtk-9.2/vtk-config.cmake:152 (include)"
+      - "CMakeLists.txt:7 (find_package)"
+    checks:
+      - "Looking for pthread_create in pthreads"
+    directories:
+      source: "D:/HEM/Graphics/PointPicker (1)/PointPicker/CMakeFiles/CMakeScratch/TryCompile-e9hx3b"
+      binary: "D:/HEM/Graphics/PointPicker (1)/PointPicker/CMakeFiles/CMakeScratch/TryCompile-e9hx3b"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3"
+      CMAKE_C_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Program Files (x86)/VTK/lib/cmake/vtk-9.2/patches/99;C:/Program Files (x86)/VTK/lib/cmake/vtk-9.2"
+    buildResult:
+      variable: "CMAKE_HAVE_PTHREADS_CREATE"
+      cached: true
+      stdout: |
+        Change Dir: D:/HEM/Graphics/PointPicker (1)/PointPicker/CMakeFiles/CMakeScratch/TryCompile-e9hx3b
+        
+        Run Build Command(s):D:/VS community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_e78a9.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n && MSBuild version 17.5.0+6f08c67f3 for .NET Framework
+        Build started 15/03/2023 11:11:26 PM.
+        Included response file: D:\\VS community\\MSBuild\\Current\\Bin\\amd64\\MSBuild.rsp
+        
+        Project "D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-e9hx3b\\cmTC_e78a9.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_e78a9.dir\\Debug\\".
+          Creating directory "D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-e9hx3b\\Debug\\".
+          Creating directory "cmTC_e78a9.dir\\Debug\\cmTC_e78a9.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_e78a9.dir\\Debug\\cmTC_e78a9.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        ClCompile:
+          D:\\VS community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_e78a9.dir\\Debug\\\\" /Fd"cmTC_e78a9.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-e9hx3b\\CheckFunctionExists.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.35.32215 for x64
+          CheckFunctionExists.c
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_e78a9.dir\\Debug\\\\" /Fd"cmTC_e78a9.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-e9hx3b\\CheckFunctionExists.c"
+        Link:
+          D:\\VS community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-e9hx3b\\Debug\\cmTC_e78a9.exe" /INCREMENTAL /ILK:"cmTC_e78a9.dir\\Debug\\cmTC_e78a9.ilk" /NOLOGO pthreads.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:/HEM/Graphics/PointPicker (1)/PointPicker/CMakeFiles/CMakeScratch/TryCompile-e9hx3b/Debug/cmTC_e78a9.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:/HEM/Graphics/PointPicker (1)/PointPicker/CMakeFiles/CMakeScratch/TryCompile-e9hx3b/Debug/cmTC_e78a9.lib" /MACHINE:X64  /machine:x64 cmTC_e78a9.dir\\Debug\\CheckFunctionExists.obj
+        LINK : fatal error LNK1104: cannot open file 'pthreads.lib' [D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-e9hx3b\\cmTC_e78a9.vcxproj]
+        Done Building Project "D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-e9hx3b\\cmTC_e78a9.vcxproj" (default targets) -- FAILED.
+        
+        Build FAILED.
+        
+        "D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-e9hx3b\\cmTC_e78a9.vcxproj" (default target) (1) ->
+        (Link target) -> 
+          LINK : fatal error LNK1104: cannot open file 'pthreads.lib' [D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-e9hx3b\\cmTC_e78a9.vcxproj]
+        
+            0 Warning(s)
+            1 Error(s)
+        
+        Time Elapsed 00:00:00.96
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "D:/share/cmake-3.26/Modules/CheckLibraryExists.cmake:71 (try_compile)"
+      - "D:/share/cmake-3.26/Modules/FindThreads.cmake:112 (CHECK_LIBRARY_EXISTS)"
+      - "D:/share/cmake-3.26/Modules/FindThreads.cmake:176 (_threads_check_lib)"
+      - "C:/Program Files (x86)/VTK/lib/cmake/vtk-9.2/VTK-vtk-module-find-packages.cmake:162 (find_package)"
+      - "C:/Program Files (x86)/VTK/lib/cmake/vtk-9.2/vtk-config.cmake:152 (include)"
+      - "CMakeLists.txt:7 (find_package)"
+    checks:
+      - "Looking for pthread_create in pthread"
+    directories:
+      source: "D:/HEM/Graphics/PointPicker (1)/PointPicker/CMakeFiles/CMakeScratch/TryCompile-an9tay"
+      binary: "D:/HEM/Graphics/PointPicker (1)/PointPicker/CMakeFiles/CMakeScratch/TryCompile-an9tay"
+    cmakeVariables:
+      CMAKE_C_FLAGS: "/DWIN32 /D_WINDOWS /W3"
+      CMAKE_C_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Program Files (x86)/VTK/lib/cmake/vtk-9.2/patches/99;C:/Program Files (x86)/VTK/lib/cmake/vtk-9.2"
+    buildResult:
+      variable: "CMAKE_HAVE_PTHREAD_CREATE"
+      cached: true
+      stdout: |
+        Change Dir: D:/HEM/Graphics/PointPicker (1)/PointPicker/CMakeFiles/CMakeScratch/TryCompile-an9tay
+        
+        Run Build Command(s):D:/VS community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_f9b78.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n && MSBuild version 17.5.0+6f08c67f3 for .NET Framework
+        Build started 15/03/2023 11:11:27 PM.
+        Included response file: D:\\VS community\\MSBuild\\Current\\Bin\\amd64\\MSBuild.rsp
+        
+        Project "D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-an9tay\\cmTC_f9b78.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_f9b78.dir\\Debug\\".
+          Creating directory "D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-an9tay\\Debug\\".
+          Creating directory "cmTC_f9b78.dir\\Debug\\cmTC_f9b78.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_f9b78.dir\\Debug\\cmTC_f9b78.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        ClCompile:
+          D:\\VS community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_f9b78.dir\\Debug\\\\" /Fd"cmTC_f9b78.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-an9tay\\CheckFunctionExists.c"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.35.32215 for x64
+          CheckFunctionExists.c
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_f9b78.dir\\Debug\\\\" /Fd"cmTC_f9b78.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TC /errorReport:queue "D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-an9tay\\CheckFunctionExists.c"
+        Link:
+          D:\\VS community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-an9tay\\Debug\\cmTC_f9b78.exe" /INCREMENTAL /ILK:"cmTC_f9b78.dir\\Debug\\cmTC_f9b78.ilk" /NOLOGO pthread.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:/HEM/Graphics/PointPicker (1)/PointPicker/CMakeFiles/CMakeScratch/TryCompile-an9tay/Debug/cmTC_f9b78.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:/HEM/Graphics/PointPicker (1)/PointPicker/CMakeFiles/CMakeScratch/TryCompile-an9tay/Debug/cmTC_f9b78.lib" /MACHINE:X64  /machine:x64 cmTC_f9b78.dir\\Debug\\CheckFunctionExists.obj
+        LINK : fatal error LNK1104: cannot open file 'pthread.lib' [D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-an9tay\\cmTC_f9b78.vcxproj]
+        Done Building Project "D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-an9tay\\cmTC_f9b78.vcxproj" (default targets) -- FAILED.
+        
+        Build FAILED.
+        
+        "D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-an9tay\\cmTC_f9b78.vcxproj" (default target) (1) ->
+        (Link target) -> 
+          LINK : fatal error LNK1104: cannot open file 'pthread.lib' [D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-an9tay\\cmTC_f9b78.vcxproj]
+        
+            0 Warning(s)
+            1 Error(s)
+        
+        Time Elapsed 00:00:00.87
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "D:/share/cmake-3.26/Modules/Internal/CheckSourceCompiles.cmake:101 (try_compile)"
+      - "D:/share/cmake-3.26/Modules/CheckCXXSourceCompiles.cmake:76 (cmake_check_source_compiles)"
+      - "D:/QtGraphics/6.4.2/msvc2019_64/lib/cmake/Qt6/FindWrapAtomic.cmake:33 (check_cxx_source_compiles)"
+      - "D:/share/cmake-3.26/Modules/CMakeFindDependencyMacro.cmake:76 (find_package)"
+      - "D:/QtGraphics/6.4.2/msvc2019_64/lib/cmake/Qt6/QtPublicDependencyHelpers.cmake:33 (find_dependency)"
+      - "D:/QtGraphics/6.4.2/msvc2019_64/lib/cmake/Qt6Core/Qt6CoreDependencies.cmake:30 (_qt_internal_find_third_party_dependencies)"
+      - "D:/QtGraphics/6.4.2/msvc2019_64/lib/cmake/Qt6Core/Qt6CoreConfig.cmake:40 (include)"
+      - "D:/share/cmake-3.26/Modules/CMakeFindDependencyMacro.cmake:76 (find_package)"
+      - "D:/QtGraphics/6.4.2/msvc2019_64/lib/cmake/Qt6/QtPublicDependencyHelpers.cmake:108 (find_dependency)"
+      - "D:/QtGraphics/6.4.2/msvc2019_64/lib/cmake/Qt6Widgets/Qt6WidgetsDependencies.cmake:39 (_qt_internal_find_qt_dependencies)"
+      - "D:/QtGraphics/6.4.2/msvc2019_64/lib/cmake/Qt6Widgets/Qt6WidgetsConfig.cmake:40 (include)"
+      - "D:/QtGraphics/6.4.2/msvc2019_64/lib/cmake/Qt6/Qt6Config.cmake:157 (find_package)"
+      - "C:/Program Files (x86)/VTK/lib/cmake/vtk-9.2/VTK-vtk-module-find-packages.cmake:209 (find_package)"
+      - "C:/Program Files (x86)/VTK/lib/cmake/vtk-9.2/vtk-config.cmake:152 (include)"
+      - "CMakeLists.txt:7 (find_package)"
+    checks:
+      - "Performing Test HAVE_STDATOMIC"
+    directories:
+      source: "D:/HEM/Graphics/PointPicker (1)/PointPicker/CMakeFiles/CMakeScratch/TryCompile-xfvgji"
+      binary: "D:/HEM/Graphics/PointPicker (1)/PointPicker/CMakeFiles/CMakeScratch/TryCompile-xfvgji"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: "/DWIN32 /D_WINDOWS /W3 /GR /EHsc"
+      CMAKE_CXX_FLAGS_DEBUG: "/MDd /Zi /Ob0 /Od /RTC1"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_MODULE_PATH: "C:/Program Files (x86)/VTK/lib/cmake/vtk-9.2/patches/99;C:/Program Files (x86)/VTK/lib/cmake/vtk-9.2;D:/QtGraphics/6.4.2/msvc2019_64/lib/cmake/Qt6;D:/QtGraphics/6.4.2/msvc2019_64/lib/cmake/Qt6/3rdparty/extra-cmake-modules/find-modules;D:/QtGraphics/6.4.2/msvc2019_64/lib/cmake/Qt6/3rdparty/kwin"
+    buildResult:
+      variable: "HAVE_STDATOMIC"
+      cached: true
+      stdout: |
+        Change Dir: D:/HEM/Graphics/PointPicker (1)/PointPicker/CMakeFiles/CMakeScratch/TryCompile-xfvgji
+        
+        Run Build Command(s):D:/VS community/MSBuild/Current/Bin/amd64/MSBuild.exe cmTC_f4613.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=17.0 /v:n && MSBuild version 17.5.0+6f08c67f3 for .NET Framework
+        Build started 15/03/2023 11:11:29 PM.
+        Included response file: D:\\VS community\\MSBuild\\Current\\Bin\\amd64\\MSBuild.rsp
+        
+        Project "D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-xfvgji\\cmTC_f4613.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_f4613.dir\\Debug\\".
+          Creating directory "D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-xfvgji\\Debug\\".
+          Creating directory "cmTC_f4613.dir\\Debug\\cmTC_f4613.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_f4613.dir\\Debug\\cmTC_f4613.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        ClCompile:
+          D:\\VS community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\CL.exe /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D HAVE_STDATOMIC /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_f4613.dir\\Debug\\\\" /Fd"cmTC_f4613.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TP /errorReport:queue "D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-xfvgji\\src.cxx"
+          Microsoft (R) C/C++ Optimizing Compiler Version 19.35.32215 for x64
+          src.cxx
+          Copyright (C) Microsoft Corporation.  All rights reserved.
+          cl /c /Zi /W3 /WX- /diagnostics:column /Od /Ob0 /D _MBCS /D WIN32 /D _WINDOWS /D HAVE_STDATOMIC /D "CMAKE_INTDIR=\\"Debug\\"" /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /GR /Fo"cmTC_f4613.dir\\Debug\\\\" /Fd"cmTC_f4613.dir\\Debug\\vc143.pdb" /external:W3 /Gd /TP /errorReport:queue "D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-xfvgji\\src.cxx"
+        Link:
+          D:\\VS community\\VC\\Tools\\MSVC\\14.35.32215\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-xfvgji\\Debug\\cmTC_f4613.exe" /INCREMENTAL /ILK:"cmTC_f4613.dir\\Debug\\cmTC_f4613.ilk" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:/HEM/Graphics/PointPicker (1)/PointPicker/CMakeFiles/CMakeScratch/TryCompile-xfvgji/Debug/cmTC_f4613.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:/HEM/Graphics/PointPicker (1)/PointPicker/CMakeFiles/CMakeScratch/TryCompile-xfvgji/Debug/cmTC_f4613.lib" /MACHINE:X64  /machine:x64 cmTC_f4613.dir\\Debug\\src.obj
+          cmTC_f4613.vcxproj -> D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-xfvgji\\Debug\\cmTC_f4613.exe
+        FinalizeBuildStatus:
+          Deleting file "cmTC_f4613.dir\\Debug\\cmTC_f4613.tlog\\unsuccessfulbuild".
+          Touching "cmTC_f4613.dir\\Debug\\cmTC_f4613.tlog\\cmTC_f4613.lastbuildstate".
+        Done Building Project "D:\\HEM\\Graphics\\PointPicker (1)\\PointPicker\\CMakeFiles\\CMakeScratch\\TryCompile-xfvgji\\cmTC_f4613.vcxproj" (default targets).
+        
+        Build succeeded.
+            0 Warning(s)
+            0 Error(s)
+        
+        Time Elapsed 00:00:02.15
+        
+      exitCode: 0
+...

@@ -1,0 +1,10 @@
+^D:\HEM\GRAPHICS\POINTPICKER (1)\POINTPICKER\CMAKEFILES\8F439FE21EF1118DF2D3FBAF7E26C31C\GENERATE.STAMP.RULE
+setlocal
+D:\bin\cmake.exe "-SD:/HEM/Graphics/PointPicker (1)/PointPicker" "-BD:/HEM/Graphics/PointPicker (1)/PointPicker" --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file "D:/HEM/Graphics/PointPicker (1)/PointPicker/PointPicker.sln"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

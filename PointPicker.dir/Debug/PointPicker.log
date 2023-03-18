@@ -1,0 +1,5 @@
+﻿  PointPicker.cxx
+D:\HEM\Graphics\PointPicker (1)\PointPicker\PointPicker.cxx(166,18): warning C4477: 'fscanf_s' : format string '%s' requires an argument of type 'unsigned int', but variadic argument 9 has type 'size_t'
+D:\HEM\Graphics\PointPicker (1)\PointPicker\PointPicker.cxx(166,18): message : this argument is used as a buffer size
+D:\HEM\Graphics\PointPicker (1)\PointPicker\PointPicker.cxx(198): warning C4715: 'ReadFile': not all control paths return a value
+  PointPicker.vcxproj -> D:\HEM\Graphics\PointPicker (1)\PointPicker\Debug\PointPicker.exe
