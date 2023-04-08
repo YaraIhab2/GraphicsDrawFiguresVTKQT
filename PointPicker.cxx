@@ -79,6 +79,8 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QObject>
+#include <vtkHexahedron.h>
+#include <QTextEdit>
 
 #include <vtkActor.h>
 #include <vtkCellArray.h>
@@ -86,6 +88,7 @@
 #include <vtkDoubleArray.h>
 #include <vtkNamedColors.h>
 #include <vtkNew.h>
+#include <vtkRegularPolygonSource.h>
 #include <vtkPoints.h>
 #include <vtkPolyData.h>
 #include <vtkPolyDataMapper.h>
@@ -110,6 +113,19 @@
 #include <QInputDialog>
 #include <QComboBox>
 #include <QSpinBox>
+#include <vtkActor.h>
+#include <vtkCamera.h>
+#include <vtkCellArray.h>
+#include <vtkDataSetMapper.h>
+#include <vtkHexahedron.h>
+#include <vtkNamedColors.h>
+#include <vtkNew.h>
+#include <vtkPoints.h>
+#include <vtkProperty.h>
+#include <vtkRenderWindow.h>
+#include <vtkRenderWindowInteractor.h>
+#include <vtkRenderer.h>
+#include <vtkUnstructuredGrid.h>
 //#include <vtkEventQtSlotConnect>
 using namespace std;
 bool widget = 0;
@@ -123,7 +139,7 @@ int LineWidth = 1;
 char LineColor[100];
 
 //LineColor[0]='B';
-
+vtkNew<vtkPointPicker> pointPicker;
 
 vtkSmartPointer<vtkTextActor> textActor = vtkSmartPointer<vtkTextActor>::New();
 vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
@@ -137,12 +153,12 @@ vtkSmartPointer<vtkGenericOpenGLRenderWindow> renderWindow = vtkSmartPointer<vtk
 
 vtkNew<vtkRenderWindowInteractor> renderWindowInteractor;
 vtkSmartPointer <vtkTextWidget> textWidget = vtkSmartPointer<vtkTextWidget>::New();
-
 string pt;
 string pt2;
 
 bool polyL = false;
 bool Line = false;
+bool regpoly = false;
 bool clearPolyLine = false;
 
 int countPolyLinePoints = 0;
@@ -150,31 +166,30 @@ int countPolyLinePoints = 0;
 vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
 vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer <vtkPolyData>::New();
 vtkSmartPointer<vtkPolyLine> polyLine = vtkSmartPointer<vtkPolyLine>::New();
+vtkSmartPointer<vtkRegularPolygonSource> polygonSource = vtkSmartPointer<vtkRegularPolygonSource>::New();
 vtkSmartPointer<vtkCellArray> cells = vtkSmartPointer<vtkCellArray>::New();
 
 /////////////////////////////////////////Functions used by classes////////////////////////
+//set the first point of the line
 void SetFirstPoint() {
 
-	lineSource->SetPoint1(picked2[0], picked2[1], 0);
+	lineSource->SetPoint1(picked2[0], picked2[1], picked2[2]);
 	return;
-
-
-
 }
 
+//set the second point of the line
 void SetSecondPoint() {
 
-	lineSource->SetPoint2(picked[0], picked[1], 0);
+	lineSource->SetPoint2(picked[0], picked[1], picked[2]);
 	//lineSource->Modified();
 	lineSource->Update();
-
 }
 
 void InsertPolyPoint() {
-	points->InsertNextPoint(picked[0], picked[1], 0);
+	points->InsertNextPoint(picked[0], picked[1], picked[2]);
 	std::cout << "Picked value of polyline: " << picked[0] << " " << picked[1] << " "
 		<< picked[2] << std::endl;
-	
+
 }
 
 
@@ -253,7 +268,7 @@ bool  WriteFile(string name) {
 		cout << "File created successfully!";
 		my_file << "(" << picked2[0] << "," << picked2[1] << "," << picked2[2] << ")" << endl << "(" << picked[0] << "," << picked[1] << "," << picked[2] << ")" << endl << LineWidth << endl << LineColor;
 		my_file.close();
-		
+		cout << LineColor;
 	}
 
 	return true;
@@ -313,7 +328,7 @@ void DrawPoint() {
 	textWidget->On();
 	renderWindow->Render();
 
-	renderWindowInteractor->Start();
+	//renderWindowInteractor->Start();
 
 
 	return;
@@ -321,7 +336,7 @@ void DrawPoint() {
 
 
 
-bool Polynum = 0;
+
 
 
 namespace {
@@ -386,18 +401,14 @@ namespace {
 			}
 			else if (polyL) {
 				countPolyLinePoints++;
-				
-				
+
 				InsertPolyPoint();
 				//polyData->SetPoints(points);
 				polyData->Modified();
 				mapper->Update();
 				this->Interactor->GetRenderWindow()->Render();
-				polyLine->GetPointIds()->SetNumberOfIds(countPolyLinePoints);
+
 				DrawPoint();
-				Polynum = 0;
-				
-				
 				return;
 
 
@@ -416,17 +427,6 @@ namespace {
 
 		// Forward events
 
-
-
-
-
-
-
-
-
-
-
-
 	};
 
 	vtkStandardNewMacro(MouseInteractorStylePP);
@@ -438,7 +438,7 @@ int main(int argc, char* argv[])
 	vtkNew<vtkNamedColors> colors;
 	vtkNew<vtkNamedColors> namedColors;
 	QSurfaceFormat::setDefaultFormat(QVTKOpenGLNativeWidget::defaultFormat());
-	vtkNew<vtkPointPicker> pointPicker;
+
 	QApplication app(argc, argv);
 
 	QMainWindow mainWindow;
@@ -447,10 +447,11 @@ int main(int argc, char* argv[])
 	// add the buttons to the main window
 	QVBoxLayout* layout = new QVBoxLayout();//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// create the buttons
-
+	QPushButton* regPolygon = new QPushButton("Draw polygon");
 	QPushButton* buttonLine = new QPushButton("Draw Line");
 	QPushButton* buttonPolyLine = new QPushButton("Draw Polyline");
 	layout->addWidget(buttonLine);
+	layout->addWidget(regPolygon);
 	layout->addWidget(buttonPolyLine);
 	QWidget* centralWidget = new QWidget();
 	centralWidget->setLayout(layout);
@@ -458,19 +459,62 @@ int main(int argc, char* argv[])
 	//////////////////FOR LINE////////////////////
 	QWidget layoutContainer;
 
-	QPointer<QVTKOpenGLNativeWidget> vtkRenderWidget =
-		new QVTKOpenGLNativeWidget();
+	QPointer<QVTKOpenGLNativeWidget> vtkRenderWidget = new QVTKOpenGLNativeWidget();
 	char read[100];
 	QComboBox* comboBox = new QComboBox();
 	QString selectedText;
 	QSpinBox* spinBox = new QSpinBox();
+	QTextEdit* textBox = new QTextEdit();
+
 	///////////////////////////////FOR POLYLINE/////////
 	// Create a polydata to store everything in
+	//draw normal polygon
+	QObject::connect(regPolygon, &QPushButton::clicked, [&]() {
+		Line = false;
+		polyL = false;
+		regpoly = true;
+		mainWindow.addDockWidget(Qt::LeftDockWidgetArea, &controlDock);
+		QLabel controlDockTitle("Control Dock");
+		controlDockTitle.setMargin(20);
+		controlDock.setTitleBarWidget(&controlDockTitle);
+		QPointer<QVBoxLayout> dockLayout = new QVBoxLayout();
+		layoutContainer.setLayout(dockLayout);
+		controlDock.setWidget(&layoutContainer);
+		mainWindow.setCentralWidget(vtkRenderWidget);
 
 
+
+
+
+		mapper->SetInputData(polyData);
+
+		//vtkNew<vtkActor> actor;
+		actor->SetMapper(mapper);
+		actor->GetProperty()->SetColor(colors->GetColor3d("Tomato").GetData());
+		renderer->SetBackground(namedColors->GetColor3d("black").GetData());
+		renderWindow->SetWindowName("regular polygon");
+		renderWindowInteractor->SetRenderWindow(renderWindow);
+		renderer->AddActor(actor);
+		renderWindow->SetInteractor(renderWindowInteractor);
+		renderWindow->AddRenderer(renderer);
+		renderWindow->SetInteractor(vtkRenderWidget->interactor());
+		renderWindow->GetInteractor()->SetPicker(pointPicker);
+		vtkNew<MouseInteractorStylePP> style;
+		renderWindow->GetInteractor()->SetInteractorStyle(style);
+		vtkRenderWidget->setRenderWindow(renderWindow);
+
+		// Display the regular polygon
+		renderWindow->Render();
+		renderWindow->GetInteractor()->Start();
+		mainWindow.show();
+
+	});
+
+	//draw polyline
 	QObject::connect(buttonPolyLine, &QPushButton::clicked, [&]() {
 		Line = false;
 		polyL = true;
+		regpoly = false;
 
 		mainWindow.addDockWidget(Qt::LeftDockWidgetArea, &controlDock);
 
@@ -547,7 +591,7 @@ int main(int argc, char* argv[])
 
 		mainWindow.show();
 
-		});
+	});
 
 
 
@@ -558,6 +602,7 @@ int main(int argc, char* argv[])
 	QObject::connect(buttonLine, &QPushButton::clicked, [&]() {
 		polyL = false;
 		Line = true;
+		regpoly = false;
 
 		///////////////////////////////////////////////////////////////GUI LINE////////////////////////////////////////////
 		mainWindow.addDockWidget(Qt::LeftDockWidgetArea, &controlDock);
@@ -650,21 +695,24 @@ int main(int argc, char* argv[])
 
 
 
-			});
+		});
 
 		//////////////////////////////////////////////////////////////// END///////////////////////////////
 		char test[100] = { 't','e','s','t' };
 		ReadFile(test);
 
 		SetFirstPoint();
-		SetSecondPoint();		////////////////////////////////////////////////////////////////WRITE PUSH BUTTON////////////////////////////////
+		SetSecondPoint();		
+		
+		////////////////////////////////////////////////////////////////WRITE PUSH BUTTON////////////////////////////////
 		QObject::connect(pushButton2, &QPushButton::released, [&]() {
 			QString text = QInputDialog::getText(nullptr, "Input File Name to be written", "File Name");
 			qDebug() << "Input: " << text;
 			string write;
 			write = text.toStdString();
 			write = write + ".txt";
-			WriteFile(write); });
+			WriteFile(write); 
+		});
 
 		//////////////////////////////////////////////////////////////////////END/////////////////////////////////////////////
 
@@ -733,8 +781,241 @@ int main(int argc, char* argv[])
 
 
 		mainWindow.show();
-		});
-	
+	});
+
+/*
+	//vtkNew<vtkNamedColors> colors;
+
+	// Set the background color.
+	std::array<unsigned char, 4> bkg{ {51, 77, 102, 255} };
+	colors->SetColor("BkgColor", bkg.data());
+
+	// For the hexahedron; setup the coordinates of eight points.
+	// The two faces must be in counter clockwise order as viewed from the
+	// outside.
+	std::vector<std::array<double, 3>> pointCoordinates;
+	pointCoordinates.push_back({ {0.0, 0.0, 0.0} }); // Face 1
+	pointCoordinates.push_back({ {1.0, 0.0, 0.0} });
+	pointCoordinates.push_back({ {1.0, 1.0, 0.0} });
+	pointCoordinates.push_back({ {0.0, 1.0, 0.0} });
+	pointCoordinates.push_back({ {0.0, 0.0, 1.0} }); // Face 2
+	pointCoordinates.push_back({ {1.0, 0.0, 1.0} });
+	pointCoordinates.push_back({ {1.0, 1.0, 1.0} });
+	pointCoordinates.push_back({ {0.0, 1.0, 1.0} });
+
+	// Create the points.
+	vtkNew<vtkPoints> points;
+
+	// Create a hexahedron from the points.
+	vtkNew<vtkHexahedron> hex;
+
+	for (auto i = 0; i < pointCoordinates.size(); ++i)
+	{
+		points->InsertNextPoint(pointCoordinates[i].data());
+		hex->GetPointIds()->SetId(i, i);
+	}
+
+	// Add the hexahedron to a cell array.
+	vtkNew<vtkCellArray> hexs;
+	hexs->InsertNextCell(hex);
+
+	// Add the points and hexahedron to an unstructured grid.
+	vtkNew<vtkUnstructuredGrid> uGrid;
+	uGrid->SetPoints(points);
+	uGrid->InsertNextCell(hex->GetCellType(), hex->GetPointIds());
+
+	// Visualize.
+	vtkNew<vtkDataSetMapper> mapper;
+	mapper->SetInputData(uGrid);
+
+	vtkNew<vtkActor> actor;
+	actor->GetProperty()->SetColor(colors->GetColor3d("PeachPuff").GetData());
+	actor->SetMapper(mapper);
+
+	vtkNew<vtkRenderer> renderer;
+	vtkNew<vtkRenderWindow> renderWindow;
+	renderWindow->SetWindowName("Hexahedron");
+	renderWindow->AddRenderer(renderer);
+	vtkNew<vtkRenderWindowInteractor> renderWindowInteractor;
+	renderWindowInteractor->SetRenderWindow(renderWindow);
+
+	renderer->AddActor(actor);
+	renderer->SetBackground(colors->GetColor3d("BkgColor").GetData());
+	renderer->ResetCamera();
+	renderer->GetActiveCamera()->Azimuth(30);
+	renderer->GetActiveCamera()->Elevation(30);
+
+	renderWindow->Render();
+	//renderWindowInteractor->Start();
+
+	*/
+	///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	//if (Line) {
+	//	mainWindow.addDockWidget(Qt::LeftDockWidgetArea, &controlDock);
+
+	//	QLabel controlDockTitle("Control Dock");
+	//	controlDockTitle.setMargin(20);
+	//	controlDock.setTitleBarWidget(&controlDockTitle);
+
+	//	QPointer<QVBoxLayout> dockLayout = new QVBoxLayout();
+	//	QWidget layoutContainer;
+	//	layoutContainer.setLayout(dockLayout);
+	//	controlDock.setWidget(&layoutContainer);
+
+	//	//dockLayout->addWidget(static_cast<QWidget(vtkTextWidget)(&QWidget)>(textWidget));
+	//	vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
+
+
+	//	QComboBox* comboBox = new QComboBox();
+	//	comboBox->addItem("Black");
+	//	comboBox->addItem("White");
+	//	comboBox->addItem("Red");
+	//	QString selectedText = comboBox->currentText();
+
+
+	//	dockLayout->addWidget(comboBox);
+
+
+	//	QSpinBox* spinBox = new QSpinBox();
+	//	spinBox->setMinimum(0);
+	//	spinBox->setMaximum(100);
+	//	spinBox->setSingleStep(1);
+	//	spinBox->setValue(1);
+
+	//	dockLayout->addWidget(spinBox);
+
+	//	QPushButton* pushButton = new QPushButton("Read File");
+	//	QPushButton* pushButton2 = new QPushButton("Write File");
+	//	dockLayout->addWidget(pushButton);
+	//	dockLayout->addWidget(pushButton2);
+
+
+	//	;
+	//	QPointer<QVTKOpenGLNativeWidget> vtkRenderWidget =
+	//		new QVTKOpenGLNativeWidget();
+	//	mainWindow.setCentralWidget(vtkRenderWidget);
+
+
+
+	//	mapper->Update();
+	//	mapper->SetInputConnection(lineSource->GetOutputPort());
+	//	mapper->Update();
+	//	renderWindow->AddRenderer(renderer);
+	//	renderWindow->SetInteractor(renderWindowInteractor);
+	//	actor->SetMapper(mapper);
+	//	renderer->AddActor(actor);
+
+	//	QObject::connect(pushButton, &QPushButton::released, [&]() {
+
+	//		QString text2 = QInputDialog::getText(nullptr, "Input File Name to be Read", "File Name");
+	//		qDebug() << "Input: " << text2;
+	//		char read[100];
+
+	//		qstrcpy(read, qPrintable(text2));
+
+
+	//		ReadFile(read);
+	//		SetFirstPoint();
+	//		SetSecondPoint();
+
+	//		mapper->Update();
+	//		actor->SetMapper(mapper);
+	//		renderer->AddActor(actor);
+	//		vtkRenderWidget->update();
+	//		renderWindowInteractor->Initialize();
+	//		renderWindow->Render();
+	//		});
+
+
+	//	QObject::connect(pushButton2, &QPushButton::released, [&]() {
+	//		QString text = QInputDialog::getText(nullptr, "Input File Name to be written", "File Name");
+	//		qDebug() << "Input: " << text;
+	//		string write;
+	//		write = text.toStdString();
+	//		write = write + ".txt";
+	//		WriteFile(write); });
+
+
+	//	vtkNew<vtkNamedColors> colors;
+
+
+
+
+
+	//	vtkNew<vtkNamedColors> namedColors;
+
+
+
+
+
+
+	//	actor->GetProperty()->SetLineWidth(spinBox->value());
+	//	cout << "color  " << selectedText.toStdString();
+	//	cout << "Linewidth  " << spinBox->value();
+	//	actor->GetProperty()->SetColor(colors->GetColor3d(selectedText.toStdString()).GetData());
+	//	/*for(int i=0;i<101;i++){
+	//		string getcolor = actor->GetProperty()->GetColor();
+	//	LineColor[i] = )[i];
+	//	if (LineColor[i] == NULL) {
+	//		break;
+	//	}
+
+	//	}*/
+
+
+
+	//	renderer->SetBackground(namedColors->GetColor3d("SlateGray").GetData());
+
+	//	QObject::connect(comboBox, (&QComboBox::currentIndexChanged), [&]() {
+
+
+	//		selectedText = comboBox->currentText(); // update selectedText with the current selected item
+	//		actor->GetProperty()->SetColor(colors->GetColor3d(selectedText.toStdString()).GetData());
+	//		qstrcpy(LineColor, qPrintable(selectedText));
+
+
+
+	//		renderWindow->Render();
+	//		});
+
+	//	QObject::connect(spinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [&]() {
+	//		actor->GetProperty()->SetLineWidth(spinBox->value());
+	//		LineWidth = spinBox->value();
+	//		renderWindow->Render();
+	//		});
+
+
+	//	//Connect renderWindowInteractor in ONLeftClick with current working interactor
+	//	renderWindow->SetInteractor(renderWindowInteractor);
+
+	//	mainWindow.setCentralWidget(vtkRenderWidget);
+
+	//	renderWindow->AddRenderer(renderer);
+	//	renderWindow->SetInteractor(vtkRenderWidget->interactor());
+
+	//	renderWindow->GetInteractor()->SetPicker(pointPicker);
+	//	vtkNew<MouseInteractorStylePP> style;
+	//	renderWindow->GetInteractor()->SetInteractorStyle(style);
+
+
+
+	//	vtkRenderWidget->setRenderWindow(renderWindow);
+
+	//	//vtkNew<vtkRenderWindowInteractor> renderWindowInteractor;
+	//	//renderWindowInteractor->SetPicker(pointPicker);
+	//	//renderWindowInteractor->SetRenderWindow(renderWindow);
+
+
+	//	//renderWindowInteractor->SetInteractorStyle(style);
+
+
+
+	//	// Display the line
+	//	renderWindow->Render();
+
+
+	//	renderWindow->GetInteractor()->Start();
+	//}
 	mainWindow.show();
 
 	return app.exec();
