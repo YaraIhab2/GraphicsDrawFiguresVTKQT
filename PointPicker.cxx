@@ -49,7 +49,7 @@
 #include <sstream>
 #include <iostream>
 #include <fstream>
-#include< stdio.h >
+#include <stdio.h>
 #include <vtkTexturedButtonRepresentation2D.h>
 #include <vtkPNGReader.h>
 #include <vtkButtonWidget.h>
@@ -81,7 +81,6 @@
 #include <QObject>
 #include <vtkHexahedron.h>
 #include <QTextEdit>
-
 #include <vtkActor.h>
 #include <vtkCellArray.h>
 #include <vtkCellData.h>
@@ -97,14 +96,12 @@
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
 #include <vtkRenderer.h>
-
 #include <cmath>
 #include <cstdlib>
 #include <random>
 #include <QWidget>
 #include <vtkSmartPointer.h>
 #include <vtkRenderWindow.h>
-
 #include <QtCore/QObject>
 #include <QtCore/QDebug>
 #include <QtWidgets/QApplication>
@@ -126,19 +123,32 @@
 #include <vtkRenderWindowInteractor.h>
 #include <vtkRenderer.h>
 #include <vtkUnstructuredGrid.h>
-//#include <vtkEventQtSlotConnect>
+#include <vtkEventQtSlotConnect.h>
+#include <vtkActor.h>
+#include <vtkCellArray.h>
+#include <vtkNamedColors.h>
+#include <vtkNew.h>
+#include <vtkPolyData.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkPolygon.h>
+#include <vtkProperty.h>
+#include <vtkRenderWindow.h>
+#include <vtkRenderWindowInteractor.h>
+#include <vtkRenderer.h>
+
+
 using namespace std;
+
 bool widget = 0;
 double picked[3];
 double picked2[3] = {};
-
 double x = 0, y = 0, z = 0, z2 = 0, x2 = 0, y2 = 0;
 
-//double *xp=&x , *yp = &y, *zp = &z, *x2p = &x2, *y2p = &y2, *z2p = &z2;
+
 int LineWidth = 1;
 char LineColor[100];
 
-//LineColor[0]='B';
+
 vtkNew<vtkPointPicker> pointPicker;
 
 vtkSmartPointer<vtkTextActor> textActor = vtkSmartPointer<vtkTextActor>::New();
@@ -468,47 +478,169 @@ int main(int argc, char* argv[])
 
 	///////////////////////////////FOR POLYLINE/////////
 	// Create a polydata to store everything in
-	//draw normal polygon
+	 
+	
 	QObject::connect(regPolygon, &QPushButton::clicked, [&]() {
+
 		Line = false;
 		polyL = false;
 		regpoly = true;
-		mainWindow.addDockWidget(Qt::LeftDockWidgetArea, &controlDock);
-		QLabel controlDockTitle("Control Dock");
-		controlDockTitle.setMargin(20);
-		controlDock.setTitleBarWidget(&controlDockTitle);
-		QPointer<QVBoxLayout> dockLayout = new QVBoxLayout();
-		layoutContainer.setLayout(dockLayout);
-		controlDock.setWidget(&layoutContainer);
-		mainWindow.setCentralWidget(vtkRenderWidget);
 
+		// Get the number of vertices from the user
+		int nVertices = QInputDialog::getInt(&mainWindow, "Regular Polygon", "Enter the number of vertices:", 3,3);
 
+		// Setup points for the regular polygon
+		vtkNew<vtkPoints> points;
+		for (int i = 0; i < nVertices; i++) {
+			double x = cos(2 * vtkMath::Pi() * i / nVertices);
+			double y = sin(2 * vtkMath::Pi() * i / nVertices);
+			points->InsertNextPoint(x, y, 0.0);
+		}
 
+		// Create the polygon
+		vtkNew<vtkPolygon> polygon;
+		polygon->GetPointIds()->SetNumberOfIds(nVertices);
+		for (int i = 0; i < nVertices; i++) {
+			polygon->GetPointIds()->SetId(i, i);
+		}
 
+		// Add the polygon to a list of polygons
+		vtkNew<vtkCellArray> polygons;
+		polygons->InsertNextCell(polygon);
 
-		mapper->SetInputData(polyData);
+		// Create a PolyData
+		vtkNew<vtkPolyData> polygonPolyData;
+		polygonPolyData->SetPoints(points);
+		polygonPolyData->SetPolys(polygons);
 
-		//vtkNew<vtkActor> actor;
+		// Create a mapper and actor
+		vtkNew<vtkPolyDataMapper> mapper;
+		mapper->SetInputData(polygonPolyData);
+
+		vtkNew<vtkActor> actor;
 		actor->SetMapper(mapper);
-		actor->GetProperty()->SetColor(colors->GetColor3d("Tomato").GetData());
-		renderer->SetBackground(namedColors->GetColor3d("black").GetData());
-		renderWindow->SetWindowName("regular polygon");
+		actor->GetProperty()->SetColor(colors->GetColor3d("green").GetData());
+
+		// Create a renderer, render window, and interactor
+		vtkNew<vtkRenderer> renderer;
+		vtkNew<vtkRenderWindow> renderWindow;
+		vtkNew<vtkRenderWindowInteractor> renderWindowInteractor;
 		renderWindowInteractor->SetRenderWindow(renderWindow);
-		renderer->AddActor(actor);
-		renderWindow->SetInteractor(renderWindowInteractor);
+
+		// Set up the render window and add the actor
 		renderWindow->AddRenderer(renderer);
-		renderWindow->SetInteractor(vtkRenderWidget->interactor());
-		renderWindow->GetInteractor()->SetPicker(pointPicker);
-		vtkNew<MouseInteractorStylePP> style;
-		renderWindow->GetInteractor()->SetInteractorStyle(style);
-		vtkRenderWidget->setRenderWindow(renderWindow);
-
-		// Display the regular polygon
+		renderer->AddActor(actor);
+		renderer->SetBackground(namedColors->GetColor3d("Silver").GetData());
+		renderWindow->SetWindowName("Regular Polygon");
 		renderWindow->Render();
-		renderWindow->GetInteractor()->Start();
-		mainWindow.show();
 
-	});
+		// Set up the interactor and start the event loop
+		vtkNew<vtkInteractorStyleTrackballCamera> style;
+		renderWindowInteractor->SetInteractorStyle(style);
+		renderWindowInteractor->Start();
+
+		});
+
+	//draw normal polygon
+	//QObject::connect(regPolygon, &QPushButton::clicked, [&]() {
+
+	//	Line = false;
+	//	polyL = false;
+	//	regpoly = true;
+	//	
+	//	/*mainWindow.addDockWidget(Qt::LeftDockWidgetArea, &controlDock);
+	//	QLabel controlDockTitle("Control Dock");
+	//	controlDockTitle.setMargin(20);
+	//	controlDock.setTitleBarWidget(&controlDockTitle);
+	//	QPointer<QVBoxLayout> dockLayout = new QVBoxLayout();
+	//	layoutContainer.setLayout(dockLayout);
+	//	controlDock.setWidget(&layoutContainer);
+	//	mainWindow.setCentralWidget(vtkRenderWidget);*/
+
+
+	//	// Setup four points
+	//	vtkNew<vtkPoints> points;
+	//	points->InsertNextPoint(0.0, 0.0, 0.0);
+	//	points->InsertNextPoint(1.0, 0.0, 0.0);
+	//	points->InsertNextPoint(1.0, 1.0, 0.0);
+	//	points->InsertNextPoint(0.0, 1.0, 0.0);
+
+	//	//de mesh matlob n7otha
+	//	// Create the polygon
+	//	vtkNew<vtkPolygon> polygon;
+	//	polygon->GetPointIds()->SetNumberOfIds(4); // make a quad
+	//	polygon->GetPointIds()->SetId(0, 0);
+	//	polygon->GetPointIds()->SetId(1, 1);
+	//	polygon->GetPointIds()->SetId(2, 2);
+	//	polygon->GetPointIds()->SetId(3, 3);
+
+	//	// Add the polygon to a list of polygons
+	//	vtkNew<vtkCellArray> polygons;
+	//	polygons->InsertNextCell(polygon);
+
+	//	// Create a PolyData
+	//	vtkNew<vtkPolyData> polygonPolyData;
+	//	polygonPolyData->SetPoints(points);
+	//	polygonPolyData->SetPolys(polygons);
+
+	//	// Create a mapper and actor
+	//	//the next line
+	//	//vtkNew<vtkPolyDataMapper> mapper;
+	//	mapper->SetInputData(polygonPolyData);
+
+	//	//the next line
+	//	//vtkNew<vtkActor> actor;
+
+	//	//the next 2 lines were commented
+	//	//actor->SetMapper(mapper);
+	//	//actor->GetProperty()->SetColor(colors->GetColor3d("Silver").GetData());
+
+	//	// Visualize
+	//	//the next two lines
+	//	//vtkNew<vtkRenderer> renderer;
+	//	//vtkNew<vtkRenderWindow> renderWindow;
+	//	//renderWindow->SetWindowName("Polygon");
+	//	//renderWindow->AddRenderer(renderer);
+	//	//the next line
+	//	//vtkNew<vtkRenderWindowInteractor> renderWindowInteractor;
+	//	//renderWindowInteractor->SetRenderWindow(renderWindow);
+
+	//	//renderer->AddActor(actor);
+	//	//renderer->SetBackground(colors->GetColor3d("Salmon").GetData());
+	//	//renderWindow->Render();
+	//	//renderWindowInteractor->Start();
+
+
+
+	//	//mapper->SetInputData(polyData);
+
+	//	//vtkNew<vtkActor> actor;
+	//	actor->SetMapper(mapper);
+	//	actor->GetProperty()->SetColor(colors->GetColor3d("Tomato").GetData());
+	//	renderer->SetBackground(namedColors->GetColor3d("siver").GetData());
+	//	renderWindow->SetWindowName("regular polygon");
+	//	renderWindowInteractor->SetRenderWindow(renderWindow);
+	//	renderer->AddActor(actor);
+	//	//1  -> the line below
+	//	renderWindow->SetInteractor(renderWindowInteractor);
+	//	renderWindow->AddRenderer(renderer);
+	//	//2  -> the line below
+	//	renderWindow->SetInteractor(vtkRenderWidget->interactor());
+	//	renderWindow->GetInteractor()->SetPicker(pointPicker);
+	//	vtkNew<MouseInteractorStylePP> style;
+	//	renderWindow->GetInteractor()->SetInteractorStyle(style);
+	//	vtkRenderWidget->setRenderWindow(renderWindow);
+
+	//	renderWindowInteractor->Start();//da ma3rafsh yet3emelo comment wla la2
+	//	
+	//	// Display the regular polygon
+	//	
+	//	//3 the 3 lines below
+	//	renderWindow->Render();
+	//	renderWindow->GetInteractor()->Start();
+	//	mainWindow.show();
+
+	//});
 
 	//draw polyline
 	QObject::connect(buttonPolyLine, &QPushButton::clicked, [&]() {
