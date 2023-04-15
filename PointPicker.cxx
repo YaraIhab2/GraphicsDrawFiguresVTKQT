@@ -228,7 +228,7 @@ using namespace std;
 bool widget = 0;
 double picked[3];
 double picked2[3] = {};
-
+double picked3[3] = {};
 double x = 0, y = 0, z = 0, z2 = 0, x2 = 0, y2 = 0;
 
 //double *xp=&x , *yp = &y, *zp = &z, *x2p = &x2, *y2p = &y2, *z2p = &z2;
@@ -331,16 +331,46 @@ void Draw_Circle()
 
 }
 
-void Draw_Ellipse(double SemiMajorAxis = 4, double SemiMinorAxis = 2)
+void Draw_Ellipse()
 {
+	double SemiMajorAxis = sqrt(pow((picked[0] - picked2[0]), 2.0) + pow((picked[1] - picked2[1]), 2.0));
+	cout << "Major " << SemiMajorAxis << " ";
+	double SemiMinorAxis =  sqrt(pow((picked3[0] - picked2[0]), 2.0) + pow((picked3[1] - picked2[1]), 2.0));
+	cout << "Minor " << SemiMinorAxis << " ";
+	double axisRatio = SemiMajorAxis / SemiMinorAxis;
+	cout << "ratio " << axisRatio << " ";
 	vtkSmartPointer<vtkPoints> Ellipse_points = vtkSmartPointer<vtkPoints>::New();
 	int number_of_points = 120;
 	lineSource->SetResolution(number_of_points);
+
+	//if (axisRatio >= 1) {
+		SemiMajorAxis = sqrt(pow((picked3[0] - picked2[0]), 2.0) + pow(picked3[1] - picked2[1], 2.0));
+		SemiMinorAxis = sqrt(pow((picked[0] - picked2[0]), 2.0) + pow(picked[1] - picked2[1], 2.0));
+		cout << "first if";
+	//}
+	/*if(axisRatio<1) {
+		SemiMajorAxis = sqrt(pow((picked[0] - picked2[0]), 2.0) + pow(picked[1] - picked2[1], 2.0));
+		SemiMinorAxis = sqrt(pow((picked3[0] - picked2[0]), 2.0) + pow(picked3[1] - picked2[1], 2.0));
+		cout << "AxisRatio<1";
+	}*/
+
 	for (int j = 0; j <= number_of_points; j++)
 	{
+		double x_ellipse;
+		double y_ellipse;
+
 		double t_parameter = static_cast<double>(j) / number_of_points;
-		double x_ellipse = SemiMajorAxis * cos(2 * vtkMath::Pi() * t_parameter);
-		double y_ellipse = SemiMinorAxis * sin(2 * vtkMath::Pi() * t_parameter);
+		
+		
+
+		 x_ellipse = picked2[0] + SemiMajorAxis * sin(2 * vtkMath::Pi() * t_parameter);
+		 y_ellipse = picked2[1] + SemiMinorAxis * cos(2 * vtkMath::Pi() * t_parameter+vtkMath::Pi()/2);
+
+		
+		/*else if (axisRatio > 1) {
+			x_ellipse = picked2[0] + SemiMajorAxis * sin(2 * vtkMath::Pi() * t_parameter)* sin(vtkMath::Pi() / 2);
+			y_ellipse = picked2[1] + SemiMinorAxis *cos(2 * vtkMath::Pi() * t_parameter)*cos( vtkMath::Pi() / 2);
+		}*/
 		Ellipse_points->InsertNextPoint(x_ellipse, y_ellipse, 0.0);
 
 	}
@@ -578,12 +608,17 @@ namespace {
 				DrawPoint();
 			}
 			if (flag == 2) {
+				for (int i = 0; i < 3; i++) {
+					picked3[i] = picked[i];
+				}
 				if (isLine) {
+
 					SetSecondPoint();
 					flag = 0;
 				}
 				
 
+				
 
 
 				std::cout << "Picked value: " << picked[0] << " " << picked[1] << " "
@@ -598,6 +633,16 @@ namespace {
 				
 
 				Draw_Circle();
+				renderWindow->Render();
+				flag = 0;
+
+				return;
+			}
+			if (isEllipse && flag == 3) {
+
+
+
+				Draw_Ellipse();
 				renderWindow->Render();
 				flag = 0;
 
