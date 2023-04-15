@@ -5,6 +5,102 @@
 #include <vtkObjectFactory.h>
 #include <vtkPointPicker.h>
 #include <vtkPolyDataMapper.h>
+#include <vtkRegularPolygonSource.h>
+#include <vtkProperty.h>
+#include <vtkRenderWindow.h>
+#include <vtkRenderWindowInteractor.h>
+#include <vtkRenderer.h>
+#include <vtkRendererCollection.h>
+#include <vtkSphereSource.h>
+#include <vtkSmartPointer.h>
+#include <vtkRenderWindow.h>
+#include <vtkRenderer.h>
+#include <vtkRenderWindowInteractor.h>
+#include <vtkInteractorStyleTrackballCamera.h>
+#include <vtkPoints.h>
+#include <vtkCellArray.h>
+#include <vtkPolyData.h>
+#include <vtkLineSource.h>
+#include <vtkPicker.h>
+#include <vtkTextActor.h>
+#include <vtkTextWidget.h>
+#include <vtkTextProperty.h>
+#include <vtkTextRepresentation.h>
+#include <vtkNamedColors.h>
+#include <vtkActor.h>
+#include <QWidget>
+#include <vtkCommand.h>
+#include <vtkCoordinate.h>
+#include <vtkNamedColors.h>
+#include <vtkNew.h>
+#include <vtkPolyDataMapper.h>
+#include <vtkProperty.h>
+#include <vtkRenderWindow.h>
+#include <vtkRenderWindowInteractor.h>
+#include <vtkRenderer.h>
+#include <vtkSphereSource.h>
+#include <vtkTextActor.h>
+#include <vtkTextProperty.h>
+#include <vtkTextRepresentation.h>
+#include <vtkTextWidget.h>
+#include <string>
+#include <sstream>
+#include <iostream>
+#include <fstream>
+#include< stdio.h >
+#include <vtkTexturedButtonRepresentation2D.h>
+#include <vtkPNGReader.h>
+#include <vtkButtonWidget.h>
+#include <vtkImageData.h>
+#include <vtkTexture.h>
+#include <vtkImageViewer2.h>
+#include <vtkNamedColors.h>
+#include <vtkImageCanvasSource2D.h>
+#include <vtkImageData.h>
+#include <vtkImageDataGeometryFilter.h>
+#include <QVTKOpenGLNativeWidget.h>
+#include <vtkActor.h>
+#include <vtkDataSetMapper.h>
+#include <vtkDoubleArray.h>
+#include <vtkGenericOpenGLRenderWindow.h>
+#include <vtkPointData.h>
+#include <vtkProperty.h>
+#include <vtkRenderer.h>
+#include <vtkSphereSource.h>
+#include <vtkTubeFilter.h>
+#include <QApplication>
+#include <QDockWidget>
+#include <QGridLayout>
+#include <QLabel>
+#include <QMainWindow>
+#include <QPointer>
+#include <QPushButton>
+#include <QVBoxLayout>
+#include <QObject>
+
+
+#include <cmath>
+#include <cstdlib>
+#include <random>
+#include <QWidget>
+#include <vtkSmartPointer.h>
+#include <vtkRenderWindow.h>
+
+#include <QtCore/QObject>
+#include <QtCore/QDebug>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QPushButton>
+#include <QLineEdit>
+#include <QInputDialog>
+#include <QComboBox>
+#include <QSpinBox>
+#include <vtkActor.h>
+#include <vtkInteractorStyleTrackballCamera.h>
+#include <vtkNamedColors.h>
+#include <vtkNew.h>
+#include <vtkObjectFactory.h>
+#include <vtkPointPicker.h>
+#include <vtkPolyDataMapper.h>
 #include <vtkProperty.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
@@ -79,6 +175,8 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QObject>
+#include <vtkHexahedron.h>
+#include <QTextEdit>
 
 #include <vtkActor.h>
 #include <vtkCellArray.h>
@@ -86,6 +184,7 @@
 #include <vtkDoubleArray.h>
 #include <vtkNamedColors.h>
 #include <vtkNew.h>
+#include <vtkRegularPolygonSource.h>
 #include <vtkPoints.h>
 #include <vtkPolyData.h>
 #include <vtkPolyDataMapper.h>
@@ -110,6 +209,20 @@
 #include <QInputDialog>
 #include <QComboBox>
 #include <QSpinBox>
+#include <vtkActor.h>
+#include <vtkCamera.h>
+#include <vtkCellArray.h>
+#include <vtkDataSetMapper.h>
+#include <vtkHexahedron.h>
+#include <vtkNamedColors.h>
+#include <vtkNew.h>
+#include <vtkPoints.h>
+#include <vtkProperty.h>
+#include <vtkRenderWindow.h>
+#include <vtkRenderWindowInteractor.h>
+#include <vtkRenderer.h>
+#include <vtkUnstructuredGrid.h>
+#include <cmath>
 //#include <vtkEventQtSlotConnect>
 using namespace std;
 bool widget = 0;
@@ -123,7 +236,7 @@ int LineWidth = 1;
 char LineColor[100];
 
 //LineColor[0]='B';
-
+vtkNew<vtkPointPicker> pointPicker;
 
 vtkSmartPointer<vtkTextActor> textActor = vtkSmartPointer<vtkTextActor>::New();
 vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
@@ -137,49 +250,143 @@ vtkSmartPointer<vtkGenericOpenGLRenderWindow> renderWindow = vtkSmartPointer<vtk
 
 vtkNew<vtkRenderWindowInteractor> renderWindowInteractor;
 vtkSmartPointer <vtkTextWidget> textWidget = vtkSmartPointer<vtkTextWidget>::New();
-
 string pt;
 string pt2;
 
 bool polyL = false;
-bool Line = false;
+bool Line = true;
+bool regpoly = false;
 bool clearPolyLine = false;
+bool circle = false;
 
 int countPolyLinePoints = 0;
 
 vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
 vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer <vtkPolyData>::New();
 vtkSmartPointer<vtkPolyLine> polyLine = vtkSmartPointer<vtkPolyLine>::New();
+vtkSmartPointer<vtkRegularPolygonSource> polygonSource = vtkSmartPointer<vtkRegularPolygonSource>::New();
 vtkSmartPointer<vtkCellArray> cells = vtkSmartPointer<vtkCellArray>::New();
 
+bool isCircle = 0;
+bool isEllipse = 0;
+bool isArc = 0;
+bool isRegularPolygon = 0;
+bool isPolygon = 0;
+bool isPolyline = 0;
+bool isLine = 1;
+
 /////////////////////////////////////////Functions used by classes////////////////////////
+//set the first point of the line
 void SetFirstPoint() {
 
-	lineSource->SetPoint1(picked2[0], picked2[1], 0);
+	lineSource->SetPoint1(picked2[0], picked2[1], picked2[2]);
 	return;
-
-
-
 }
 
+//set the second point of the line
 void SetSecondPoint() {
 
-	lineSource->SetPoint2(picked[0], picked[1], 0);
+	lineSource->SetPoint2(picked[0], picked[1], picked[2]);
 	//lineSource->Modified();
 	lineSource->Update();
-
 }
+
 
 void InsertPolyPoint() {
-	points->InsertNextPoint(picked[0], picked[1], 0);
+	points->InsertNextPoint(picked[0], picked[1], picked[2]);
 	std::cout << "Picked value of polyline: " << picked[0] << " " << picked[1] << " "
 		<< picked[2] << std::endl;
+
+}
+
+void Set_line_shape(vtkLineSource* line, vtkPoints* points, vtkPolyDataMapper* mapper, vtkActor* actor, vtkRenderer* renderer)
+{
+	line->SetPoints(points);
+	mapper->SetInputConnection(line->GetOutputPort());
+	mapper->Update();
+	actor->SetMapper(mapper);
+	actor->GetProperty()->SetColor(1.0, 0.0, 0.0);
+	actor->GetProperty()->SetLineWidth(3.0);
+
+	renderer->AddActor(actor);
+}
+
+void Draw_Circle()
+{
+	double Raduis = sqrt(pow((picked[0] - picked2[0]),2.0) + pow(picked[1] - picked2[1], 2.0));
+	vtkSmartPointer<vtkPoints> Circle_points = vtkSmartPointer<vtkPoints>::New();
+	int number_of_points = 120;
+	lineSource->SetResolution(number_of_points);  //determines the quality of the generated line or polyline, with higher values of number_of_points leading to smoother and more precise lines.
+	for (int i = 0; i <= number_of_points; i++)
+	{
+		double t_parameter = static_cast<double>(i) / number_of_points;   // division is performed using floating-point arithmetic rather than integer division.
+		double x_circle = picked2[0]+Raduis * cos(2 * vtkMath::Pi() * t_parameter);
+		double y_circle =picked2[1]+ Raduis * sin(2 * vtkMath::Pi() * t_parameter);
+		Circle_points->InsertNextPoint(x_circle, y_circle, 0.0);
+		
+	}
 	
+	Set_line_shape(lineSource, Circle_points, mapper, actor, renderer);
+	
+
+}
+
+void Draw_Ellipse(double SemiMajorAxis = 4, double SemiMinorAxis = 2)
+{
+	vtkSmartPointer<vtkPoints> Ellipse_points = vtkSmartPointer<vtkPoints>::New();
+	int number_of_points = 120;
+	lineSource->SetResolution(number_of_points);
+	for (int j = 0; j <= number_of_points; j++)
+	{
+		double t_parameter = static_cast<double>(j) / number_of_points;
+		double x_ellipse = SemiMajorAxis * cos(2 * vtkMath::Pi() * t_parameter);
+		double y_ellipse = SemiMinorAxis * sin(2 * vtkMath::Pi() * t_parameter);
+		Ellipse_points->InsertNextPoint(x_ellipse, y_ellipse, 0.0);
+
+	}
+
+
+
+	Set_line_shape(lineSource, Ellipse_points, mapper, actor, renderer);
 }
 
 
+void Draw_Arc(double Raduis = 5, double Start_angle = 0, double End_Angle = 90)
+{
+	vtkSmartPointer<vtkPoints> Arc_points = vtkSmartPointer<vtkPoints>::New();
+	int number_of_points = 120;
+	lineSource->SetResolution(number_of_points);
+	double Angle_increment = (End_Angle - Start_angle) / (number_of_points - 1);
+	for (int i = 0; i < number_of_points; i++)
+	{
+		double Current_angle = Start_angle + Angle_increment * i;
+		double x_arc = Raduis * cos(vtkMath::RadiansFromDegrees(Current_angle));
+		double y_arc = Raduis * sin(vtkMath::RadiansFromDegrees(Current_angle));
+		Arc_points->InsertNextPoint(x_arc, y_arc, 0.0);
+
+	}
+
+	Set_line_shape(lineSource, Arc_points, mapper, actor, renderer);
+}
 
 
+void Draw_Regular_Polygon(int number_of_sides = 5, double Radius = 1)
+{
+	vtkSmartPointer<vtkPoints> Regpolygon_points = vtkSmartPointer<vtkPoints>::New();
+	int number_of_points = number_of_sides;
+	lineSource->SetResolution(number_of_points);
+	double Angle_increment = 2 * vtkMath::Pi() / number_of_points;
+	for (int point_indx = 0; point_indx < number_of_points; point_indx++)
+	{
+		double Current_angle = Angle_increment * point_indx;
+		double x_regpolygon = Radius * cos(Current_angle);
+		double y_regpolygon = Radius * sin(Current_angle);
+		Regpolygon_points->InsertNextPoint(x_regpolygon, y_regpolygon, 0.0);
+
+	}
+	Set_line_shape(lineSource, Regpolygon_points, mapper, actor, renderer);
+
+}
 
 
 bool ReadFile(char name[100]) {
@@ -253,7 +460,7 @@ bool  WriteFile(string name) {
 		cout << "File created successfully!";
 		my_file << "(" << picked2[0] << "," << picked2[1] << "," << picked2[2] << ")" << endl << "(" << picked[0] << "," << picked[1] << "," << picked[2] << ")" << endl << LineWidth << endl << LineColor;
 		my_file.close();
-		
+		cout << LineColor;
 	}
 
 	return true;
@@ -313,7 +520,7 @@ void DrawPoint() {
 	textWidget->On();
 	renderWindow->Render();
 
-	renderWindowInteractor->Start();
+	//renderWindowInteractor->Start();
 
 
 	return;
@@ -321,7 +528,7 @@ void DrawPoint() {
 
 
 
-bool Polynum = 0;
+
 
 
 namespace {
@@ -354,59 +561,56 @@ namespace {
 
 			std::cout << "Picked value: " << picked[0] << " " << picked[1] << " "
 				<< picked[2] << std::endl;
+			
+			
+			flag++;
+			if (flag == 1) {
 
 
-
-			if (Line) {
-				flag++;
-				if (flag == 1) {
-
-
-					for (int i = 0; i < 3; i++) {
-						picked2[i] = picked[i];
-					}
+				for (int i = 0; i < 3; i++) {
+					picked2[i] = picked[i];
+				}
+				if (isLine) {
 					SetFirstPoint();
 					SetSecondPoint();
-					DrawPoint();
+					
 				}
-				if (flag == 2) {
-
+				DrawPoint();
+			}
+			if (flag == 2) {
+				if (isLine) {
 					SetSecondPoint();
 					flag = 0;
-
-
-
-					std::cout << "Picked value: " << picked[0] << " " << picked[1] << " "
-						<< picked[2] << std::endl;
-					std::cout << "Picked2 value: " << picked2[0] << " " << picked2[1] << " "
-						<< picked2[2] << std::endl;
-					DrawPoint();
-
 				}
-			}
-			else if (polyL) {
-				countPolyLinePoints++;
 				
-				
-				InsertPolyPoint();
-				//polyData->SetPoints(points);
-				polyData->Modified();
-				mapper->Update();
-				this->Interactor->GetRenderWindow()->Render();
-				polyLine->GetPointIds()->SetNumberOfIds(countPolyLinePoints);
+
+
+
+				std::cout << "Picked value: " << picked[0] << " " << picked[1] << " "
+					<< picked[2] << std::endl;
+				std::cout << "Picked2 value: " << picked2[0] << " " << picked2[1] << " "
+					<< picked2[2] << std::endl;
 				DrawPoint();
-				Polynum = 0;
+
+			}
+
+			if (isCircle &&flag==2) {
 				
-				
+
+				Draw_Circle();
+				renderWindow->Render();
+				flag = 0;
+
 				return;
+			}
 
 
-			}
-			if (clearPolyLine) {
-				points->Delete();
-				clearPolyLine = false;
-				countPolyLinePoints = 0;
-			}
+			//}
+			//if (clearPolyLine) {
+			//	points->Delete();
+			//	clearPolyLine = false;
+			//	countPolyLinePoints = 0;
+			//}
 
 			vtkInteractorStyleTrackballCamera::OnLeftButtonDown();
 
@@ -415,17 +619,6 @@ namespace {
 
 
 		// Forward events
-
-
-
-
-
-
-
-
-
-
-
 
 	};
 
@@ -437,310 +630,426 @@ int main(int argc, char* argv[])
 {
 	vtkNew<vtkNamedColors> colors;
 	vtkNew<vtkNamedColors> namedColors;
-	QSurfaceFormat::setDefaultFormat(QVTKOpenGLNativeWidget::defaultFormat());
-	vtkNew<vtkPointPicker> pointPicker;
-	QApplication app(argc, argv);
+	QSurfaceFormat::setDefaultFormat(QVTKOpenGLNativeWidget::defaultFormat());   //line sets the default format for Qt surface to be used with VTK
+	// The QSurfaceFormat is a class that defines the format for OpenGL surfaces. In this case, the QVTKOpenGLNativeWidget is used as the default format, which is a widget that provides a native OpenGL rendering context for VTK.
+
+	QApplication app(argc, argv);  //creates QApplication object required for the Qt Application
+
 
 	QMainWindow mainWindow;
 	mainWindow.resize(1200, 900);
-	QDockWidget controlDock;
+	QDockWidget controlDock;    // dockable widget attached to sides of main window
 	// add the buttons to the main window
 	QVBoxLayout* layout = new QVBoxLayout();//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	// create the buttons
 
-	QPushButton* buttonLine = new QPushButton("Draw Line");
-	QPushButton* buttonPolyLine = new QPushButton("Draw Polyline");
-	layout->addWidget(buttonLine);
-	layout->addWidget(buttonPolyLine);
 	QWidget* centralWidget = new QWidget();
 	centralWidget->setLayout(layout);
 	mainWindow.setCentralWidget(centralWidget);
 	//////////////////FOR LINE////////////////////
 	QWidget layoutContainer;
 
-	QPointer<QVTKOpenGLNativeWidget> vtkRenderWidget =
-		new QVTKOpenGLNativeWidget();
+	QPointer<QVTKOpenGLNativeWidget> vtkRenderWidget = new QVTKOpenGLNativeWidget();
 	char read[100];
-	QComboBox* comboBox = new QComboBox();
+	QComboBox* color_comboBox = new QComboBox();
+	
 	QString selectedText;
 	QSpinBox* spinBox = new QSpinBox();
+	QTextEdit* textBox = new QTextEdit();
+	
 	///////////////////////////////FOR POLYLINE/////////
 	// Create a polydata to store everything in
-
-
-	QObject::connect(buttonPolyLine, &QPushButton::clicked, [&]() {
-		Line = false;
-		polyL = true;
-
-		mainWindow.addDockWidget(Qt::LeftDockWidgetArea, &controlDock);
-
-		QLabel controlDockTitle("Control Dock");
-		controlDockTitle.setMargin(20);
-		controlDock.setTitleBarWidget(&controlDockTitle);
-
-		QPointer<QVBoxLayout> dockLayout = new QVBoxLayout();
-
-		layoutContainer.setLayout(dockLayout);
-		controlDock.setWidget(&layoutContainer);
-
-
-		mainWindow.setCentralWidget(vtkRenderWidget);
-
-
-
-
-		polyLine->GetPointIds()->SetNumberOfIds(countPolyLinePoints);
-		for (unsigned int i = 0; i < countPolyLinePoints; i++)
-		{
-			polyLine->GetPointIds()->SetId(i, i);
-		}
-
-
-		cells->InsertNextCell(polyLine);
-
-
-
-		// Add the points to the dataset
-		polyData->SetPoints(points);
-
-		// Add the lines to the dataset
-		polyData->SetLines(cells);
-
-		// Setup actor and mapper
-
-		mapper->SetInputData(polyData);
-
-		//vtkNew<vtkActor> actor;
-		actor->SetMapper(mapper);
-		actor->GetProperty()->SetColor(colors->GetColor3d("Tomato").GetData());
-
-		renderer->SetBackground(namedColors->GetColor3d("SlateGray").GetData());
-		renderWindow->SetWindowName("PolyLine");
-
-		renderWindowInteractor->SetRenderWindow(renderWindow);
-		renderer->AddActor(actor);
-
-
-
-
-		renderWindow->SetInteractor(renderWindowInteractor);
-
-
-		renderWindow->AddRenderer(renderer);
-		renderWindow->SetInteractor(vtkRenderWidget->interactor());
-
-		renderWindow->GetInteractor()->SetPicker(pointPicker);
-		vtkNew<MouseInteractorStylePP> style;
-		renderWindow->GetInteractor()->SetInteractorStyle(style);
-
-
-
-		vtkRenderWidget->setRenderWindow(renderWindow);
-
-
-		// Display the line
-		renderWindow->Render();
-
-
-		renderWindow->GetInteractor()->Start();
-
-
-		mainWindow.show();
-
-		});
+	//draw normal polygon
+	//QObject::connect(regPolygon, &QPushButton::clicked, [&]() {
+	//	Line = false;
+	//	polyL = false;
+	//	regpoly = true;
+	//	mainWindow.addDockWidget(Qt::LeftDockWidgetArea, &controlDock);
+	//	QLabel controlDockTitle("Control Dock");
+	//	controlDockTitle.setMargin(20);
+	//	controlDock.setTitleBarWidget(&controlDockTitle);
+	//	QPointer<QVBoxLayout> dockLayout = new QVBoxLayout();
+	//	layoutContainer.setLayout(dockLayout);
+	//	controlDock.setWidget(&layoutContainer);
+	//	mainWindow.setCentralWidget(vtkRenderWidget);
 
 
 
 
 
+	//	mapper->SetInputData(polyData);
 
-	// connect the buttons to slots
-	QObject::connect(buttonLine, &QPushButton::clicked, [&]() {
-		polyL = false;
-		Line = true;
+	//	//vtkNew<vtkActor> actor;
+	//	actor->SetMapper(mapper);
+	//	actor->GetProperty()->SetColor(colors->GetColor3d("Tomato").GetData());
+	//	renderer->SetBackground(namedColors->GetColor3d("black").GetData());
+	//	renderWindow->SetWindowName("regular polygon");
+	//	renderWindowInteractor->SetRenderWindow(renderWindow);
+	//	renderer->AddActor(actor);
+	//	renderWindow->SetInteractor(renderWindowInteractor);
+	//	renderWindow->AddRenderer(renderer);
+	//	renderWindow->SetInteractor(vtkRenderWidget->interactor());
+	//	renderWindow->GetInteractor()->SetPicker(pointPicker);
+	//	vtkNew<MouseInteractorStylePP> style;
+	//	renderWindow->GetInteractor()->SetInteractorStyle(style);
+	//	vtkRenderWidget->setRenderWindow(renderWindow);
+
+	//	// Display the regular polygon
+	//	renderWindow->Render();
+	//	renderWindow->GetInteractor()->Start();
+	//	mainWindow.show();
+
+	//	});
+
+	////draw polyline
+	//QObject::connect(buttonPolyLine, &QPushButton::clicked, [&]() {
+	//	Line = false;
+	//	polyL = true;
+	//	regpoly = false;
+
+	//	mainWindow.addDockWidget(Qt::LeftDockWidgetArea, &controlDock);
+
+	//	QLabel controlDockTitle("Control Dock");
+	//	controlDockTitle.setMargin(20);
+	//	controlDock.setTitleBarWidget(&controlDockTitle);
+
+	//	QPointer<QVBoxLayout> dockLayout = new QVBoxLayout();
+
+	//	layoutContainer.setLayout(dockLayout);
+	//	controlDock.setWidget(&layoutContainer);
+
+
+	//	mainWindow.setCentralWidget(vtkRenderWidget);
+
+
+
+
+	//	polyLine->GetPointIds()->SetNumberOfIds(countPolyLinePoints);
+	//	for (unsigned int i = 0; i < countPolyLinePoints; i++)
+	//	{
+	//		polyLine->GetPointIds()->SetId(i, i);
+	//	}
+
+
+	//	cells->InsertNextCell(polyLine);
+
+
+
+	//	// Add the points to the dataset
+	//	polyData->SetPoints(points);
+
+	//	// Add the lines to the dataset
+	//	polyData->SetLines(cells);
+
+	//	// Setup actor and mapper
+
+	//	mapper->SetInputData(polyData);
+
+	//	//vtkNew<vtkActor> actor;
+	//	actor->SetMapper(mapper);
+	//	actor->GetProperty()->SetColor(colors->GetColor3d("Tomato").GetData());
+
+	//	renderer->SetBackground(namedColors->GetColor3d("SlateGray").GetData());
+	//	renderWindow->SetWindowName("PolyLine");
+
+	//	renderWindowInteractor->SetRenderWindow(renderWindow);
+	//	renderer->AddActor(actor);
+
+
+
+
+	//	renderWindow->SetInteractor(renderWindowInteractor);
+
+
+	//	renderWindow->AddRenderer(renderer);
+	//	renderWindow->SetInteractor(vtkRenderWidget->interactor());
+
+	//	renderWindow->GetInteractor()->SetPicker(pointPicker);
+	//	vtkNew<MouseInteractorStylePP> style;
+	//	renderWindow->GetInteractor()->SetInteractorStyle(style);
+
+
+
+	//	vtkRenderWidget->setRenderWindow(renderWindow);
+
+
+	//	// Display the line
+	//	renderWindow->Render();
+
+
+	//	renderWindow->GetInteractor()->Start();
+
+
+	//	mainWindow.show();
+
+	//	});
+
+
+
+
+
+
+
 
 		///////////////////////////////////////////////////////////////GUI LINE////////////////////////////////////////////
-		mainWindow.addDockWidget(Qt::LeftDockWidgetArea, &controlDock);
+	mainWindow.addDockWidget(Qt::LeftDockWidgetArea, &controlDock);
 
-		QLabel controlDockTitle("Control Dock");
-		controlDockTitle.setMargin(20);
-		controlDock.setTitleBarWidget(&controlDockTitle);
+	QLabel controlDockTitle("Control Dock");
+	controlDockTitle.setMargin(20);
+	controlDock.setTitleBarWidget(&controlDockTitle);
 
-		QPointer<QVBoxLayout> dockLayout = new QVBoxLayout();
+	QPointer<QVBoxLayout> dockLayout = new QVBoxLayout();
 
-		layoutContainer.setLayout(dockLayout);
-		controlDock.setWidget(&layoutContainer);
+	layoutContainer.setLayout(dockLayout);
+	controlDock.setWidget(&layoutContainer);
 
-		////////////////////////////////////////////////////////////////////END//////////////////////////////////////
+	////////////////////////////////////////////////////////////////////END//////////////////////////////////////
 
-		///////////////////////////////////////////////////////////////COMBOBOX COLOUR LINE/////////////////////////////////////////
-
-
-
-		comboBox->addItem("Black");
-		comboBox->addItem("White");
-		comboBox->addItem("Red");
-		selectedText = comboBox->currentText();
-
-		dockLayout->addWidget(comboBox);
-
-		/////////////////////////////////////////////////////////////////END///////////////////////////////////////////////////
-
-		////////////////////////////////////////////////////////SPINBOX LINE WIDTH///////////////////////////////////////
-		spinBox->setMinimum(0);
-		spinBox->setMaximum(100);
-		spinBox->setSingleStep(1);
-		spinBox->setValue(1);
-
-		dockLayout->addWidget(spinBox);
-		///////////////////////////////////////////////////////////////////////////////END/////////////////////////////////
-
-		///////////////////////////////////////////////////////////////////READ WRITE BUTTONS////////////////////////////////////
-		QPushButton* pushButton = new QPushButton("Read File");
-		QPushButton* pushButton2 = new QPushButton("Write File");
-		dockLayout->addWidget(pushButton);
-		dockLayout->addWidget(pushButton2);
-
-
-		mainWindow.setCentralWidget(vtkRenderWidget);
-
-
-		///////////////////////LINE/////////////////////////////
-
-
-		mapper->SetInputConnection(lineSource->GetOutputPort());
-		mapper->Update();
-		actor->GetProperty()->SetColor(colors->GetColor3d(selectedText.toStdString()).GetData());
-		/*LineColor = selectedText.toStdString().c_str();
-		actor->GetProperty()->SetLineWidth(spinBox->value());*/
-		LineWidth = spinBox->value();
-		actor->SetMapper(mapper);
-		renderer->AddActor(actor);
-		renderWindow->AddRenderer(renderer);
-
-		//renderWindow->SetInteractor(renderWindowInteractor);
-
-
-		/////////////////////////////////////////////////////READ PUSH BUTTON//////////////////////////////////////
-
-		QObject::connect(pushButton, &QPushButton::released, [&]() {
-
-			QString text2 = QInputDialog::getText(nullptr, "Input File Name to be Read", "File Name");
-			qDebug() << "Input: " << text2;
-
-
-			strcpy(read, text2.toStdString().c_str());
-
-
-			ReadFile(read);
-			spinBox->setValue(LineWidth);
-			comboBox->setCurrentText(LineColor);
-			vtkSmartPointer<vtkLineSource> lineSource = vtkSmartPointer<vtkLineSource>::New();
-			actor->GetProperty()->SetLineWidth(LineWidth);
-			actor->GetProperty()->SetColor(colors->GetColor3d(LineColor).GetData());
-			SetFirstPoint();
-			SetSecondPoint();
-			lineSource->Update();
-			cout << picked[1] << "                         " << picked2[1];
-			mapper->Update();
-
-			DrawPoint();
+	///////////////////////////////////////////////////////////////COMBOBOX COLOUR LINE/////////////////////////////////////////
 
 
 
+	color_comboBox->addItem("Black");
+	color_comboBox->addItem("White");
+	color_comboBox->addItem("Red");
+	selectedText = color_comboBox->currentText();
+
+	dockLayout->addWidget(color_comboBox);
+
+	/////////////////////////////////////////////////////////////////END///////////////////////////////////////////////////
+
+	////////////////////////////////////////////////////////SPINBOX LINE WIDTH///////////////////////////////////////
+	spinBox->setMinimum(0);
+	spinBox->setMaximum(100);
+	spinBox->setSingleStep(1);
+	spinBox->setValue(1);
+
+	dockLayout->addWidget(spinBox);
+	///////////////////////////////////////////////////////////////////////////////END/////////////////////////////////
+	QComboBox* shape_comboBox = new QComboBox();
+
+	///////////////////////////////////////////////////////////////COMBOBOX COMBOBOX SHAPE SELECT/////////////////////////////////////////
+	shape_comboBox->addItem("Line");
+	shape_comboBox->addItem("Polyline");
+	shape_comboBox->addItem("Polygon");
+	shape_comboBox->addItem("Regular Polygon");
+	shape_comboBox->addItem("Circle");
+	shape_comboBox->addItem("Arc");
+	shape_comboBox->addItem("Ellipse");
+	dockLayout->addWidget(shape_comboBox);
+	QObject::connect(shape_comboBox, (&QComboBox::currentIndexChanged), [&]() {
+
+		string selectedText = shape_comboBox->currentText().toStdString();
+		
+		switch (selectedText[0]) {
+		case 'C':
+			isLine = 0;
+			isEllipse = 0;
+			isArc = 0;
+			isRegularPolygon = 0;
+			isPolygon = 0;
+			isPolyline = 0;
+			isCircle = 1;
+			break;
+		case 'L':
+			isLine = 1;
+			isEllipse = 0;
+			isArc = 0;
+			isRegularPolygon = 0;
+			isPolygon = 0;
+			isPolyline = 0;
+			isCircle = 0;
+			break;
+
+		case 'E':
+			isLine = 0;
+			isEllipse = 1;
+			isArc = 0;
+			isRegularPolygon = 0;
+			isPolygon = 0;
+			isPolyline = 0;
+			isCircle = 0;
+			break;
+		case 'R':
+			isLine = 0;
+			isEllipse = 0;
+			isArc = 0;
+			isRegularPolygon = 1;
+			isPolygon = 0;
+			isPolyline = 0;
+			isCircle = 0;
+			break;
+		case 'A':
+			isLine = 0;
+			isEllipse = 0;
+			isArc = 1;
+			isRegularPolygon = 0;
+			isPolygon = 0;
+			isPolyline = 0;
+			isCircle = 0;
+			break;
+		}
+
+		// update selectedText with the current selected item
+		
+		
 
 
-			});
 
-		//////////////////////////////////////////////////////////////// END///////////////////////////////
-		char test[100] = { 't','e','s','t' };
-		ReadFile(test);
-
-		SetFirstPoint();
-		SetSecondPoint();		////////////////////////////////////////////////////////////////WRITE PUSH BUTTON////////////////////////////////
-		QObject::connect(pushButton2, &QPushButton::released, [&]() {
-			QString text = QInputDialog::getText(nullptr, "Input File Name to be written", "File Name");
-			qDebug() << "Input: " << text;
-			string write;
-			write = text.toStdString();
-			write = write + ".txt";
-			WriteFile(write); });
-
-		//////////////////////////////////////////////////////////////////////END/////////////////////////////////////////////
-
-		////////////////////////////////////////////SET READ VALUES (COLOUR AND WIDTH) IN COMBOBOX AND SPINBOX///////////////
-		actor->GetProperty()->SetLineWidth(spinBox->value());
-		cout << "color  " << selectedText.toStdString();
-		cout << "Linewidth  " << spinBox->value();
-		actor->GetProperty()->SetColor(colors->GetColor3d(selectedText.toStdString()).GetData());
-		//////////////////////////////////////////////////////////END///////////////////////////////////////////////////////////
-
-
-
-		renderer->SetBackground(namedColors->GetColor3d("SlateGray").GetData());
-		///////////////////////////////////////////////////////////COMBOBOX WIDGET APPLIED/////////////////////////////////
-
-		QObject::connect(comboBox, (&QComboBox::currentIndexChanged), [&]() {
-
-
-			selectedText = comboBox->currentText();
-
-
-			// update selectedText with the current selected item
-			actor->GetProperty()->SetColor(colors->GetColor3d(selectedText.toStdString()).GetData());
-			qstrcpy(LineColor, qPrintable(selectedText));
-
-
-
-			renderWindow->Render();
-			});
-		///////////////////////////////////////////////////////////END//////////////////////////////////////////////
-		// 
-		//////////////////////////////////////////////////////////////////////SPINBOX WIDGET APPLIED///////////////////////////////////
-		QObject::connect(spinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [&]() {
-			actor->GetProperty()->SetLineWidth(spinBox->value());
-			LineWidth = spinBox->value();
-			renderWindow->Render();
-			});
-		////////////////////////////////////////////////////////////////////////////END/////////////////////////////
-
-
-		///////////////////////////////////////////////RENDERING, RENDERER, RENDERWINDOW, INTERACTOR//////////////////
-		//Connect renderWindowInteractor in ONLeftClick with current working interactor
-		// 
-		// 
-
-		renderWindow->SetInteractor(renderWindowInteractor);
-
-
-		renderWindow->AddRenderer(renderer);
-		renderWindow->SetInteractor(vtkRenderWidget->interactor());
-
-		renderWindow->GetInteractor()->SetPicker(pointPicker);
-		vtkNew<MouseInteractorStylePP> style;
-		renderWindow->GetInteractor()->SetInteractorStyle(style);
-
-
-
-		vtkRenderWidget->setRenderWindow(renderWindow);
-
-
-		// Display the line
 		renderWindow->Render();
-
-
-		renderWindow->GetInteractor()->Start();
-
-
-		mainWindow.show();
 		});
 	
+	///////////////////////////////////////////////////////////////////////////////END/////////////////////////////////
+
+	///////////////////////////////////////////////////////////////////READ WRITE BUTTONS////////////////////////////////////
+	QPushButton* pushButton = new QPushButton("Read File");
+	QPushButton* pushButton2 = new QPushButton("Write File");
+	dockLayout->addWidget(pushButton);
+	dockLayout->addWidget(pushButton2);
+
+
+	mainWindow.setCentralWidget(vtkRenderWidget);
+
+
+	///////////////////////LINE/////////////////////////////
+	
+
+	//Draw_Circle(3);
+//	Draw_Arc();
+	//Draw_Ellipse();
+
+	mapper->SetInputConnection(lineSource->GetOutputPort());
+	mapper->Update();
+	actor->GetProperty()->SetColor(colors->GetColor3d(selectedText.toStdString()).GetData());
+	/*LineColor = selectedText.toStdString().c_str();
+	actor->GetProperty()->SetLineWidth(spinBox->value());*/
+	LineWidth = spinBox->value();
+	actor->SetMapper(mapper);
+	renderer->AddActor(actor);
+	renderWindow->AddRenderer(renderer);
+
+	//renderWindow->SetInteractor(renderWindowInteractor);
+
+
+	/////////////////////////////////////////////////////READ PUSH BUTTON//////////////////////////////////////
+
+	QObject::connect(pushButton, &QPushButton::released, [&]() {
+
+		QString text2 = QInputDialog::getText(nullptr, "Input File Name to be Read", "File Name");
+		qDebug() << "Input: " << text2;
+
+
+		strcpy(read, text2.toStdString().c_str());
+
+
+		ReadFile(read);
+		spinBox->setValue(LineWidth);
+		color_comboBox->setCurrentText(LineColor);
+		vtkSmartPointer<vtkLineSource> lineSource = vtkSmartPointer<vtkLineSource>::New();
+		actor->GetProperty()->SetLineWidth(LineWidth);
+		actor->GetProperty()->SetColor(colors->GetColor3d(LineColor).GetData());
+		SetFirstPoint();
+		SetSecondPoint();
+		lineSource->Update();
+		cout << picked[1] << "                         " << picked2[1];
+		mapper->Update();
+
+		DrawPoint();
+
+
+
+
+
+		});
+
+	//////////////////////////////////////////////////////////////// END///////////////////////////////
+	char test[100] = { 't','e','s','t' };
+	ReadFile(test);
+
+	SetFirstPoint();
+	SetSecondPoint();
+
+	////////////////////////////////////////////////////////////////WRITE PUSH BUTTON////////////////////////////////
+	QObject::connect(pushButton2, &QPushButton::released, [&]() {
+		QString text = QInputDialog::getText(nullptr, "Input File Name to be written", "File Name");
+		qDebug() << "Input: " << text;
+		string write;
+		write = text.toStdString();
+		write = write + ".txt";
+		WriteFile(write);
+		});
+
+	//////////////////////////////////////////////////////////////////////END/////////////////////////////////////////////
+
+	////////////////////////////////////////////SET READ VALUES (COLOUR AND WIDTH) IN COMBOBOX AND SPINBOX///////////////
+	actor->GetProperty()->SetLineWidth(spinBox->value());
+	cout << "color  " << selectedText.toStdString();
+	cout << "Linewidth  " << spinBox->value();
+	actor->GetProperty()->SetColor(colors->GetColor3d(selectedText.toStdString()).GetData());
+	//////////////////////////////////////////////////////////END///////////////////////////////////////////////////////////
+
+
+
+	renderer->SetBackground(namedColors->GetColor3d("SlateGray").GetData());
+	///////////////////////////////////////////////////////////COMBOBOX WIDGET APPLIED/////////////////////////////////
+
+	QObject::connect(color_comboBox, (&QComboBox::currentIndexChanged), [&]() {
+
+
+		selectedText = color_comboBox->currentText();
+
+
+		// update selectedText with the current selected item
+		actor->GetProperty()->SetColor(colors->GetColor3d(selectedText.toStdString()).GetData());
+		qstrcpy(LineColor, qPrintable(selectedText));
+
+
+
+		renderWindow->Render();
+		});
+	///////////////////////////////////////////////////////////END//////////////////////////////////////////////
+	// 
+	//////////////////////////////////////////////////////////////////////SPINBOX WIDGET APPLIED///////////////////////////////////
+	QObject::connect(spinBox, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [&]() {
+		actor->GetProperty()->SetLineWidth(spinBox->value());
+		LineWidth = spinBox->value();
+		renderWindow->Render();
+		});
+	////////////////////////////////////////////////////////////////////////////END/////////////////////////////
+
+	///////////////////////////////////////////////RENDERING, RENDERER, RENDERWINDOW, INTERACTOR//////////////////
+	//Connect renderWindowInteractor in ONLeftClick with current working interactor
+	// 
+	// 
+
+	renderWindow->SetInteractor(renderWindowInteractor);
+
+
+	renderWindow->AddRenderer(renderer);
+	renderWindow->SetInteractor(vtkRenderWidget->interactor());
+
+	renderWindow->GetInteractor()->SetPicker(pointPicker);
+	vtkNew<MouseInteractorStylePP> style;
+	renderWindow->GetInteractor()->SetInteractorStyle(style);
+
+
+
+	vtkRenderWidget->setRenderWindow(renderWindow);
+
+
+	// Display the line
+	renderWindow->Render();
+
+
+	renderWindow->GetInteractor()->Start();
+
+
+	mainWindow.show();
+
+
+
 	mainWindow.show();
 
 	return app.exec();
 
 
 }
-
-
-// VTK part
