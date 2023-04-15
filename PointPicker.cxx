@@ -253,7 +253,7 @@ string pt;
 string pt2;
 
 bool polyL = false;
-bool Line = false;
+bool Line = true;
 bool regpoly = false;
 bool clearPolyLine = false;
 bool circle = false;
@@ -304,7 +304,7 @@ void Set_line_shape(vtkLineSource* line,vtkPoints* points, vtkPolyDataMapper* ma
 
 void Draw_Circle(double Raduis = 3)
 {
-	
+	vtkSmartPointer<vtkPoints> Circle_points = vtkSmartPointer<vtkPoints>::New();
 	int number_of_points = 120; 
 	lineSource->SetResolution(number_of_points);  //determines the quality of the generated line or polyline, with higher values of number_of_points leading to smoother and more precise lines.
 	for (int i = 0; i <= number_of_points; i++)
@@ -312,16 +312,17 @@ void Draw_Circle(double Raduis = 3)
 		double t_parameter = static_cast<double>(i) / number_of_points;   // division is performed using floating-point arithmetic rather than integer division.
 		double x_circle = Raduis * cos(2 * vtkMath::Pi() * t_parameter);
 		double y_circle = Raduis * sin(2 * vtkMath::Pi() * t_parameter);
-		points->InsertNextPoint(x_circle, y_circle, 0.0);
+		Circle_points->InsertNextPoint(x_circle, y_circle, 0.0);
 
 	}
 
-	Set_line_shape(lineSource, points, mapper, actor, renderer);
+	Set_line_shape(lineSource, Circle_points, mapper, actor, renderer);
 
 }
 
 void Draw_Ellipse(double SemiMajorAxis = 4, double SemiMinorAxis = 2)
 {
+	vtkSmartPointer<vtkPoints> Ellipse_points = vtkSmartPointer<vtkPoints>::New();
 	int number_of_points = 120;
 	lineSource->SetResolution(number_of_points); 
 	for (int j = 0; j <= number_of_points; j++)
@@ -329,18 +330,19 @@ void Draw_Ellipse(double SemiMajorAxis = 4, double SemiMinorAxis = 2)
 		double t_parameter = static_cast<double>(j) / number_of_points; 
 		double x_ellipse = SemiMajorAxis * cos(2 * vtkMath::Pi() * t_parameter);
 		double y_ellipse = SemiMinorAxis * sin(2 * vtkMath::Pi() * t_parameter);
-		points->InsertNextPoint(x_ellipse, y_ellipse, 0.0);
+		Ellipse_points->InsertNextPoint(x_ellipse, y_ellipse, 0.0);
 
 	}
 
 
 
-	Set_line_shape(lineSource, points, mapper, actor, renderer);
+	Set_line_shape(lineSource, Ellipse_points, mapper, actor, renderer);
 }
 
 
 void Draw_Arc(double Raduis =5, double Start_angle = 0 , double End_Angle = 90 )
 {
+	vtkSmartPointer<vtkPoints> Arc_points = vtkSmartPointer<vtkPoints>::New();
 	int number_of_points = 120; 
 	lineSource->SetResolution(number_of_points);
 	double Angle_increment = (End_Angle - Start_angle) / (number_of_points - 1);
@@ -349,11 +351,30 @@ void Draw_Arc(double Raduis =5, double Start_angle = 0 , double End_Angle = 90 )
 		double Current_angle = Start_angle + Angle_increment * i; 
 		double x_arc = Raduis * cos(vtkMath::RadiansFromDegrees(Current_angle));
 		double y_arc = Raduis * sin(vtkMath::RadiansFromDegrees(Current_angle));
-		points->InsertNextPoint(x_arc, y_arc, 0.0);
+		Arc_points->InsertNextPoint(x_arc, y_arc, 0.0);
 
 	}
 
-	Set_line_shape(lineSource, points, mapper, actor, renderer);
+	Set_line_shape(lineSource, Arc_points, mapper, actor, renderer);
+}
+
+
+void Draw_Regular_Polygon(int number_of_sides =5 , double Radius = 1)   
+{
+	vtkSmartPointer<vtkPoints> Regpolygon_points = vtkSmartPointer<vtkPoints>::New();
+	int number_of_points = number_of_sides;
+	lineSource->SetResolution(number_of_points);
+	double Angle_increment = 2 * vtkMath::Pi() / number_of_points; 
+	for (int point_indx = 0; point_indx < number_of_points; point_indx++)
+	{
+		double Current_angle = Angle_increment * point_indx;
+		double x_regpolygon = Radius * cos(Current_angle);
+		double y_regpolygon = Radius * sin(Current_angle);
+		Regpolygon_points->InsertNextPoint(x_regpolygon, y_regpolygon, 0.0);
+
+	}
+	Set_line_shape(lineSource, Regpolygon_points, mapper, actor, renderer);
+
 }
 
 
@@ -532,7 +553,7 @@ namespace {
 
 
 
-			if (Line) {
+		
 				flag++;
 				if (flag == 1) {
 
@@ -558,26 +579,26 @@ namespace {
 					DrawPoint();
 
 				}
-			}
-			else if (polyL) {
-				countPolyLinePoints++;
+			
+			//else if (polyL) {
+			//	countPolyLinePoints++;
 
-				InsertPolyPoint();
-				//polyData->SetPoints(points);
-				polyData->Modified();
-				mapper->Update();
-				this->Interactor->GetRenderWindow()->Render();
+			//	InsertPolyPoint();
+			//	//polyData->SetPoints(points);
+			//	polyData->Modified();
+			//	mapper->Update();
+			//	this->Interactor->GetRenderWindow()->Render();
 
-				DrawPoint();
-				return;
+			//	DrawPoint();
+			//	return;
 
 
-			}
-			if (clearPolyLine) {
-				points->Delete();
-				clearPolyLine = false;
-				countPolyLinePoints = 0;
-			}
+			//}
+			//if (clearPolyLine) {
+			//	points->Delete();
+			//	clearPolyLine = false;
+			//	countPolyLinePoints = 0;
+			//}
 
 			vtkInteractorStyleTrackballCamera::OnLeftButtonDown();
 
@@ -820,7 +841,7 @@ int main(int argc, char* argv[])
 		
 	
 		//Draw_Circle(3);
-		Draw_Arc();
+	//	Draw_Arc();
 		//Draw_Ellipse();
 		mapper->SetInputConnection(lineSource->GetOutputPort());
 		mapper->Update();
@@ -959,5 +980,4 @@ int main(int argc, char* argv[])
 
 
 }
-
 
