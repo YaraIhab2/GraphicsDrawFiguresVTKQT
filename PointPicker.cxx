@@ -234,7 +234,7 @@ double x = 0, y = 0, z = 0, z2 = 0, x2 = 0, y2 = 0;
 //double *xp=&x , *yp = &y, *zp = &z, *x2p = &x2, *y2p = &y2, *z2p = &z2;
 int LineWidth = 1;
 char LineColor[100];
-
+int countIsPolygon=0;
 //LineColor[0]='B';
 vtkNew<vtkPointPicker> pointPicker;
 
@@ -266,7 +266,7 @@ vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer <vtkPolyData>::New();
 vtkSmartPointer<vtkPolyLine> polyLine = vtkSmartPointer<vtkPolyLine>::New();
 vtkSmartPointer<vtkRegularPolygonSource> polygonSource = vtkSmartPointer<vtkRegularPolygonSource>::New();
 vtkSmartPointer<vtkCellArray> cells = vtkSmartPointer<vtkCellArray>::New();
-
+int countIsLine = 0;
 bool isCircle = 0;
 bool isEllipse = 0;
 bool isArc = 0;
@@ -274,7 +274,7 @@ bool isRegularPolygon = 0;
 bool isPolygon = 0;
 bool isPolyline = 0;
 bool isLine = 1;
-
+double pointsArray[100][3];
 /////////////////////////////////////////Functions used by classes////////////////////////
 //set the first point of the line
 void SetFirstPoint() {
@@ -310,7 +310,80 @@ void Set_line_shape(vtkLineSource* line, vtkPoints* points, vtkPolyDataMapper* m
 
 	renderer->AddActor(actor);
 }
+int counterPoly = -1;
+int counterPolygon = -1;
+void Draw_Polyline() {
+	
 
+	counterPoly++;
+	//points->InsertNextPoint(picked[0], picked[1], 0);
+	//vtkSmartPointer<vtkPoints> point1 = vtkSmartPointer<vtkPoints>::New();
+	////point1=points->GetPoint(0);
+
+	//vtkSmartPointer<vtkPoints> newPoints = vtkSmartPointer<vtkPoints>::New();
+	//newPoints->DeepCopy(points);
+	
+	pointsArray[counterPoly][0] = picked[0];
+	pointsArray[counterPoly][1] = picked[1];
+	pointsArray[counterPoly][2] = 0;
+	//pointsArray[i].Take(point1);
+	
+	for (int j = 0; j <= counterPoly;j++) {
+		points->InsertNextPoint(pointsArray[j][0], pointsArray[j][1], 0);
+
+	}
+	lineSource->SetPoints(points);
+	mapper->SetInputConnection(lineSource->GetOutputPort());
+	mapper->Update();
+	actor->SetMapper(mapper);
+	//actor->GetProperty()->SetColor(LineColor);
+	renderer->AddActor(actor);
+	renderWindow->AddRenderer(renderer);
+	renderWindow->Render();
+	renderWindowInteractor->SetRenderWindow(renderWindow);
+
+
+}
+void Draw_Polygon() {
+
+
+	counterPolygon++;
+	//points->InsertNextPoint(picked[0], picked[1], 0);
+	//vtkSmartPointer<vtkPoints> point1 = vtkSmartPointer<vtkPoints>::New();
+	////point1=points->GetPoint(0);
+
+	//vtkSmartPointer<vtkPoints> newPoints = vtkSmartPointer<vtkPoints>::New();
+	//newPoints->DeepCopy(points);
+
+	pointsArray[counterPolygon][0] = picked[0];
+	pointsArray[counterPolygon][1] = picked[1];
+	pointsArray[counterPolygon][2] = 0;
+	//pointsArray[i].Take(point1);
+
+	for (int j = 0; j <= counterPolygon; j++) {
+		if ((counterPolygon != 0) && j==0) {
+			pointsArray[counterPolygon][0] = 0;
+			pointsArray[counterPolygon][1] = 0;
+			pointsArray[counterPolygon][2] = 0;
+
+		}
+		points->InsertNextPoint(pointsArray[j][0], pointsArray[j][1], 0);
+		if (j == counterPolygon) {
+			points->InsertNextPoint(pointsArray[0][0], pointsArray[0][1], 0);
+		}
+	}
+	lineSource->SetPoints(points);
+	mapper->SetInputConnection(lineSource->GetOutputPort());
+	mapper->Update();
+	actor->SetMapper(mapper);
+	//actor->GetProperty()->SetColor(LineColor);
+	renderer->AddActor(actor);
+	renderWindow->AddRenderer(renderer);
+	renderWindow->Render();
+	renderWindowInteractor->SetRenderWindow(renderWindow);
+
+
+}
 void Draw_Circle()
 {
 	double Raduis = sqrt(pow((picked[0] - picked2[0]),2.0) + pow(picked[1] - picked2[1], 2.0));
@@ -333,6 +406,7 @@ void Draw_Circle()
 
 void Draw_Ellipse()
 {
+	
 	double SemiMajorAxis = sqrt(pow((picked[0] - picked2[0]), 2.0) + pow((picked[1] - picked2[1]), 2.0));
 	cout << "Major " << SemiMajorAxis << " ";
 	double SemiMinorAxis =  sqrt(pow((picked3[0] - picked2[0]), 2.0) + pow((picked3[1] - picked2[1]), 2.0));
@@ -343,6 +417,7 @@ void Draw_Ellipse()
 	int number_of_points = 120;
 	lineSource->SetResolution(number_of_points);
 
+	
 	//if (axisRatio >= 1) {
 		SemiMajorAxis = sqrt(pow((picked3[0] - picked2[0]), 2.0) + pow(picked3[1] - picked2[1], 2.0));
 		SemiMinorAxis = sqrt(pow((picked[0] - picked2[0]), 2.0) + pow(picked[1] - picked2[1], 2.0));
@@ -363,8 +438,8 @@ void Draw_Ellipse()
 		
 		
 
-		 x_ellipse = picked2[0] + SemiMajorAxis * sin(2 * vtkMath::Pi() * t_parameter);
-		 y_ellipse = picked2[1] + SemiMinorAxis * cos(2 * vtkMath::Pi() * t_parameter+vtkMath::Pi()/2);
+		 x_ellipse = picked2[0] + SemiMajorAxis * cos(2 * vtkMath::Pi() * (t_parameter+0.25)) ;
+		 y_ellipse = picked2[1] + SemiMinorAxis * sin(2 * vtkMath::Pi() * (t_parameter+0.25));
 
 		
 		/*else if (axisRatio > 1) {
@@ -604,6 +679,26 @@ namespace {
 					SetFirstPoint();
 					SetSecondPoint();
 					
+				}
+				if (isPolyline) {
+					/*if (countIsLine > 1) {
+						
+						counterPoly = 0;
+						pointsArray[100][3] = {0};
+					}*/
+					Draw_Polyline();
+					renderWindow->Render();
+					flag = 0;
+				}
+				if (isPolygon) {
+					/*if (countIsPolygon > 1) {
+
+						counterPolygon = 0;
+						pointsArray[100][3] = { 0 };
+					}*/
+					Draw_Polygon();
+					renderWindow->Render();
+					flag = 0;
 				}
 				DrawPoint();
 			}
@@ -896,6 +991,7 @@ int main(int argc, char* argv[])
 			isCircle = 1;
 			break;
 		case 'L':
+			
 			isLine = 1;
 			isEllipse = 0;
 			isArc = 0;
@@ -932,6 +1028,29 @@ int main(int argc, char* argv[])
 			isPolyline = 0;
 			isCircle = 0;
 			break;
+		case 'P':
+			if (selectedText=="Polyline"){
+				countIsLine++;
+			isLine = 0;
+			isEllipse = 0;
+			isArc = 0;
+			isRegularPolygon = 0;
+			isPolygon = 0;
+			isPolyline = 1;
+			isCircle = 0;
+			break;
+			}
+			if (selectedText == "Polygon") {
+				countIsPolygon++;
+				isLine = 0;
+				isEllipse = 0;
+				isArc = 0;
+				isRegularPolygon = 0;
+				isPolygon = 1;
+				isPolyline = 0;
+				isCircle = 0;
+				break;
+			}
 		}
 
 		// update selectedText with the current selected item
