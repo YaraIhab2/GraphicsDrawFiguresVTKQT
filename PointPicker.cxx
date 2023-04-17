@@ -262,6 +262,7 @@ bool circle = false;
 int countPolyLinePoints = 0;
 
 vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
+
 vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer <vtkPolyData>::New();
 vtkSmartPointer<vtkPolyLine> polyLine = vtkSmartPointer<vtkPolyLine>::New();
 vtkSmartPointer<vtkRegularPolygonSource> polygonSource = vtkSmartPointer<vtkRegularPolygonSource>::New();
@@ -314,8 +315,9 @@ int counterPoly = -1;
 int counterPolygon = -1;
 void Draw_Polyline() {
 	
-
+	vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
 	counterPoly++;
+	countIsLine = 1;
 	//points->InsertNextPoint(picked[0], picked[1], 0);
 	//vtkSmartPointer<vtkPoints> point1 = vtkSmartPointer<vtkPoints>::New();
 	////point1=points->GetPoint(0);
@@ -332,22 +334,25 @@ void Draw_Polyline() {
 		points->InsertNextPoint(pointsArray[j][0], pointsArray[j][1], 0);
 
 	}
-	lineSource->SetPoints(points);
-	mapper->SetInputConnection(lineSource->GetOutputPort());
-	mapper->Update();
-	actor->SetMapper(mapper);
-	//actor->GetProperty()->SetColor(LineColor);
-	renderer->AddActor(actor);
+	//lineSource->SetPoints(points);
+	//mapper->SetInputConnection(lineSource->GetOutputPort());
+	//mapper->Update();
+	//actor->SetMapper(mapper);
+	////actor->GetProperty()->SetColor(LineColor);
+	//renderer->AddActor(actor);
+	//renderWindow->AddRenderer(renderer);
+	Set_line_shape(lineSource, points, mapper, actor, renderer);
 	renderWindow->AddRenderer(renderer);
 	renderWindow->Render();
-	renderWindowInteractor->SetRenderWindow(renderWindow);
+	/*renderWindowInteractor->SetRenderWindow(renderWindow);*/
 
 
 }
 void Draw_Polygon() {
 
-
+	vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
 	counterPolygon++;
+	countIsPolygon = 1;
 	//points->InsertNextPoint(picked[0], picked[1], 0);
 	//vtkSmartPointer<vtkPoints> point1 = vtkSmartPointer<vtkPoints>::New();
 	////point1=points->GetPoint(0);
@@ -361,12 +366,12 @@ void Draw_Polygon() {
 	//pointsArray[i].Take(point1);
 
 	for (int j = 0; j <= counterPolygon; j++) {
-		if ((counterPolygon != 0) && j==0) {
+		/*if ((counterPolygon != 0) && j==counterPolygon-1) {
 			pointsArray[counterPolygon][0] = 0;
 			pointsArray[counterPolygon][1] = 0;
 			pointsArray[counterPolygon][2] = 0;
-
-		}
+			
+		}*/
 		points->InsertNextPoint(pointsArray[j][0], pointsArray[j][1], 0);
 		if (j == counterPolygon) {
 			points->InsertNextPoint(pointsArray[0][0], pointsArray[0][1], 0);
@@ -375,13 +380,21 @@ void Draw_Polygon() {
 	lineSource->SetPoints(points);
 	mapper->SetInputConnection(lineSource->GetOutputPort());
 	mapper->Update();
+	                 // renderer->Render();
 	actor->SetMapper(mapper);
+	
 	//actor->GetProperty()->SetColor(LineColor);
 	renderer->AddActor(actor);
+	               //       renderer->Render();
+	//renderWindow->AddRenderer(renderer);
+	
+	//mapper->Update();
+	//Set_line_shape(lineSource, points, mapper, actor, renderer);
+	//mapper->Update();
 	renderWindow->AddRenderer(renderer);
 	renderWindow->Render();
-	renderWindowInteractor->SetRenderWindow(renderWindow);
-
+	//renderer->RemoveAllViewProps();
+	//renderWindowInteractor->SetRenderWindow(renderWindow);
 
 }
 void Draw_Circle()
@@ -681,21 +694,30 @@ namespace {
 					
 				}
 				if (isPolyline) {
-					/*if (countIsLine > 1) {
+					if (countIsLine ==2) {
+						for (int i = 0; i <= counterPoly; i++) {
+							pointsArray[i][0] = 0;
+							pointsArray[i][1] = 0;
+							pointsArray[i][2] = 0;
+						}
+						counterPoly = -1;
 						
-						counterPoly = 0;
-						pointsArray[100][3] = {0};
-					}*/
+					}
 					Draw_Polyline();
 					renderWindow->Render();
 					flag = 0;
 				}
 				if (isPolygon) {
-					/*if (countIsPolygon > 1) {
-
-						counterPolygon = 0;
-						pointsArray[100][3] = { 0 };
-					}*/
+					if (countIsPolygon ==2  ) {
+						for (int i = 0; i <= counterPolygon; i++) {
+							pointsArray[i][0] = 0;
+							pointsArray[i][1] = 0;
+							pointsArray[i][2] = 0;
+						}
+						
+						counterPolygon = -1;
+						
+					}
 					Draw_Polygon();
 					renderWindow->Render();
 					flag = 0;
@@ -1029,7 +1051,7 @@ int main(int argc, char* argv[])
 			isCircle = 0;
 			break;
 		case 'P':
-			if (selectedText=="Polyline"){
+			if (selectedText[4] =='l'){
 				countIsLine++;
 			isLine = 0;
 			isEllipse = 0;
@@ -1040,7 +1062,7 @@ int main(int argc, char* argv[])
 			isCircle = 0;
 			break;
 			}
-			if (selectedText == "Polygon") {
+			else {
 				countIsPolygon++;
 				isLine = 0;
 				isEllipse = 0;
