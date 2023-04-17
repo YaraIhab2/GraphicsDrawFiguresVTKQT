@@ -235,6 +235,8 @@ double x = 0, y = 0, z = 0, z2 = 0, x2 = 0, y2 = 0;
 int LineWidth = 1;
 char LineColor[100];
 int countIsPolygon=0;
+int startAngle = 0;
+int endAngle = 0;
 //LineColor[0]='B';
 vtkNew<vtkPointPicker> pointPicker;
 
@@ -258,7 +260,7 @@ bool Line = true;
 bool regpoly = false;
 bool clearPolyLine = false;
 bool circle = false;
-
+int NumSides = 5;
 int countPolyLinePoints = 0;
 
 vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
@@ -469,36 +471,72 @@ void Draw_Ellipse()
 }
 
 
-void Draw_Arc(double Raduis = 5, double Start_angle = 0, double End_Angle = 90)
+void Draw_Arc()
 {
+	startAngle = M_PI_2;
 	vtkSmartPointer<vtkPoints> Arc_points = vtkSmartPointer<vtkPoints>::New();
+
 	int number_of_points = 120;
+
 	lineSource->SetResolution(number_of_points);
-	double Angle_increment = (End_Angle - Start_angle) / (number_of_points - 1);
+
+	//double firstLine[3] = { picked3[0] - picked2[0], picked3[1] - picked2[1] };
+	double firstLine[3] = { 0 - picked2[0], 1 - picked2[1],0 };
+	double firstPoint[3] = { 0,1,0 };
+	double Raduis = vtkMath::Distance2BetweenPoints(picked2,firstPoint );
+	
+	
+	double secondLine[3] = { picked[0] - picked2[0], picked[1] - picked2[1],0 };
+	double Raduis2 = vtkMath::Distance2BetweenPoints(picked2, picked);
+	
+	/*double horizontal[3] = { (picked2[0]+1) - picked2[0], picked2[1] - picked2[1] };
+	double horizontalRaduis= sqrt(pow(horizontal[0], 2) + pow(horizontal[1], 2));*/
+	
+	/*if (picked2[1] < picked3[1]) {
+		start_angle = acos((firstLine[0] * horizontal[0] + horizontal[1]* firstLine[1]);
+	}*/
+
+	double angle=acos(vtkMath::RadiansFromDegrees(firstLine[0]*secondLine[0]+firstLine[1]*secondLine[1]))/(Raduis2*Raduis);
+	/*if (picked[0] < picked3[0] && picked[1]>picked3[1]) {
+
+
+		angle = 180;
+
+	}
+	if (picked3[0] < picked2[0] && picked3[1] < picked2[1]) {
+
+
+		angle = -angle;
+	}*/
+	double Angle_increment = (angle) / (number_of_points - 1);
 	for (int i = 0; i < number_of_points; i++)
 	{
-		double Current_angle = Start_angle + Angle_increment * i;
-		double x_arc = Raduis * cos(vtkMath::RadiansFromDegrees(Current_angle));
-		double y_arc = Raduis * sin(vtkMath::RadiansFromDegrees(Current_angle));
+		double Current_angle = startAngle + Angle_increment * i;
+		double x_arc = picked2[0]+Raduis2 * cos(Current_angle);
+		double y_arc = picked2[1]+Raduis2 * sin(Current_angle);
 		Arc_points->InsertNextPoint(x_arc, y_arc, 0.0);
 
 	}
 
 	Set_line_shape(lineSource, Arc_points, mapper, actor, renderer);
+	renderWindow->Render();
 }
 
 
-void Draw_Regular_Polygon(int number_of_sides = 5, double Radius = 1)
+void Draw_Regular_Polygon()
 {
 	vtkSmartPointer<vtkPoints> Regpolygon_points = vtkSmartPointer<vtkPoints>::New();
-	int number_of_points = number_of_sides;
+	int number_of_points = NumSides;
 	lineSource->SetResolution(number_of_points);
+
+	double Raduis_regpolygon = sqrt(pow((picked[0] - picked2[0]), 2.0) + pow(picked[1] - picked2[1], 2.0));
+
 	double Angle_increment = 2 * vtkMath::Pi() / number_of_points;
-	for (int point_indx = 0; point_indx < number_of_points; point_indx++)
+	for (int point_indx = 0; point_indx <= number_of_points; point_indx++)
 	{
 		double Current_angle = Angle_increment * point_indx;
-		double x_regpolygon = Radius * cos(Current_angle);
-		double y_regpolygon = Radius * sin(Current_angle);
+		double x_regpolygon = picked2[0] + Raduis_regpolygon * cos(Current_angle);
+		double y_regpolygon = picked2[1] + Raduis_regpolygon * sin(Current_angle);
 		Regpolygon_points->InsertNextPoint(x_regpolygon, y_regpolygon, 0.0);
 
 	}
@@ -722,6 +760,7 @@ namespace {
 					renderWindow->Render();
 					flag = 0;
 				}
+				
 				DrawPoint();
 			}
 			if (flag == 2) {
@@ -734,7 +773,18 @@ namespace {
 					flag = 0;
 				}
 				
+				if (isRegularPolygon)
+				{
+					Draw_Regular_Polygon();
+					renderWindow->Render();
+					flag = 0;
+					return;
 
+				}
+				if (isArc) {
+					Draw_Arc();
+					flag = 0;
+				}
 				
 
 
@@ -765,6 +815,7 @@ namespace {
 
 				return;
 			}
+			
 
 
 			//}
@@ -980,6 +1031,7 @@ int main(int argc, char* argv[])
 	/////////////////////////////////////////////////////////////////END///////////////////////////////////////////////////
 
 	////////////////////////////////////////////////////////SPINBOX LINE WIDTH///////////////////////////////////////
+	
 	spinBox->setMinimum(0);
 	spinBox->setMaximum(100);
 	spinBox->setSingleStep(1);
@@ -998,12 +1050,17 @@ int main(int argc, char* argv[])
 	shape_comboBox->addItem("Arc");
 	shape_comboBox->addItem("Ellipse");
 	dockLayout->addWidget(shape_comboBox);
+
+	QSpinBox* spinNumSides = new QSpinBox();
 	QObject::connect(shape_comboBox, (&QComboBox::currentIndexChanged), [&]() {
 
 		string selectedText = shape_comboBox->currentText().toStdString();
 		
 		switch (selectedText[0]) {
 		case 'C':
+			if (spinNumSides->value() != NULL) {
+				dockLayout->removeWidget(spinNumSides);
+			}
 			isLine = 0;
 			isEllipse = 0;
 			isArc = 0;
@@ -1013,7 +1070,9 @@ int main(int argc, char* argv[])
 			isCircle = 1;
 			break;
 		case 'L':
-			
+			if (spinNumSides->value() != NULL) {
+				dockLayout->removeWidget(spinNumSides);
+			}
 			isLine = 1;
 			isEllipse = 0;
 			isArc = 0;
@@ -1024,6 +1083,9 @@ int main(int argc, char* argv[])
 			break;
 
 		case 'E':
+			if (spinNumSides->value() != NULL) {
+				dockLayout->removeWidget(spinNumSides);
+			}
 			isLine = 0;
 			isEllipse = 1;
 			isArc = 0;
@@ -1040,8 +1102,20 @@ int main(int argc, char* argv[])
 			isPolygon = 0;
 			isPolyline = 0;
 			isCircle = 0;
+
+			
+			spinNumSides->setMinimum(0);
+			spinNumSides->setMaximum(100);
+			spinNumSides->setSingleStep(1);
+			spinNumSides->setValue(NumSides);
+
+			dockLayout->addWidget(spinNumSides);
+			
 			break;
 		case 'A':
+			if (spinNumSides->value() != NULL) {
+				dockLayout->removeWidget(spinNumSides);
+			}
 			isLine = 0;
 			isEllipse = 0;
 			isArc = 1;
@@ -1051,6 +1125,9 @@ int main(int argc, char* argv[])
 			isCircle = 0;
 			break;
 		case 'P':
+			if (spinNumSides->value() != NULL) {
+				dockLayout->removeWidget(spinNumSides);
+			}
 			if (selectedText[4] =='l'){
 				countIsLine++;
 			isLine = 0;
@@ -1063,6 +1140,9 @@ int main(int argc, char* argv[])
 			break;
 			}
 			else {
+				if (spinNumSides->value() != NULL) {
+					dockLayout->removeWidget(spinNumSides);
+				}
 				countIsPolygon++;
 				isLine = 0;
 				isEllipse = 0;
@@ -1200,6 +1280,27 @@ int main(int argc, char* argv[])
 		LineWidth = spinBox->value();
 		renderWindow->Render();
 		});
+	QObject::connect(spinNumSides, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [&]() {
+		
+		NumSides = spinNumSides->value();
+		Draw_Regular_Polygon();
+		renderWindow->Render();
+		
+		});
+	/*QObject::connect(spinStartAngle, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [&]() {
+
+		startAngle = spinStartAngle->value();
+		Draw_Arc;
+		renderWindow->Render();
+
+		});
+	QObject::connect(spinEndAngle, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [&]() {
+
+		endAngle = spinEndAngle->value();
+		Draw_Arc;
+		renderWindow->Render();
+
+		});*/
 	////////////////////////////////////////////////////////////////////////////END/////////////////////////////
 
 	///////////////////////////////////////////////RENDERING, RENDERER, RENDERWINDOW, INTERACTOR//////////////////
