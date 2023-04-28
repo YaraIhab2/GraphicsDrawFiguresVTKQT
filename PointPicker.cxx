@@ -1048,6 +1048,36 @@ bool ReadFile(char name[100]) {
 			renderWindow->Render();
 
 		}
+		if (Shapes_drawn.find("Regular Polygon") != Shapes_drawn.end()) {
+
+			isLine = 0;
+			isEllipse = 0;
+			isArc = 0;
+			isRegularPolygon = 1;
+			isPolygon = 0;
+			isPolyline = 0;
+			isCircle = 0;
+
+			fscanf_s(file, "Regular Polygon,%d,(%lf,%lf,%lf),(%lf,%lf,%lf),%d,%s\n", &num,&x, &y, &z, &x2, &y2, &z2, &LineWidth, LineColor, sizeof(LineColor));
+
+			for (int i = 0; i < 3; i++) {
+				if (i == 0) {
+					picked[i] = x2;
+					picked2[i] = x;
+				}
+				if (i == 1) {
+					picked[i] = y2;
+					picked2[i] = y;
+				}
+				if (i == 2) {
+					picked[i] = z2;
+					picked2[i] = z;
+				}
+			}
+			NumSides = num;
+			Draw_Regular_Polygon();
+
+		}
 
 	}
 
