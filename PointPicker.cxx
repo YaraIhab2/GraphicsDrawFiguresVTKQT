@@ -242,7 +242,7 @@ int endAngle = 0;
 double arcR = 3;
 double arcStart = 0;
 double arcEnd = 90;
-//LineColor[0]='B';
+
 // 
 //_______________________________________________________________//
 
@@ -342,6 +342,8 @@ bool isPolygon = 0;
 bool isPolyline = 0;
 bool isLine = 1;
 double pointsArray[100][3];
+
+
 /////////////////////////////////////////Functions used by classes////////////////////////
 //set the first point of the line
 void SetFirstPoint() {
@@ -430,8 +432,7 @@ void Draw_Polyline() {
 	//renderWindow->AddRenderer(renderer);
 	Set_line_shape(Polyline_lineSource, points, Polyline_mapper, Polyline_actor, renderer);
 	renderWindow->AddRenderer(renderer);
-	renderWindow->Render();
-
+	
 	if (counterPoly == 1) {
 		for (int i = 0; i < sizeof(PolylinePointsArray)[0]; i++) {
 
@@ -831,9 +832,71 @@ bool ReadFile(char name[100]) {
 	fopen_s(&file, name, "r");
 	cout << "file to be read  " << file;
 	if (file != NULL) {
+		if (Shapes_drawn.find("Line") != Shapes_drawn.end()) {
+			fscanf_s(file, "Line,(%lf,%lf,%lf),(%lf,%lf,%lf),%d,%s\n", &x, &y, &z, &x2, &y2, &z2, &LineWidth, LineColor, sizeof(LineColor));
+							
+			for (int i = 0; i < 3; i++) {
+				if (i == 0) {
+					picked[i] = x2;
+					picked2[i] = x;
+				}
+				if (i == 1) {
+					picked[i] = y2;
+					picked2[i] = y;
+				}
+				if (i == 2) {
+					picked[i] = z2;
+					picked2[i] = z;
+				}
+			}
+			SetFirstPoint();
+			SetSecondPoint();
+			SetSecondPoint();
+			printf("x: %lf, y: %lf, z: %lf\n", x, y, z);
+			printf("x2: %lf, y2: %lf, z2: %lf\n", x2, y2, z2);
+			printf("LineWidth: %d\n", LineWidth);
+			printf("LineColor: %s\n", LineColor);
+			cout << "picked= " << picked[1] << "picked2= " << picked2[1] << endl;
+			
+		}
+		if (Shapes_drawn.find("Circle") != Shapes_drawn.end()) {
+			fscanf_s(file, "Circle,(%lf,%lf,%lf),(%lf,%lf,%lf),%d,%s\n", &x, &y, &z, &x2, &y2, &z2, &LineWidth, LineColor, sizeof(LineColor));
+							
+			for (int i = 0; i < 3; i++) {
+				if (i == 0) {
+					picked[i] = x2;
+					picked2[i] = x;
+				}
+				if (i == 1) {
+					picked[i] = y2;
+					picked2[i] = y;
+				}
+				if (i == 2) {
+					picked[i] = z2;
+					picked2[i] = z;
+				}
+			}
+			Draw_Circle();
+		}
+		if (Shapes_drawn.find("Polyline") != Shapes_drawn.end()) {
+			fscanf_s(file, "Polyline,%d",&x2);
+			x2+=2;
+			
+			for (int i = 0; i < x2; i++) {
+				fscanf_s(file, ",(%lf,%lf,%lf)", &x, &y, &z);
+				picked[0] = x;
+				picked[1] = y;
+				picked[2] = z;
+				counterPoly = i;
+				Draw_Polyline();
+				
+				printf("Polyline x: %lf, y: %lf, z: %lf\n", x, y, z);
+				
+			}
+			fscanf_s(file, ",%d,%s\n", &LineWidth, LineColor, sizeof(LineColor));
+			renderWindow->Render();
 
-		fscanf_s(file, "(%lf,%lf,%lf)\n(%lf,%lf,%lf) \n %d \n %s )", &x, &y, &z, &x2, &y2, &z2, &LineWidth, LineColor, sizeof(LineColor));
-
+		}
 		printf("x: %lf, y: %lf, z: %lf\n", x, y, z);
 		printf("x2: %lf, y2: %lf, z2: %lf\n", x2, y2, z2);
 		printf("LineWidth: %d\n", LineWidth);
@@ -842,20 +905,7 @@ bool ReadFile(char name[100]) {
 		//linestream << line;
 		//linestream >> x >> y >> z;
 		//if (counter ==1) {
-		for (int i = 0; i < 3; i++) {
-			if (i == 0) {
-				picked[i] = x2;
-				picked2[i] = x;
-			}
-			if (i == 1) {
-				picked[i] = y2;
-				picked2[i] = y;
-			}
-			if (i == 2) {
-				picked[i] = z2;
-				picked2[i] = z;
-			}
-		}
+		
 		fclose(file);
 
 
@@ -903,7 +953,7 @@ bool  WriteFile(string name) {
 			my_file << LineWidth << "," << LineColor << endl;
 		}
 		if (Shapes_drawn.find("Polyline") != Shapes_drawn.end()) {
-			my_file << "Polyline,";
+			my_file << "Polyline,"<<counterPoly<<",";
 			for (int i = 0; i < sizeof(PolylinePointsArray) / sizeof(PolylinePointsArray[0]); i++) {
 				if (PolylinePointsArray[i][0] == 0 && PolylinePointsArray[i][1] == 0 && PolylinePointsArray[i][2] == 0) {
 					break;
@@ -913,7 +963,7 @@ bool  WriteFile(string name) {
 			my_file << LineWidth << "," << LineColor << endl;
 		}
 		if (Shapes_drawn.find("Polygon") != Shapes_drawn.end()) {
-			my_file << "Polygon,";
+			my_file << "Polygon," << counterPolygon << ",";
 			for (int i = 0; i < sizeof(PolygonPointsArray) / sizeof(PolygonPointsArray[0]); i++) {
 
 				if (PolygonPointsArray[i][0] == 0 && PolygonPointsArray[i][1] == 0 && PolygonPointsArray[i][2] == 0) {
@@ -925,7 +975,7 @@ bool  WriteFile(string name) {
 
 		}
 		if (Shapes_drawn.find("Regular Polygon") != Shapes_drawn.end()) {
-			my_file << "Regular Polygon,";
+			my_file << "Regular Polygon," << NumSides << ",";
 			for (int i = 0; i < sizeof(RegPolygonPointsArray) / sizeof(RegPolygonPointsArray[0]); i++) {
 				if (RegPolygonPointsArray[i][0] == 0 && RegPolygonPointsArray[i][1] == 0 && RegPolygonPointsArray[i][2] == 0) {
 					break;
@@ -1066,6 +1116,7 @@ namespace {
 
 					}
 					Draw_Polyline();
+					
 					renderWindow->Render();
 					flag = 0;
 				}
@@ -1354,7 +1405,7 @@ int main(int argc, char* argv[])
 	color_comboBox->addItem("White");
 	color_comboBox->addItem("Red");
 	selectedText = color_comboBox->currentText();
-
+	
 	dockLayout->addWidget(color_comboBox);
 
 	/////////////////////////////////////////////////////////////////END///////////////////////////////////////////////////
@@ -1621,7 +1672,11 @@ int main(int argc, char* argv[])
 
 
 	/////////////////////////////////////////////////////READ PUSH BUTTON//////////////////////////////////////
-
+	LineColor[0] = 'B';
+	LineColor[1] = 'l';
+	LineColor[2] = 'a';
+	LineColor[3] = 'c';
+	LineColor[4] = 'k';
 	QObject::connect(pushButton, &QPushButton::released, [&]() {
 
 		QString text2 = QInputDialog::getText(nullptr, "Input File Name to be Read", "File Name");
