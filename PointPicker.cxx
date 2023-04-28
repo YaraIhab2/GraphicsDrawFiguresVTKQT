@@ -345,7 +345,7 @@ double pointsArray[100][3];
 /////////////////////////////////////////Functions used by classes////////////////////////
 //set the first point of the line
 void SetFirstPoint() {
-
+	
 	lineSource->SetPoint1(picked2[0], picked2[1], picked2[2]);
 	return;
 }
@@ -353,9 +353,29 @@ void SetFirstPoint() {
 //set the second point of the line
 void SetSecondPoint() {
 
+
 	lineSource->SetPoint2(picked[0], picked[1], picked[2]);
 	//lineSource->Modified();
 	lineSource->Update();
+	for (int i = 0; i < sizeof(PolylinePointsArray)[0]; i++) {
+
+		for (int j = 0; j < sizeof(PolylinePointsArray)[1]; j++) {
+			PolylinePointsArray[i][j] = 0.0;
+
+		}
+	}
+	for (int i = 0; i < 2; i++) {
+		if (i == 0) {
+			LinePointsArray[i][0] = picked2[0];
+			LinePointsArray[i][1] = picked2[1];
+			LinePointsArray[i][2] = picked2[2];
+		}
+		if (i == 1) {
+			LinePointsArray[i][0] = picked[0];
+			LinePointsArray[i][1] = picked[1];
+			LinePointsArray[i][2] = picked[2];
+		}
+	}
 }
 
 
@@ -377,18 +397,6 @@ void Set_line_shape(vtkLineSource* Shape_line, vtkPoints* Shape_points, vtkPolyD
 
 	renderer->AddActor(Shape_actor);
 
-	for (int i = 0; i < 2; i++) {
-		if (i == 0) {
-			LinePointsArray[i][0] = picked2[0];
-			LinePointsArray[i][1] = picked2[1];
-			LinePointsArray[i][2] = picked2[2];
-		}
-		if (i == 1) {
-			LinePointsArray[i][0] = picked[0];
-			LinePointsArray[i][1] = picked[1];
-			LinePointsArray[i][2] = picked[2];
-		}
-	}
 }
 int counterPoly = -1;
 int counterPolygon = -1;
@@ -1392,8 +1400,10 @@ int main(int argc, char* argv[])
 	sliderEA->setRange(0, 360);
 	sliderEA->setValue(90);
 
-
-
+	bool FlagLineWriteFirstTime = 1;
+	if (FlagLineWriteFirstTime) {
+		Shapes_drawn.insert("Line");
+	}
 	QObject::connect(shape_comboBox, (&QComboBox::currentIndexChanged), [&]() {
 
 		string selectedText = shape_comboBox->currentText().toStdString();
@@ -1435,7 +1445,7 @@ int main(int argc, char* argv[])
 			isPolygon = 0;
 			isPolyline = 0;
 			isCircle = 0;
-
+			FlagLineWriteFirstTime = 0;
 			Shapes_drawn.insert(selectedText);
 			break;
 
