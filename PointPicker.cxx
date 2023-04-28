@@ -223,35 +223,91 @@
 #include <vtkRenderer.h>
 #include <vtkUnstructuredGrid.h>
 #include <cmath>
-//#include <vtkEventQtSlotConnect>
+#include <set>
 using namespace std;
+//__________Initializing some global variables___________________//
 bool widget = 0;
+set<string>Shapes_drawn;   //Store drawn shapes
 double picked[3];
 double picked2[3] = {};
 double picked3[3] = {};
 double x = 0, y = 0, z = 0, z2 = 0, x2 = 0, y2 = 0;
-
-//double *xp=&x , *yp = &y, *zp = &z, *x2p = &x2, *y2p = &y2, *z2p = &z2;
-int LineWidth = 1;
+int LineWidth = 3;
 char LineColor[100];
 int countIsPolygon = 0;
 int startAngle = 0;
 int endAngle = 0;
 //LineColor[0]='B';
+//_______________________________________________________________//
+
 vtkNew<vtkPointPicker> pointPicker;
 
-vtkSmartPointer<vtkTextActor> textActor = vtkSmartPointer<vtkTextActor>::New();
-vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
+//_____________________Line source,actor,mapper for each shape________________________________//
+
+//Line
 vtkSmartPointer<vtkLineSource> lineSource = vtkSmartPointer<vtkLineSource>::New();
-std::stringstream ss;
 vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
+vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
+
+//Circle
+vtkSmartPointer<vtkLineSource> Circle_lineSource = vtkSmartPointer<vtkLineSource>::New();
+vtkSmartPointer<vtkPolyDataMapper> Circle_mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+vtkSmartPointer<vtkActor> Circle_actor = vtkSmartPointer<vtkActor>::New();
+
+//Ellipse
+vtkSmartPointer<vtkLineSource> Ellipse_lineSource = vtkSmartPointer<vtkLineSource>::New();
+vtkSmartPointer<vtkPolyDataMapper> Ellipse_mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+vtkSmartPointer<vtkActor> Ellipse_actor = vtkSmartPointer<vtkActor>::New();
+
+//Regpolygon
+vtkSmartPointer<vtkLineSource> Regpolygon_linesource = vtkSmartPointer<vtkLineSource>::New();
+vtkSmartPointer<vtkPolyDataMapper> Regpolygon_mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+vtkSmartPointer<vtkActor> Regpolygon_actor = vtkSmartPointer<vtkActor>::New();
+
+//Polyline
+vtkSmartPointer<vtkLineSource> Polyline_lineSource = vtkSmartPointer<vtkLineSource>::New();
+vtkSmartPointer<vtkPolyDataMapper> Polyline_mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+vtkSmartPointer<vtkActor> Polyline_actor = vtkSmartPointer<vtkActor>::New();
+
+//Polygon
+vtkSmartPointer<vtkLineSource> Polygon_lineSource = vtkSmartPointer<vtkLineSource>::New();
+vtkSmartPointer<vtkPolyDataMapper> Polygon_mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+vtkSmartPointer<vtkActor> Polygon_actor = vtkSmartPointer<vtkActor>::New();
+
+//Arc
+vtkSmartPointer<vtkLineSource> Arc_lineSource = vtkSmartPointer<vtkLineSource>::New();
+vtkSmartPointer<vtkPolyDataMapper> Arc_mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+vtkSmartPointer<vtkActor> Arc_actor = vtkSmartPointer<vtkActor>::New();
+
+
+//Star
+vtkSmartPointer<vtkLineSource> Star_lineSource = vtkSmartPointer<vtkLineSource>::New();
+vtkSmartPointer<vtkPolyDataMapper> Star_mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+vtkSmartPointer<vtkActor> Star_actor = vtkSmartPointer<vtkActor>::New();
+
+
+
+//Rossette
+vtkSmartPointer<vtkLineSource> Rossette_lineSource = vtkSmartPointer<vtkLineSource>::New();
+vtkSmartPointer<vtkPolyDataMapper> Rossette_mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+vtkSmartPointer<vtkActor> Rossette_actor = vtkSmartPointer<vtkActor>::New();
+
+
+
+
+
+//_____________________________________________________________________________________________//
+
+
 vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
-
-// vtkSmartPointer<vtkRenderWindow> renderWindow = vtkSmartPointer<vtkRenderWindow>::New();
 vtkSmartPointer<vtkGenericOpenGLRenderWindow> renderWindow = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
-
 vtkNew<vtkRenderWindowInteractor> renderWindowInteractor;
+// vtkSmartPointer<vtkRenderWindow> renderWindow = vtkSmartPointer<vtkRenderWindow>::New();
+std::stringstream ss; 
 vtkSmartPointer <vtkTextWidget> textWidget = vtkSmartPointer<vtkTextWidget>::New();
+vtkSmartPointer<vtkTextActor> textActor = vtkSmartPointer<vtkTextActor>::New();
+
 string pt;
 string pt2;
 
@@ -264,12 +320,11 @@ int NumSides = 5;
 float Scale_factor = 1;
 int countPolyLinePoints = 0;
 
-vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
+//vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
 
-vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer <vtkPolyData>::New();
-vtkSmartPointer<vtkPolyLine> polyLine = vtkSmartPointer<vtkPolyLine>::New();
-vtkSmartPointer<vtkRegularPolygonSource> polygonSource = vtkSmartPointer<vtkRegularPolygonSource>::New();
-vtkSmartPointer<vtkCellArray> cells = vtkSmartPointer<vtkCellArray>::New();
+//vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer <vtkPolyData>::New();
+//vtkSmartPointer<vtkPolyLine> polyLine = vtkSmartPointer<vtkPolyLine>::New();
+//vtkSmartPointer<vtkCellArray> cells = vtkSmartPointer<vtkCellArray>::New();
 int countIsLine = 0;
 bool isCircle = 0;
 bool isEllipse = 0;
@@ -303,16 +358,16 @@ void InsertPolyPoint() {
 
 }
 
-void Set_line_shape(vtkLineSource* line, vtkPoints* points, vtkPolyDataMapper* mapper, vtkActor* actor, vtkRenderer* renderer)
+void Set_line_shape(vtkLineSource* Shape_line, vtkPoints* Shape_points, vtkPolyDataMapper* Shape_mapper, vtkActor* Shape_actor, vtkRenderer* renderer)
 {
-	line->SetPoints(points);
-	mapper->SetInputConnection(line->GetOutputPort());
-	mapper->Update();
-	actor->SetMapper(mapper);
-	actor->GetProperty()->SetColor(1.0, 0.0, 0.0);
-	actor->GetProperty()->SetLineWidth(3.0);
+	Shape_line->SetPoints(Shape_points);
+	Shape_mapper->SetInputConnection(Shape_line->GetOutputPort());
+	Shape_mapper->Update();
+	Shape_actor->SetMapper(Shape_mapper);
+	Shape_actor->GetProperty()->SetColor(1.0, 0.0, 0.0);   //Have to change this default color
+	Shape_actor->GetProperty()->SetLineWidth(3.0);
 
-	renderer->AddActor(actor);
+	renderer->AddActor(Shape_actor);
 }
 int counterPoly = -1;
 int counterPolygon = -1;
@@ -344,7 +399,7 @@ void Draw_Polyline() {
 	////actor->GetProperty()->SetColor(LineColor);
 	//renderer->AddActor(actor);
 	//renderWindow->AddRenderer(renderer);
-	Set_line_shape(lineSource, points, mapper, actor, renderer);
+	Set_line_shape(Polyline_lineSource, points, Polyline_mapper, Polyline_actor, renderer);
 	renderWindow->AddRenderer(renderer);
 	renderWindow->Render();
 	/*renderWindowInteractor->SetRenderWindow(renderWindow);*/
@@ -379,24 +434,19 @@ void Draw_Polygon() {
 			points->InsertNextPoint(pointsArray[0][0], pointsArray[0][1], 0);
 		}
 	}
-	lineSource->SetPoints(points);
-	mapper->SetInputConnection(lineSource->GetOutputPort());
-	mapper->Update();
-	// renderer->Render();
-	actor->SetMapper(mapper);
 
-	//actor->GetProperty()->SetColor(LineColor);
-	renderer->AddActor(actor);
-	//       renderer->Render();
-//renderWindow->AddRenderer(renderer);
+	Set_line_shape(Polygon_lineSource, points, Polygon_mapper, Polygon_actor, renderer);
 
-//mapper->Update();
-//Set_line_shape(lineSource, points, mapper, actor, renderer);
-//mapper->Update();
+	//lineSource->SetPoints(points);
+	//mapper->SetInputConnection(lineSource->GetOutputPort());
+	//mapper->Update();
+	//actor->SetMapper(mapper);
+
+
+	//renderer->AddActor(actor);
+
 	renderWindow->AddRenderer(renderer);
 	renderWindow->Render();
-	//renderer->RemoveAllViewProps();
-	//renderWindowInteractor->SetRenderWindow(renderWindow);
 
 }
 
@@ -463,7 +513,7 @@ void Draw_Circle()
 
 	}
 
-	Set_line_shape(lineSource, Circle_points, mapper, actor, renderer);
+	Set_line_shape(Circle_lineSource, Circle_points, Circle_mapper, Circle_actor, renderer);
 
 
 }
@@ -502,7 +552,7 @@ void Draw_Ellipse()
 
 
 
-		x_ellipse = Scale_factor*(picked2[0] + SemiMajorAxis * cos(2 * vtkMath::Pi() * (t_parameter + 0.25)));
+		x_ellipse = Scale_factor*(picked2[0] + SemiMajorAxis * cos(2 * vtkMath::Pi() * (t_parameter + 0.25)));   //0.25?
 		y_ellipse = Scale_factor*(picked2[1] + SemiMinorAxis * sin(2 * vtkMath::Pi() * (t_parameter + 0.25)));
 
 
@@ -516,10 +566,10 @@ void Draw_Ellipse()
 
 
 
-	Set_line_shape(lineSource, Ellipse_points, mapper, actor, renderer);
+	Set_line_shape(Ellipse_lineSource, Ellipse_points, Ellipse_mapper, Ellipse_actor, renderer);
 }
 
-
+//Needs Modifications
 void Draw_Arc()
 {
 	startAngle = M_PI_2;
@@ -562,7 +612,7 @@ void Draw_Arc()
 
 	}
 
-	Set_line_shape(lineSource, Arc_points, mapper, actor, renderer);
+	Set_line_shape(Arc_lineSource, Arc_points, Arc_mapper, Arc_actor, renderer);
 	renderWindow->Render();
 }
 
@@ -584,7 +634,7 @@ void Draw_Regular_Polygon()
 		Regpolygon_points->InsertNextPoint(x_regpolygon, y_regpolygon, 0.0);
 
 	}
-	Set_line_shape(lineSource, Regpolygon_points, mapper, actor, renderer);
+	Set_line_shape(Regpolygon_linesource, Regpolygon_points, Regpolygon_mapper, Regpolygon_actor, renderer);
 
 }
 
@@ -725,8 +775,11 @@ void DrawPoint() {
 
 	return;
 }
+//Actor, colorcombobox
+void change_color()
+{
 
-
+}
 
 
 
@@ -1116,6 +1169,7 @@ int main(int argc, char* argv[])
 			isPolygon = 0;
 			isPolyline = 0;
 			isCircle = 1;
+			Shapes_drawn.insert(selectedText);
 			break;
 		case 'L':
 			if (spinNumSides->value() != NULL) {
@@ -1151,7 +1205,7 @@ int main(int argc, char* argv[])
 			isPolyline = 0;
 			isCircle = 0;
 
-
+			
 			spinNumSides->setMinimum(0);
 			spinNumSides->setMaximum(100);
 			spinNumSides->setSingleStep(1);
@@ -1320,7 +1374,7 @@ int main(int argc, char* argv[])
 	///////////////////////////////////////////////////////////COMBOBOX WIDGET APPLIED/////////////////////////////////
 
 	QObject::connect(color_comboBox, (&QComboBox::currentIndexChanged), [&]() {
-
+		//Another function change color
 
 		selectedText = color_comboBox->currentText();
 
@@ -1427,3 +1481,4 @@ int main(int argc, char* argv[])
 
 
 }
+
