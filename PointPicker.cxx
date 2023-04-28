@@ -243,6 +243,7 @@ double arcR = 3;
 double arcStart = 0;
 double arcEnd = 90;
 //LineColor[0]='B';
+// 
 //_______________________________________________________________//
 
 vtkNew<vtkPointPicker> pointPicker;
@@ -255,36 +256,38 @@ vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::
 vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
 vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
 
+double LinePointsArray[2][3];
+
 //Circle
 vtkSmartPointer<vtkLineSource> Circle_lineSource = vtkSmartPointer<vtkLineSource>::New();
 vtkSmartPointer<vtkPolyDataMapper> Circle_mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
 vtkSmartPointer<vtkActor> Circle_actor = vtkSmartPointer<vtkActor>::New();
-
+double CirclePointsArray[2][3];
 //Ellipse
 vtkSmartPointer<vtkLineSource> Ellipse_lineSource = vtkSmartPointer<vtkLineSource>::New();
 vtkSmartPointer<vtkPolyDataMapper> Ellipse_mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
 vtkSmartPointer<vtkActor> Ellipse_actor = vtkSmartPointer<vtkActor>::New();
-
+double EllipsePointsArray[3][3];
 //Regpolygon
 vtkSmartPointer<vtkLineSource> Regpolygon_linesource = vtkSmartPointer<vtkLineSource>::New();
 vtkSmartPointer<vtkPolyDataMapper> Regpolygon_mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
 vtkSmartPointer<vtkActor> Regpolygon_actor = vtkSmartPointer<vtkActor>::New();
-
+double RegPolygonPointsArray[100][3];
 //Polyline
 vtkSmartPointer<vtkLineSource> Polyline_lineSource = vtkSmartPointer<vtkLineSource>::New();
 vtkSmartPointer<vtkPolyDataMapper> Polyline_mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
 vtkSmartPointer<vtkActor> Polyline_actor = vtkSmartPointer<vtkActor>::New();
-
+double PolylinePointsArray[100][3];
 //Polygon
 vtkSmartPointer<vtkLineSource> Polygon_lineSource = vtkSmartPointer<vtkLineSource>::New();
 vtkSmartPointer<vtkPolyDataMapper> Polygon_mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
 vtkSmartPointer<vtkActor> Polygon_actor = vtkSmartPointer<vtkActor>::New();
-
+double PolygonPointsArray[100][3];
 //Arc
 vtkSmartPointer<vtkLineSource> Arc_lineSource = vtkSmartPointer<vtkLineSource>::New();
 vtkSmartPointer<vtkPolyDataMapper> Arc_mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
 vtkSmartPointer<vtkActor> Arc_actor = vtkSmartPointer<vtkActor>::New();
-
+double ArcPointsArray[3][3];
 
 //Star
 vtkSmartPointer<vtkLineSource> Star_lineSource = vtkSmartPointer<vtkLineSource>::New();
@@ -373,6 +376,19 @@ void Set_line_shape(vtkLineSource* Shape_line, vtkPoints* Shape_points, vtkPolyD
 	Shape_actor->GetProperty()->SetLineWidth(3.0);
 
 	renderer->AddActor(Shape_actor);
+
+	for (int i = 0; i < 2; i++) {
+		if (i == 0) {
+			LinePointsArray[i][0] = picked2[0];
+			LinePointsArray[i][1] = picked2[1];
+			LinePointsArray[i][2] = picked2[2];
+		}
+		if (i == 1) {
+			LinePointsArray[i][0] = picked[0];
+			LinePointsArray[i][1] = picked[1];
+			LinePointsArray[i][2] = picked[2];
+		}
+	}
 }
 int counterPoly = -1;
 int counterPolygon = -1;
@@ -407,6 +423,22 @@ void Draw_Polyline() {
 	Set_line_shape(Polyline_lineSource, points, Polyline_mapper, Polyline_actor, renderer);
 	renderWindow->AddRenderer(renderer);
 	renderWindow->Render();
+
+	if (counterPoly == 1) {
+		for (int i = 0; i < sizeof(PolylinePointsArray)[0]; i++) {
+
+			for (int j = 0; j < sizeof(PolylinePointsArray)[1]; j++) {
+				PolylinePointsArray[i][j] = 0.0;
+
+			}
+		}
+
+	}
+	for (int i = 0; i < points->GetNumberOfPoints(); i++) {
+		PolylinePointsArray[i][0] = points->GetPoint(i)[0];
+		PolylinePointsArray[i][1] = points->GetPoint(i)[1];
+		PolylinePointsArray[i][2] = points->GetPoint(i)[2];
+	}
 	/*renderWindowInteractor->SetRenderWindow(renderWindow);*/
 
 
@@ -446,10 +478,25 @@ void Draw_Polygon() {
 	//mapper->SetInputConnection(lineSource->GetOutputPort());
 	//mapper->Update();
 	//actor->SetMapper(mapper);
+	if (counterPolygon == 1) {
+		for (int i = 0; i < sizeof(PolygonPointsArray)[0]; i++) {
 
+			for (int j = 0; j < sizeof(PolygonPointsArray)[1]; j++) {
+				PolygonPointsArray[i][j] = 0.0;
+
+			}
+		}
+
+	}
 
 	//renderer->AddActor(actor);
+	for (int i = 0; i < counterPolygon + 1; i++) {
 
+		PolygonPointsArray[i][0] = picked[0];
+		PolygonPointsArray[i][1] = picked[1];
+		PolygonPointsArray[i][2] = picked[2];
+
+	}
 	renderWindow->AddRenderer(renderer);
 	renderWindow->Render();
 
@@ -519,7 +566,28 @@ void Draw_Circle()
 	}
 
 	Set_line_shape(Circle_lineSource, Circle_points, Circle_mapper, Circle_actor, renderer);
+	
+	for (int i = 0; i < sizeof(CirclePointsArray)[0]; i++) {
 
+		for (int j = 0; j < sizeof(CirclePointsArray)[1]; j++) {
+			CirclePointsArray[i][j] = 0.0;
+
+		}
+	}
+
+	
+	for (int i = 0; i < 2; i++) {
+		if (i == 0) {
+			CirclePointsArray[i][0] = picked2[0];
+			CirclePointsArray[i][1] = picked2[1];
+			CirclePointsArray[i][2] = picked2[2];
+		}
+		if (i == 1) {
+			CirclePointsArray[i][0] = picked[0];
+			CirclePointsArray[i][1] = picked[1];
+			CirclePointsArray[i][2] = picked[2];
+		}
+	}
 
 }
 
@@ -568,9 +636,36 @@ void Draw_Ellipse()
 		Ellipse_points->InsertNextPoint(x_ellipse, y_ellipse, 0.0);
 
 	}
+	
+	for (int i = 0; i < sizeof(EllipsePointsArray)[0]; i++) {
+
+		for (int j = 0; j < sizeof(EllipsePointsArray)[1]; j++) {
+			EllipsePointsArray[i][j] = 0.0;
+
+		}
+	}
 
 
 
+	for (int i = 0; i < 3; i++) {
+
+		if (i == 0) {
+			EllipsePointsArray[i][0] = picked2[0];
+			EllipsePointsArray[i][1] = picked2[1];
+			EllipsePointsArray[i][2] = picked2[2];
+		}
+		if (i == 1) {
+			EllipsePointsArray[i][0] = picked3[0];
+			EllipsePointsArray[i][1] = picked3[1];
+			EllipsePointsArray[i][2] = picked3[2];
+		}
+		if (i == 2) {
+			EllipsePointsArray[i][0] = picked[0];
+			EllipsePointsArray[i][1] = picked[1];
+			EllipsePointsArray[i][2] = picked[2];
+		}
+
+	}
 	Set_line_shape(Ellipse_lineSource, Ellipse_points, Ellipse_mapper, Ellipse_actor, renderer);
 }
 
@@ -611,7 +706,7 @@ void Draw_Ellipse()
 //	renderWindow->Render();
 //}
 
-void Draw_Arc(double Raduis , double Start_angle, double End_Angle)
+void Draw_Arc(double Raduis, double Start_angle, double End_Angle)
 {
 	vtkSmartPointer<vtkPoints> Arc_points = vtkSmartPointer<vtkPoints>::New();
 	int number_of_points = 120;
@@ -625,7 +720,32 @@ void Draw_Arc(double Raduis , double Start_angle, double End_Angle)
 		Arc_points->InsertNextPoint(x_arc, y_arc, 0.0);
 
 	}
+	for (int i = 0; i < sizeof(ArcPointsArray)[0]; i++) {
 
+		for (int j = 0; j < sizeof(ArcPointsArray)[1]; j++) {
+			ArcPointsArray[i][j] = 0.0;
+
+		}
+	}
+	for (int i = 0; i < 3; i++) {
+
+		if (i == 0) {
+			ArcPointsArray[i][0] = picked2[0];
+			ArcPointsArray[i][1] = picked2[1];
+			ArcPointsArray[i][2] = picked2[2];
+		}
+		if (i == 1) {
+			ArcPointsArray[i][0] = picked3[0];
+			ArcPointsArray[i][1] = picked3[1];
+			ArcPointsArray[i][2] = picked3[2];
+		}
+		if (i == 2) {
+			ArcPointsArray[i][0] = picked[0];
+			ArcPointsArray[i][1] = picked[1];
+			ArcPointsArray[i][2] = picked[2];
+		}
+
+	}
 	Set_line_shape(Arc_lineSource, Arc_points, Arc_mapper, Arc_actor, renderer);
 	renderWindow->Render();
 }
@@ -653,6 +773,28 @@ void Draw_Regular_Polygon()
 	}
 	Set_line_shape(Regpolygon_linesource, Regpolygon_points, Regpolygon_mapper, Regpolygon_actor, renderer);
 
+	
+	for (int i = 0; i < sizeof(PolygonPointsArray)[0]; i++) {
+
+		for (int j = 0; j < sizeof(PolygonPointsArray)[1]; j++) {
+			PolygonPointsArray[i][j] = 0.0;
+
+		}
+	}
+
+	
+	for (int i = 0; i < number_of_points; i++) {
+		if (i == 0) {
+			RegPolygonPointsArray[i][0] = picked2[0];
+			RegPolygonPointsArray[i][1] = picked2[1];
+			RegPolygonPointsArray[i][2] = picked2[2];
+		}
+		if (i == 1) {
+			RegPolygonPointsArray[i][0] = picked[0];
+			RegPolygonPointsArray[i][1] = picked[1];
+			RegPolygonPointsArray[i][2] = picked[2];
+		}
+	}
 }
 
 
@@ -725,9 +867,69 @@ bool  WriteFile(string name) {
 	}
 	else {
 		cout << "File created successfully!";
-		my_file << "(" << picked2[0] << "," << picked2[1] << "," << picked2[2] << ")" << endl << "(" << picked[0] << "," << picked[1] << "," << picked[2] << ")" << endl << LineWidth << endl << LineColor;
+		if (Shapes_drawn.find("Line") != Shapes_drawn.end()) {
+			my_file << "Line,";
+			for (int i = 0; i < sizeof(LinePointsArray) / sizeof(LinePointsArray[0]); i++) {
+				my_file << "(" << LinePointsArray[i][0] << "," << LinePointsArray[i][1] << "," << LinePointsArray[i][2] << "),";
+			}
+			my_file << LineWidth << "," << LineColor << endl;
+		}if (Shapes_drawn.find("Circle") != Shapes_drawn.end()) {
+			my_file << "Circle,";
+			for (int i = 0; i < sizeof(CirclePointsArray) / sizeof(CirclePointsArray[0]); i++) {
+				my_file << "(" << CirclePointsArray[i][0] << "," << CirclePointsArray[i][1] << "," << CirclePointsArray[i][2] << "),";
+			}
+			my_file << LineWidth << "," << LineColor << endl;
+		}
+		if (Shapes_drawn.find("Ellipse") != Shapes_drawn.end()) {
+			my_file << "Ellipse,";
+			for (int i = 0; i < sizeof(EllipsePointsArray) / sizeof(EllipsePointsArray[0]); i++) {
+				my_file << "(" << EllipsePointsArray[i][0] << "," << EllipsePointsArray[i][1] << "," << EllipsePointsArray[i][2] << "),";
+			}
+			my_file << LineWidth << "," << LineColor << endl;
+		}
+		if (Shapes_drawn.find("Arc") != Shapes_drawn.end()) {
+			my_file << "Arc,";
+			for (int i = 0; i < sizeof(ArcPointsArray) / sizeof(ArcPointsArray[0]); i++) {
+				my_file << "(" << ArcPointsArray[i][0] << "," << ArcPointsArray[i][1] << "," << ArcPointsArray[i][2] << "),";
+			}
+			my_file << LineWidth << "," << LineColor << endl;
+		}
+		if (Shapes_drawn.find("Polyline") != Shapes_drawn.end()) {
+			my_file << "Polyline,";
+			for (int i = 0; i < sizeof(PolylinePointsArray) / sizeof(PolylinePointsArray[0]); i++) {
+				if (PolylinePointsArray[i][0] == 0 && PolylinePointsArray[i][1] == 0 && PolylinePointsArray[i][2] == 0) {
+					break;
+				}
+				my_file << "(" << PolylinePointsArray[i][0] << "," << PolylinePointsArray[i][1] << "," << PolylinePointsArray[i][2] << "),";
+			}
+			my_file << LineWidth << "," << LineColor << endl;
+		}
+		if (Shapes_drawn.find("Polygon") != Shapes_drawn.end()) {
+			my_file << "Polygon,";
+			for (int i = 0; i < sizeof(PolygonPointsArray) / sizeof(PolygonPointsArray[0]); i++) {
+
+				if (PolygonPointsArray[i][0] == 0 && PolygonPointsArray[i][1] == 0 && PolygonPointsArray[i][2] == 0) {
+					break;
+				}
+				my_file << "(" << PolygonPointsArray[i][0] << "," << PolygonPointsArray[i][1] << "," << PolygonPointsArray[i][2] << "),";
+			}
+			my_file << LineWidth << "," << LineColor << endl;
+
+		}
+		if (Shapes_drawn.find("Regular Polygon") != Shapes_drawn.end()) {
+			my_file << "Regular Polygon,";
+			for (int i = 0; i < sizeof(RegPolygonPointsArray) / sizeof(RegPolygonPointsArray[0]); i++) {
+				if (RegPolygonPointsArray[i][0] == 0 && RegPolygonPointsArray[i][1] == 0 && RegPolygonPointsArray[i][2] == 0) {
+					break;
+				}
+				my_file << "(" << RegPolygonPointsArray[i][0] << "," << RegPolygonPointsArray[i][1] << "," << RegPolygonPointsArray[i][2] << "),";
+
+
+			}
+			my_file << LineWidth << "," << LineColor << endl;
+		}
 		my_file.close();
-		cout << LineColor;
+
 	}
 
 	return true;
@@ -899,7 +1101,7 @@ namespace {
 					return;
 
 				}
-				
+
 
 
 
@@ -1177,13 +1379,13 @@ int main(int argc, char* argv[])
 	sliderR->setRange(0, 100);
 	sliderR->setValue(3);
 
-	
+
 
 	QSlider* sliderSA = new QSlider(Qt::Horizontal);
 	sliderSA->setRange(0, 360);
 	sliderSA->setValue(0);
 
-	
+
 
 
 	QSlider* sliderEA = new QSlider(Qt::Horizontal);
@@ -1191,12 +1393,12 @@ int main(int argc, char* argv[])
 	sliderEA->setValue(90);
 
 
-	
+
 	QObject::connect(shape_comboBox, (&QComboBox::currentIndexChanged), [&]() {
 
 		string selectedText = shape_comboBox->currentText().toStdString();
 
-	
+
 
 
 		switch (selectedText[0]) {
@@ -1233,6 +1435,8 @@ int main(int argc, char* argv[])
 			isPolygon = 0;
 			isPolyline = 0;
 			isCircle = 0;
+
+			Shapes_drawn.insert(selectedText);
 			break;
 
 		case 'E':
@@ -1251,12 +1455,13 @@ int main(int argc, char* argv[])
 			isPolygon = 0;
 			isPolyline = 0;
 			isCircle = 0;
+			Shapes_drawn.insert(selectedText);
 			break;
 		case 'R':
 
 			dockLayout->removeWidget(sliderR);
 			dockLayout->removeWidget(sliderSA);
-			dockLayout->removeWidget(sliderEA); 
+			dockLayout->removeWidget(sliderEA);
 
 			isLine = 0;
 			isEllipse = 0;
@@ -1273,7 +1478,7 @@ int main(int argc, char* argv[])
 			spinNumSides->setValue(NumSides);
 
 			dockLayout->addWidget(spinNumSides);
-
+			Shapes_drawn.insert(selectedText);
 			break;
 		case 'A':
 			if (spinNumSides->value() != NULL) {
@@ -1306,7 +1511,7 @@ int main(int argc, char* argv[])
 				arcEnd = sliderEA->value();
 				Draw_Arc(arcR, arcStart, arcEnd);
 				});
-
+			Shapes_drawn.insert(selectedText);
 			// Show the widget
 			layoutContainer.show();
 			break;
@@ -1326,6 +1531,8 @@ int main(int argc, char* argv[])
 				isPolygon = 0;
 				isPolyline = 1;
 				isCircle = 0;
+
+				Shapes_drawn.insert(selectedText);
 				break;
 			}
 			else {
@@ -1343,6 +1550,8 @@ int main(int argc, char* argv[])
 				isPolygon = 1;
 				isPolyline = 0;
 				isCircle = 0;
+				Shapes_drawn.insert(selectedText);
+
 				break;
 			}
 		}
