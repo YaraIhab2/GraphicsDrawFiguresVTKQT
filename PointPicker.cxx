@@ -77,8 +77,8 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QObject>
-
-
+#include <vtkTransform.h>
+#include <vtkTransformPolyDataFilter.h>
 #include <cmath>
 #include <cstdlib>
 #include <random>
@@ -223,35 +223,96 @@
 #include <vtkRenderer.h>
 #include <vtkUnstructuredGrid.h>
 #include <cmath>
-//#include <vtkEventQtSlotConnect>
+#include <set>
+#include <QtWidgets/QFormLayout>
 using namespace std;
+//__________Initializing some global variables___________________//
 bool widget = 0;
+set<string>Shapes_drawn;   //Store drawn shapes
 double picked[3];
 double picked2[3] = {};
 double picked3[3] = {};
 double x = 0, y = 0, z = 0, z2 = 0, x2 = 0, y2 = 0;
-
-//double *xp=&x , *yp = &y, *zp = &z, *x2p = &x2, *y2p = &y2, *z2p = &z2;
-int LineWidth = 1;
+int LineWidth = 3;
 char LineColor[100];
-int countIsPolygon=0;
+int countIsPolygon = 0;
 int startAngle = 0;
 int endAngle = 0;
+
+double arcR = 3;
+double arcStart = 0;
+double arcEnd = 90;
 //LineColor[0]='B';
+//_______________________________________________________________//
+
 vtkNew<vtkPointPicker> pointPicker;
 
-vtkSmartPointer<vtkTextActor> textActor = vtkSmartPointer<vtkTextActor>::New();
-vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
+//_____________________Line source,actor,mapper for each shape________________________________//
+
+//Line
 vtkSmartPointer<vtkLineSource> lineSource = vtkSmartPointer<vtkLineSource>::New();
-std::stringstream ss;
 vtkSmartPointer<vtkPolyDataMapper> mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+vtkSmartPointer<vtkActor> actor = vtkSmartPointer<vtkActor>::New();
+vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
+
+//Circle
+vtkSmartPointer<vtkLineSource> Circle_lineSource = vtkSmartPointer<vtkLineSource>::New();
+vtkSmartPointer<vtkPolyDataMapper> Circle_mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+vtkSmartPointer<vtkActor> Circle_actor = vtkSmartPointer<vtkActor>::New();
+
+//Ellipse
+vtkSmartPointer<vtkLineSource> Ellipse_lineSource = vtkSmartPointer<vtkLineSource>::New();
+vtkSmartPointer<vtkPolyDataMapper> Ellipse_mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+vtkSmartPointer<vtkActor> Ellipse_actor = vtkSmartPointer<vtkActor>::New();
+
+//Regpolygon
+vtkSmartPointer<vtkLineSource> Regpolygon_linesource = vtkSmartPointer<vtkLineSource>::New();
+vtkSmartPointer<vtkPolyDataMapper> Regpolygon_mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+vtkSmartPointer<vtkActor> Regpolygon_actor = vtkSmartPointer<vtkActor>::New();
+
+//Polyline
+vtkSmartPointer<vtkLineSource> Polyline_lineSource = vtkSmartPointer<vtkLineSource>::New();
+vtkSmartPointer<vtkPolyDataMapper> Polyline_mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+vtkSmartPointer<vtkActor> Polyline_actor = vtkSmartPointer<vtkActor>::New();
+
+//Polygon
+vtkSmartPointer<vtkLineSource> Polygon_lineSource = vtkSmartPointer<vtkLineSource>::New();
+vtkSmartPointer<vtkPolyDataMapper> Polygon_mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+vtkSmartPointer<vtkActor> Polygon_actor = vtkSmartPointer<vtkActor>::New();
+
+//Arc
+vtkSmartPointer<vtkLineSource> Arc_lineSource = vtkSmartPointer<vtkLineSource>::New();
+vtkSmartPointer<vtkPolyDataMapper> Arc_mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+vtkSmartPointer<vtkActor> Arc_actor = vtkSmartPointer<vtkActor>::New();
+
+
+//Star
+vtkSmartPointer<vtkLineSource> Star_lineSource = vtkSmartPointer<vtkLineSource>::New();
+vtkSmartPointer<vtkPolyDataMapper> Star_mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+vtkSmartPointer<vtkActor> Star_actor = vtkSmartPointer<vtkActor>::New();
+
+
+
+//Rossette
+vtkSmartPointer<vtkLineSource> Rossette_lineSource = vtkSmartPointer<vtkLineSource>::New();
+vtkSmartPointer<vtkPolyDataMapper> Rossette_mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+vtkSmartPointer<vtkActor> Rossette_actor = vtkSmartPointer<vtkActor>::New();
+
+
+
+
+
+//_____________________________________________________________________________________________//
+
+
 vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
-
-// vtkSmartPointer<vtkRenderWindow> renderWindow = vtkSmartPointer<vtkRenderWindow>::New();
 vtkSmartPointer<vtkGenericOpenGLRenderWindow> renderWindow = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
-
 vtkNew<vtkRenderWindowInteractor> renderWindowInteractor;
+// vtkSmartPointer<vtkRenderWindow> renderWindow = vtkSmartPointer<vtkRenderWindow>::New();
+std::stringstream ss;
 vtkSmartPointer <vtkTextWidget> textWidget = vtkSmartPointer<vtkTextWidget>::New();
+vtkSmartPointer<vtkTextActor> textActor = vtkSmartPointer<vtkTextActor>::New();
+
 string pt;
 string pt2;
 
@@ -261,14 +322,14 @@ bool regpoly = false;
 bool clearPolyLine = false;
 bool circle = false;
 int NumSides = 5;
+float Scale_factor = 1;
 int countPolyLinePoints = 0;
 
-vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
+//vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
 
-vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer <vtkPolyData>::New();
-vtkSmartPointer<vtkPolyLine> polyLine = vtkSmartPointer<vtkPolyLine>::New();
-vtkSmartPointer<vtkRegularPolygonSource> polygonSource = vtkSmartPointer<vtkRegularPolygonSource>::New();
-vtkSmartPointer<vtkCellArray> cells = vtkSmartPointer<vtkCellArray>::New();
+//vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer <vtkPolyData>::New();
+//vtkSmartPointer<vtkPolyLine> polyLine = vtkSmartPointer<vtkPolyLine>::New();
+//vtkSmartPointer<vtkCellArray> cells = vtkSmartPointer<vtkCellArray>::New();
 int countIsLine = 0;
 bool isCircle = 0;
 bool isEllipse = 0;
@@ -302,21 +363,21 @@ void InsertPolyPoint() {
 
 }
 
-void Set_line_shape(vtkLineSource* line, vtkPoints* points, vtkPolyDataMapper* mapper, vtkActor* actor, vtkRenderer* renderer)
+void Set_line_shape(vtkLineSource* Shape_line, vtkPoints* Shape_points, vtkPolyDataMapper* Shape_mapper, vtkActor* Shape_actor, vtkRenderer* renderer)
 {
-	line->SetPoints(points);
-	mapper->SetInputConnection(line->GetOutputPort());
-	mapper->Update();
-	actor->SetMapper(mapper);
-	actor->GetProperty()->SetColor(1.0, 0.0, 0.0);
-	actor->GetProperty()->SetLineWidth(3.0);
+	Shape_line->SetPoints(Shape_points);
+	Shape_mapper->SetInputConnection(Shape_line->GetOutputPort());
+	Shape_mapper->Update();
+	Shape_actor->SetMapper(Shape_mapper);
+	Shape_actor->GetProperty()->SetColor(1.0, 0.0, 0.0);   //Have to change this default color
+	Shape_actor->GetProperty()->SetLineWidth(3.0);
 
-	renderer->AddActor(actor);
+	renderer->AddActor(Shape_actor);
 }
 int counterPoly = -1;
 int counterPolygon = -1;
 void Draw_Polyline() {
-	
+
 	vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
 	counterPoly++;
 	countIsLine = 1;
@@ -326,13 +387,13 @@ void Draw_Polyline() {
 
 	//vtkSmartPointer<vtkPoints> newPoints = vtkSmartPointer<vtkPoints>::New();
 	//newPoints->DeepCopy(points);
-	
+
 	pointsArray[counterPoly][0] = picked[0];
 	pointsArray[counterPoly][1] = picked[1];
 	pointsArray[counterPoly][2] = 0;
 	//pointsArray[i].Take(point1);
-	
-	for (int j = 0; j <= counterPoly;j++) {
+
+	for (int j = 0; j <= counterPoly; j++) {
 		points->InsertNextPoint(pointsArray[j][0], pointsArray[j][1], 0);
 
 	}
@@ -343,7 +404,7 @@ void Draw_Polyline() {
 	////actor->GetProperty()->SetColor(LineColor);
 	//renderer->AddActor(actor);
 	//renderWindow->AddRenderer(renderer);
-	Set_line_shape(lineSource, points, mapper, actor, renderer);
+	Set_line_shape(Polyline_lineSource, points, Polyline_mapper, Polyline_actor, renderer);
 	renderWindow->AddRenderer(renderer);
 	renderWindow->Render();
 	/*renderWindowInteractor->SetRenderWindow(renderWindow);*/
@@ -372,59 +433,102 @@ void Draw_Polygon() {
 			pointsArray[counterPolygon][0] = 0;
 			pointsArray[counterPolygon][1] = 0;
 			pointsArray[counterPolygon][2] = 0;
-			
 		}*/
 		points->InsertNextPoint(pointsArray[j][0], pointsArray[j][1], 0);
 		if (j == counterPolygon) {
 			points->InsertNextPoint(pointsArray[0][0], pointsArray[0][1], 0);
 		}
 	}
-	lineSource->SetPoints(points);
-	mapper->SetInputConnection(lineSource->GetOutputPort());
-	mapper->Update();
-	                 // renderer->Render();
-	actor->SetMapper(mapper);
-	
-	//actor->GetProperty()->SetColor(LineColor);
-	renderer->AddActor(actor);
-	               //       renderer->Render();
-	//renderWindow->AddRenderer(renderer);
-	
+
+	Set_line_shape(Polygon_lineSource, points, Polygon_mapper, Polygon_actor, renderer);
+
+	//lineSource->SetPoints(points);
+	//mapper->SetInputConnection(lineSource->GetOutputPort());
 	//mapper->Update();
-	//Set_line_shape(lineSource, points, mapper, actor, renderer);
-	//mapper->Update();
+	//actor->SetMapper(mapper);
+
+
+	//renderer->AddActor(actor);
+
 	renderWindow->AddRenderer(renderer);
 	renderWindow->Render();
-	//renderer->RemoveAllViewProps();
-	//renderWindowInteractor->SetRenderWindow(renderWindow);
 
 }
+
+
+void transformation(vtkPolyDataMapper* mapper, vtkActor* actor, double x_axis, double y_axis, double z_axis) {
+	//vtkNew<vtkPolyDataMapper> originalMapper;
+	mapper->SetInputConnection(lineSource->GetOutputPort());
+
+	//vtkNew<vtkActor> originalActor;
+	actor->SetMapper(mapper);
+	//originalActor->GetProperty()->SetColor(colors->GetColor3d("Blue").GetData());
+
+	// Set up the transform filter
+
+	vtkNew<vtkTransform> translation;
+	//translation->Translate(x_axis, y_axis, z_axis);
+	translation->Translate(2.0, 2.0, 0.0);
+
+	vtkNew<vtkTransformPolyDataFilter> transformFilter;
+	transformFilter->SetInputConnection(lineSource->GetOutputPort());
+	transformFilter->SetTransform(translation);
+	transformFilter->Update();
+
+	// Set up the actor to display the transformed polydata
+
+	vtkNew<vtkPolyDataMapper> transformedMapper;
+	transformedMapper->SetInputConnection(transformFilter->GetOutputPort());
+
+	vtkNew<vtkActor> transformedActor;
+	transformedActor->SetMapper(transformedMapper);
+	//transformedActor->GetProperty()->SetColor(colors->GetColor3d("Red").GetData());
+
+	// Set up the rest of the visualization pipeline
+
+	//vtkNew<vtkRenderer> renderer;
+	//renderer->AddActor(originalActor);
+	renderer->AddActor(transformedActor);
+	//renderer->SetBackground(colors->GetColor3d("Green").GetData());
+
+	//vtkNew<vtkRenderWindow> renderWindow;
+	renderWindow->AddRenderer(renderer);
+
+	//vtkNew<vtkRenderWindowInteractor> renderWindowInteractor;
+	//renderWindowInteractor->SetRenderWindow(renderWindow);
+
+	//renderWindow->SetWindowName("TransformPolyData");
+	//renderWindow->Render();
+	//renderWindowInteractor->Start();
+}
+
+
 void Draw_Circle()
 {
-	double Raduis = sqrt(pow((picked[0] - picked2[0]),2.0) + pow(picked[1] - picked2[1], 2.0));
+	double Raduis = sqrt(pow((picked[0] - picked2[0]), 2.0) + pow(picked[1] - picked2[1], 2.0));
 	vtkSmartPointer<vtkPoints> Circle_points = vtkSmartPointer<vtkPoints>::New();
 	int number_of_points = 120;
 	lineSource->SetResolution(number_of_points);  //determines the quality of the generated line or polyline, with higher values of number_of_points leading to smoother and more precise lines.
 	for (int i = 0; i <= number_of_points; i++)
 	{
 		double t_parameter = static_cast<double>(i) / number_of_points;   // division is performed using floating-point arithmetic rather than integer division.
-		double x_circle = picked2[0]+Raduis * cos(2 * vtkMath::Pi() * t_parameter);
-		double y_circle =picked2[1]+ Raduis * sin(2 * vtkMath::Pi() * t_parameter);
+		double x_circle = Scale_factor * (picked2[0] + Raduis * cos(2 * vtkMath::Pi() * t_parameter));
+		double y_circle = Scale_factor * (picked2[1] + Raduis * sin(2 * vtkMath::Pi() * t_parameter));
 		Circle_points->InsertNextPoint(x_circle, y_circle, 0.0);
-		
+
 	}
-	
-	Set_line_shape(lineSource, Circle_points, mapper, actor, renderer);
-	
+
+	Set_line_shape(Circle_lineSource, Circle_points, Circle_mapper, Circle_actor, renderer);
+
 
 }
 
 void Draw_Ellipse()
 {
-	
+
 	double SemiMajorAxis = sqrt(pow((picked[0] - picked2[0]), 2.0) + pow((picked[1] - picked2[1]), 2.0));
 	cout << "Major " << SemiMajorAxis << " ";
-	double SemiMinorAxis =  sqrt(pow((picked3[0] - picked2[0]), 2.0) + pow((picked3[1] - picked2[1]), 2.0));
+	double SemiMinorAxis = sqrt(pow((picked3[0] - picked2[0]), 2.0) + pow((picked3[1] - picked2[1]), 2.0));
 	cout << "Minor " << SemiMinorAxis << " ";
 	double axisRatio = SemiMajorAxis / SemiMinorAxis;
 	cout << "ratio " << axisRatio << " ";
@@ -432,11 +536,11 @@ void Draw_Ellipse()
 	int number_of_points = 120;
 	lineSource->SetResolution(number_of_points);
 
-	
+
 	//if (axisRatio >= 1) {
-		SemiMajorAxis = sqrt(pow((picked3[0] - picked2[0]), 2.0) + pow(picked3[1] - picked2[1], 2.0));
-		SemiMinorAxis = sqrt(pow((picked[0] - picked2[0]), 2.0) + pow(picked[1] - picked2[1], 2.0));
-		cout << "first if";
+	SemiMajorAxis = sqrt(pow((picked3[0] - picked2[0]), 2.0) + pow(picked3[1] - picked2[1], 2.0));
+	SemiMinorAxis = sqrt(pow((picked[0] - picked2[0]), 2.0) + pow(picked[1] - picked2[1], 2.0));
+	cout << "first if";
 	//}
 	/*if(axisRatio<1) {
 		SemiMajorAxis = sqrt(pow((picked[0] - picked2[0]), 2.0) + pow(picked[1] - picked2[1], 2.0));
@@ -450,13 +554,13 @@ void Draw_Ellipse()
 		double y_ellipse;
 
 		double t_parameter = static_cast<double>(j) / number_of_points;
-		
-		
 
-		 x_ellipse = picked2[0] + SemiMajorAxis * cos(2 * vtkMath::Pi() * (t_parameter+0.25)) ;
-		 y_ellipse = picked2[1] + SemiMinorAxis * sin(2 * vtkMath::Pi() * (t_parameter+0.25));
 
-		
+
+		x_ellipse = Scale_factor * (picked2[0] + SemiMajorAxis * cos(2 * vtkMath::Pi() * (t_parameter + 0.25)));   //0.25?
+		y_ellipse = Scale_factor * (picked2[1] + SemiMinorAxis * sin(2 * vtkMath::Pi() * (t_parameter + 0.25)));
+
+
 		/*else if (axisRatio > 1) {
 			x_ellipse = picked2[0] + SemiMajorAxis * sin(2 * vtkMath::Pi() * t_parameter)* sin(vtkMath::Pi() / 2);
 			y_ellipse = picked2[1] + SemiMinorAxis *cos(2 * vtkMath::Pi() * t_parameter)*cos( vtkMath::Pi() / 2);
@@ -467,60 +571,67 @@ void Draw_Ellipse()
 
 
 
-	Set_line_shape(lineSource, Ellipse_points, mapper, actor, renderer);
+	Set_line_shape(Ellipse_lineSource, Ellipse_points, Ellipse_mapper, Ellipse_actor, renderer);
 }
 
+//Needs Modifications
+//void Draw_Arc()
+//{
+//	//startAngle = M_PI_2;
+//	vtkSmartPointer<vtkPoints> Arc_points = vtkSmartPointer<vtkPoints>::New();
+//
+//	int number_of_points = 120;
+//
+//
+//	lineSource->SetResolution(number_of_points);
+//
+//	//Using Click (incomplete ASK)
+//
+//	double firstLine[3] = {picked3[0]- picked2[0], picked3[1] - picked2[1],0};
+//
+//	double Raduis = vtkMath::Distance2BetweenPoints(picked3,picked2 );
+//	
+//	double Raduis2 = vtkMath::Distance2BetweenPoints(picked2, picked);
+//	double secondLine[3] = { ((picked[0] - picked2[0])/Raduis2)* Raduis,((picked[1] - picked2[1])/Raduis2)*Raduis,0 };
+//
+//
+//	double angle=acos(vtkMath::RadiansFromDegrees(firstLine[0]*secondLine[0]+firstLine[1]*secondLine[1]))/(Raduis*Raduis);
+//	
+//	double Angle_increment = (angle) / (number_of_points - 1);
+//	for (int i = 0; i < number_of_points; i++)
+//	{
+//		double Current_angle = Angle_increment * i;
+//		double x_arc = picked2[0]+Raduis * cos(Current_angle);
+//		double y_arc = picked2[1]+Raduis * sin(Current_angle);
+//		Arc_points->InsertNextPoint(x_arc, y_arc, 0.0);
+//
+//	}
+//
+//	Set_line_shape(Arc_lineSource, Arc_points, Arc_mapper, Arc_actor, renderer);
+//	renderWindow->Render();
+//}
 
-void Draw_Arc()
+void Draw_Arc(double Raduis , double Start_angle, double End_Angle)
 {
-	startAngle = M_PI_2;
 	vtkSmartPointer<vtkPoints> Arc_points = vtkSmartPointer<vtkPoints>::New();
-
 	int number_of_points = 120;
-
 	lineSource->SetResolution(number_of_points);
-
-	//double firstLine[3] = { picked3[0] - picked2[0], picked3[1] - picked2[1] };
-	double firstLine[3] = { 0 - picked2[0], 1 - picked2[1],0 };
-	double firstPoint[3] = { 0,1,0 };
-	double Raduis = vtkMath::Distance2BetweenPoints(picked2,firstPoint );
-	
-	
-	double secondLine[3] = { picked[0] - picked2[0], picked[1] - picked2[1],0 };
-	double Raduis2 = vtkMath::Distance2BetweenPoints(picked2, picked);
-	
-	/*double horizontal[3] = { (picked2[0]+1) - picked2[0], picked2[1] - picked2[1] };
-	double horizontalRaduis= sqrt(pow(horizontal[0], 2) + pow(horizontal[1], 2));*/
-	
-	/*if (picked2[1] < picked3[1]) {
-		start_angle = acos((firstLine[0] * horizontal[0] + horizontal[1]* firstLine[1]);
-	}*/
-
-	double angle=acos(vtkMath::RadiansFromDegrees(firstLine[0]*secondLine[0]+firstLine[1]*secondLine[1]))/(Raduis2*Raduis);
-	/*if (picked[0] < picked3[0] && picked[1]>picked3[1]) {
-
-
-		angle = 180;
-
-	}
-	if (picked3[0] < picked2[0] && picked3[1] < picked2[1]) {
-
-
-		angle = -angle;
-	}*/
-	double Angle_increment = (angle) / (number_of_points - 1);
+	double Angle_increment = (End_Angle - Start_angle) / (number_of_points - 1);
 	for (int i = 0; i < number_of_points; i++)
 	{
-		double Current_angle = startAngle + Angle_increment * i;
-		double x_arc = picked2[0]+Raduis2 * cos(Current_angle);
-		double y_arc = picked2[1]+Raduis2 * sin(Current_angle);
+		double Current_angle = Start_angle + Angle_increment * i;
+		double x_arc = Raduis * cos(vtkMath::RadiansFromDegrees(Current_angle));
+		double y_arc = Raduis * sin(vtkMath::RadiansFromDegrees(Current_angle));
 		Arc_points->InsertNextPoint(x_arc, y_arc, 0.0);
 
 	}
 
-	Set_line_shape(lineSource, Arc_points, mapper, actor, renderer);
+	Set_line_shape(Arc_lineSource, Arc_points, Arc_mapper, Arc_actor, renderer);
 	renderWindow->Render();
 }
+
+
+
 
 
 void Draw_Regular_Polygon()
@@ -535,12 +646,12 @@ void Draw_Regular_Polygon()
 	for (int point_indx = 0; point_indx <= number_of_points; point_indx++)
 	{
 		double Current_angle = Angle_increment * point_indx;
-		double x_regpolygon = picked2[0] + Raduis_regpolygon * cos(Current_angle);
-		double y_regpolygon = picked2[1] + Raduis_regpolygon * sin(Current_angle);
+		double x_regpolygon = Scale_factor * (picked2[0] + Raduis_regpolygon * cos(Current_angle));
+		double y_regpolygon = Scale_factor * (picked2[1] + Raduis_regpolygon * sin(Current_angle));
 		Regpolygon_points->InsertNextPoint(x_regpolygon, y_regpolygon, 0.0);
 
 	}
-	Set_line_shape(lineSource, Regpolygon_points, mapper, actor, renderer);
+	Set_line_shape(Regpolygon_linesource, Regpolygon_points, Regpolygon_mapper, Regpolygon_actor, renderer);
 
 }
 
@@ -681,8 +792,11 @@ void DrawPoint() {
 
 	return;
 }
+//Actor, colorcombobox
+void change_color()
+{
 
-
+}
 
 
 
@@ -717,8 +831,8 @@ namespace {
 
 			std::cout << "Picked value: " << picked[0] << " " << picked[1] << " "
 				<< picked[2] << std::endl;
-			
-			
+
+
 			flag++;
 			if (flag == 1) {
 
@@ -729,38 +843,42 @@ namespace {
 				if (isLine) {
 					SetFirstPoint();
 					SetSecondPoint();
-					
+
 				}
 				if (isPolyline) {
-					if (countIsLine ==2) {
+					if (countIsLine == 2) {
 						for (int i = 0; i <= counterPoly; i++) {
 							pointsArray[i][0] = 0;
 							pointsArray[i][1] = 0;
 							pointsArray[i][2] = 0;
 						}
 						counterPoly = -1;
-						
+
 					}
 					Draw_Polyline();
 					renderWindow->Render();
 					flag = 0;
 				}
 				if (isPolygon) {
-					if (countIsPolygon ==2  ) {
+					if (countIsPolygon == 2) {
 						for (int i = 0; i <= counterPolygon; i++) {
 							pointsArray[i][0] = 0;
 							pointsArray[i][1] = 0;
 							pointsArray[i][2] = 0;
 						}
-						
+
 						counterPolygon = -1;
-						
+
 					}
 					Draw_Polygon();
 					renderWindow->Render();
 					flag = 0;
 				}
-				
+				/*if (isArc) {
+					Draw_Arc();
+					flag = 0;
+				}*/
+
 				DrawPoint();
 			}
 			if (flag == 2) {
@@ -772,7 +890,7 @@ namespace {
 					SetSecondPoint();
 					flag = 0;
 				}
-				
+
 				if (isRegularPolygon)
 				{
 					Draw_Regular_Polygon();
@@ -781,11 +899,8 @@ namespace {
 					return;
 
 				}
-				if (isArc) {
-					Draw_Arc();
-					flag = 0;
-				}
 				
+
 
 
 				std::cout << "Picked value: " << picked[0] << " " << picked[1] << " "
@@ -796,11 +911,14 @@ namespace {
 
 			}
 
-			if (isCircle &&flag==2) {
-				
+			if (isCircle && flag == 2) {
+
 
 				Draw_Circle();
 				renderWindow->Render();
+				//renderer->RemoveAllViewProps();
+				//transformation(mapper, actor, 0, 0, 0);
+				//renderWindow->Render();
 				flag = 0;
 
 				return;
@@ -815,7 +933,7 @@ namespace {
 
 				return;
 			}
-			
+
 
 
 			//}
@@ -864,11 +982,12 @@ int main(int argc, char* argv[])
 	QPointer<QVTKOpenGLNativeWidget> vtkRenderWidget = new QVTKOpenGLNativeWidget();
 	char read[100];
 	QComboBox* color_comboBox = new QComboBox();
-	
+
 	QString selectedText;
 	QSpinBox* spinBox = new QSpinBox();
+	QDoubleSpinBox* Scaling_spinbox = new QDoubleSpinBox();
 	QTextEdit* textBox = new QTextEdit();
-	
+	/*
 	///////////////////////////////FOR POLYLINE/////////
 	// Create a polydata to store everything in
 	//draw normal polygon
@@ -998,12 +1117,12 @@ int main(int argc, char* argv[])
 
 
 
+*/
 
 
 
 
-
-		///////////////////////////////////////////////////////////////GUI LINE////////////////////////////////////////////
+///////////////////////////////////////////////////////////////GUI LINE////////////////////////////////////////////
 	mainWindow.addDockWidget(Qt::LeftDockWidgetArea, &controlDock);
 
 	QLabel controlDockTitle("Control Dock");
@@ -1031,7 +1150,7 @@ int main(int argc, char* argv[])
 	/////////////////////////////////////////////////////////////////END///////////////////////////////////////////////////
 
 	////////////////////////////////////////////////////////SPINBOX LINE WIDTH///////////////////////////////////////
-	
+
 	spinBox->setMinimum(0);
 	spinBox->setMaximum(100);
 	spinBox->setSingleStep(1);
@@ -1052,12 +1171,40 @@ int main(int argc, char* argv[])
 	dockLayout->addWidget(shape_comboBox);
 
 	QSpinBox* spinNumSides = new QSpinBox();
+
+	///////////////////Arc Inputs///////////////
+	QSlider* sliderR = new QSlider(Qt::Horizontal);
+	sliderR->setRange(0, 100);
+	sliderR->setValue(3);
+
+	
+
+	QSlider* sliderSA = new QSlider(Qt::Horizontal);
+	sliderSA->setRange(0, 360);
+	sliderSA->setValue(0);
+
+	
+
+
+	QSlider* sliderEA = new QSlider(Qt::Horizontal);
+	sliderEA->setRange(0, 360);
+	sliderEA->setValue(90);
+
+
+	
 	QObject::connect(shape_comboBox, (&QComboBox::currentIndexChanged), [&]() {
 
 		string selectedText = shape_comboBox->currentText().toStdString();
-		
+
+	
+
+
 		switch (selectedText[0]) {
 		case 'C':
+			dockLayout->removeWidget(sliderR);
+			dockLayout->removeWidget(sliderSA);
+			dockLayout->removeWidget(sliderEA);
+
 			if (spinNumSides->value() != NULL) {
 				dockLayout->removeWidget(spinNumSides);
 			}
@@ -1068,8 +1215,14 @@ int main(int argc, char* argv[])
 			isPolygon = 0;
 			isPolyline = 0;
 			isCircle = 1;
+			Shapes_drawn.insert(selectedText);
 			break;
 		case 'L':
+
+			dockLayout->removeWidget(sliderR);
+			dockLayout->removeWidget(sliderSA);
+			dockLayout->removeWidget(sliderEA);
+
 			if (spinNumSides->value() != NULL) {
 				dockLayout->removeWidget(spinNumSides);
 			}
@@ -1083,6 +1236,11 @@ int main(int argc, char* argv[])
 			break;
 
 		case 'E':
+
+			dockLayout->removeWidget(sliderR);
+			dockLayout->removeWidget(sliderSA);
+			dockLayout->removeWidget(sliderEA);
+
 			if (spinNumSides->value() != NULL) {
 				dockLayout->removeWidget(spinNumSides);
 			}
@@ -1095,6 +1253,11 @@ int main(int argc, char* argv[])
 			isCircle = 0;
 			break;
 		case 'R':
+
+			dockLayout->removeWidget(sliderR);
+			dockLayout->removeWidget(sliderSA);
+			dockLayout->removeWidget(sliderEA); 
+
 			isLine = 0;
 			isEllipse = 0;
 			isArc = 0;
@@ -1103,14 +1266,14 @@ int main(int argc, char* argv[])
 			isPolyline = 0;
 			isCircle = 0;
 
-			
+
 			spinNumSides->setMinimum(0);
 			spinNumSides->setMaximum(100);
 			spinNumSides->setSingleStep(1);
 			spinNumSides->setValue(NumSides);
 
 			dockLayout->addWidget(spinNumSides);
-			
+
 			break;
 		case 'A':
 			if (spinNumSides->value() != NULL) {
@@ -1123,23 +1286,52 @@ int main(int argc, char* argv[])
 			isPolygon = 0;
 			isPolyline = 0;
 			isCircle = 0;
+
+
+			dockLayout->addWidget(sliderR);
+			dockLayout->addWidget(sliderSA);
+			dockLayout->addWidget(sliderEA);
+
+			QObject::connect(sliderR, &QSlider::valueChanged, [&]() {
+				arcR = sliderR->value();
+				Draw_Arc(arcR, arcStart, arcEnd);
+				});
+
+			QObject::connect(sliderSA, &QSlider::valueChanged, [&]() {
+				arcStart = sliderSA->value();
+				Draw_Arc(arcR, arcStart, arcEnd);
+				});
+
+			QObject::connect(sliderEA, &QSlider::valueChanged, [&]() {
+				arcEnd = sliderEA->value();
+				Draw_Arc(arcR, arcStart, arcEnd);
+				});
+
+			// Show the widget
+			layoutContainer.show();
 			break;
 		case 'P':
 			if (spinNumSides->value() != NULL) {
 				dockLayout->removeWidget(spinNumSides);
 			}
-			if (selectedText[4] =='l'){
+			dockLayout->removeWidget(sliderR);
+			dockLayout->removeWidget(sliderSA);
+			dockLayout->removeWidget(sliderEA);
+			if (selectedText[4] == 'l') {
 				countIsLine++;
-			isLine = 0;
-			isEllipse = 0;
-			isArc = 0;
-			isRegularPolygon = 0;
-			isPolygon = 0;
-			isPolyline = 1;
-			isCircle = 0;
-			break;
+				isLine = 0;
+				isEllipse = 0;
+				isArc = 0;
+				isRegularPolygon = 0;
+				isPolygon = 0;
+				isPolyline = 1;
+				isCircle = 0;
+				break;
 			}
 			else {
+				dockLayout->removeWidget(sliderR);
+				dockLayout->removeWidget(sliderSA);
+				dockLayout->removeWidget(sliderEA);
 				if (spinNumSides->value() != NULL) {
 					dockLayout->removeWidget(spinNumSides);
 				}
@@ -1156,14 +1348,14 @@ int main(int argc, char* argv[])
 		}
 
 		// update selectedText with the current selected item
-		
-		
+
+
 
 
 
 		renderWindow->Render();
 		});
-	
+
 	///////////////////////////////////////////////////////////////////////////////END/////////////////////////////////
 
 	///////////////////////////////////////////////////////////////////READ WRITE BUTTONS////////////////////////////////////
@@ -1172,12 +1364,25 @@ int main(int argc, char* argv[])
 	dockLayout->addWidget(pushButton);
 	dockLayout->addWidget(pushButton2);
 
+	/////////////////Scaling_spinbox///////////////////
+	Scaling_spinbox->setMinimum(-5.0);
+	Scaling_spinbox->setMaximum(5.0);
+	Scaling_spinbox->setSingleStep(0.1);
+	Scaling_spinbox->setValue(1.0);
+
+	dockLayout->addWidget(Scaling_spinbox);
+
+
+	////////////////////////End///////////////////////
+
+
+
 
 	mainWindow.setCentralWidget(vtkRenderWidget);
 
 
 	///////////////////////LINE/////////////////////////////
-	
+
 
 	//Draw_Circle(3);
 //	Draw_Arc();
@@ -1259,7 +1464,7 @@ int main(int argc, char* argv[])
 	///////////////////////////////////////////////////////////COMBOBOX WIDGET APPLIED/////////////////////////////////
 
 	QObject::connect(color_comboBox, (&QComboBox::currentIndexChanged), [&]() {
-
+		//Another function change color
 
 		selectedText = color_comboBox->currentText();
 
@@ -1280,33 +1485,59 @@ int main(int argc, char* argv[])
 		LineWidth = spinBox->value();
 		renderWindow->Render();
 		});
+	QObject::connect(Scaling_spinbox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [&]() {
+
+		Scale_factor = Scaling_spinbox->value();
+		if (isCircle)
+		{
+			Draw_Circle();
+			renderWindow->Render();
+		}
+		else if (isRegularPolygon)
+		{
+			Draw_Regular_Polygon();
+			renderWindow->Render();
+		}
+
+		else if (isArc)
+		{
+			Draw_Arc(arcR, arcStart, arcEnd);
+			renderWindow->Render();
+
+		}
+
+		else if (isEllipse)
+		{
+			Draw_Ellipse();
+			renderWindow->Render();
+		}
+
+		});
+
+
 	QObject::connect(spinNumSides, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [&]() {
-		
+
 		NumSides = spinNumSides->value();
 		Draw_Regular_Polygon();
 		renderWindow->Render();
-		
+
 		});
 	/*QObject::connect(spinStartAngle, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [&]() {
-
 		startAngle = spinStartAngle->value();
 		Draw_Arc;
 		renderWindow->Render();
-
 		});
 	QObject::connect(spinEndAngle, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [&]() {
-
 		endAngle = spinEndAngle->value();
 		Draw_Arc;
 		renderWindow->Render();
-
 		});*/
-	////////////////////////////////////////////////////////////////////////////END/////////////////////////////
+		////////////////////////////////////////////////////////////////////////////END/////////////////////////////
 
-	///////////////////////////////////////////////RENDERING, RENDERER, RENDERWINDOW, INTERACTOR//////////////////
-	//Connect renderWindowInteractor in ONLeftClick with current working interactor
-	// 
-	// 
+		///////////////////////////////////////////////RENDERING, RENDERER, RENDERWINDOW, INTERACTOR//////////////////
+		//Connect renderWindowInteractor in ONLeftClick with current working interactor
+		// 
+		// 
 
 	renderWindow->SetInteractor(renderWindowInteractor);
 
@@ -1340,3 +1571,4 @@ int main(int argc, char* argv[])
 
 
 }
+
