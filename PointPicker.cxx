@@ -233,16 +233,17 @@ double picked[3];
 double picked2[3] = {};
 double picked3[3] = {};
 double x = 0, y = 0, z = 0, z2 = 0, x2 = 0, y2 = 0;
+double x3, y3, z3 = 0;
 int LineWidth = 3;
 char LineColor[100];
 int countIsPolygon = 0;
 int startAngle = 0;
 int endAngle = 0;
-
+double r, sa, ea = 0.0;
 double arcR = 3;
 double arcStart = 0;
 double arcEnd = 90;
-
+bool FlagLineWriteFirstTime = 1;
 // 
 //_______________________________________________________________//
 
@@ -287,7 +288,7 @@ double PolygonPointsArray[100][3];
 vtkSmartPointer<vtkLineSource> Arc_lineSource = vtkSmartPointer<vtkLineSource>::New();
 vtkSmartPointer<vtkPolyDataMapper> Arc_mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
 vtkSmartPointer<vtkActor> Arc_actor = vtkSmartPointer<vtkActor>::New();
-double ArcPointsArray[3][3];
+double ArcPointsArray[3];
 
 //Star
 vtkSmartPointer<vtkLineSource> Star_lineSource = vtkSmartPointer<vtkLineSource>::New();
@@ -359,10 +360,10 @@ void SetSecondPoint() {
 	lineSource->SetPoint2(picked[0], picked[1], picked[2]);
 	//lineSource->Modified();
 	lineSource->Update();
-	for (int i = 0; i < sizeof(PolylinePointsArray)[0]; i++) {
+	for (int i = 0; i < 2; i++) {
 
-		for (int j = 0; j < sizeof(PolylinePointsArray)[1]; j++) {
-			PolylinePointsArray[i][j] = 0.0;
+		for (int j = 0; j < 3; j++) {
+			LinePointsArray[i][j] = 0.0;
 
 		}
 	}
@@ -416,11 +417,11 @@ void Draw_Polyline() {
 
 	pointsArray[counterPoly][0] = picked[0];
 	pointsArray[counterPoly][1] = picked[1];
-	pointsArray[counterPoly][2] = 0;
+	pointsArray[counterPoly][2] = picked[2];
 	//pointsArray[i].Take(point1);
 
 	for (int j = 0; j <= counterPoly; j++) {
-		points->InsertNextPoint(pointsArray[j][0], pointsArray[j][1], 0);
+		points->InsertNextPoint(pointsArray[j][0], pointsArray[j][1], pointsArray[j][2]);
 
 	}
 	//lineSource->SetPoints(points);
@@ -433,7 +434,7 @@ void Draw_Polyline() {
 	Set_line_shape(Polyline_lineSource, points, Polyline_mapper, Polyline_actor, renderer);
 	renderWindow->AddRenderer(renderer);
 	
-	if (counterPoly == 1) {
+	if (counterPoly == 0) {
 		for (int i = 0; i < sizeof(PolylinePointsArray)[0]; i++) {
 
 			for (int j = 0; j < sizeof(PolylinePointsArray)[1]; j++) {
@@ -443,10 +444,10 @@ void Draw_Polyline() {
 		}
 
 	}
-	for (int i = 0; i < points->GetNumberOfPoints(); i++) {
-		PolylinePointsArray[i][0] = points->GetPoint(i)[0];
-		PolylinePointsArray[i][1] = points->GetPoint(i)[1];
-		PolylinePointsArray[i][2] = points->GetPoint(i)[2];
+	for (int i = 0; i <= counterPoly; i++) {
+		PolylinePointsArray[i][0] = pointsArray[i][0];
+		PolylinePointsArray[i][1] = pointsArray[i][1];
+		PolylinePointsArray[i][2] = pointsArray[i][2];
 	}
 	/*renderWindowInteractor->SetRenderWindow(renderWindow);*/
 
@@ -466,7 +467,7 @@ void Draw_Polygon() {
 
 	pointsArray[counterPolygon][0] = picked[0];
 	pointsArray[counterPolygon][1] = picked[1];
-	pointsArray[counterPolygon][2] = 0;
+	pointsArray[counterPolygon][2] = picked[2];
 	//pointsArray[i].Take(point1);
 
 	for (int j = 0; j <= counterPolygon; j++) {
@@ -477,7 +478,7 @@ void Draw_Polygon() {
 		}*/
 		points->InsertNextPoint(pointsArray[j][0], pointsArray[j][1], 0);
 		if (j == counterPolygon) {
-			points->InsertNextPoint(pointsArray[0][0], pointsArray[0][1], 0);
+			points->InsertNextPoint(pointsArray[0][0], pointsArray[0][1], pointsArray[0][2]);
 		}
 	}
 
@@ -499,7 +500,7 @@ void Draw_Polygon() {
 	}
 
 	//renderer->AddActor(actor);
-	for (int i = 0; i < counterPolygon + 1; i++) {
+	for (int i = 0; i <= counterPolygon ; i++) {
 
 		PolygonPointsArray[i][0] = picked[0];
 		PolygonPointsArray[i][1] = picked[1];
@@ -576,9 +577,9 @@ void Draw_Circle()
 
 	Set_line_shape(Circle_lineSource, Circle_points, Circle_mapper, Circle_actor, renderer);
 	
-	for (int i = 0; i < sizeof(CirclePointsArray)[0]; i++) {
+	for (int i = 0; i < 2; i++) {
 
-		for (int j = 0; j < sizeof(CirclePointsArray)[1]; j++) {
+		for (int j = 0; j < 3; j++) {
 			CirclePointsArray[i][j] = 0.0;
 
 		}
@@ -646,9 +647,9 @@ void Draw_Ellipse()
 
 	}
 	
-	for (int i = 0; i < sizeof(EllipsePointsArray)[0]; i++) {
+	for (int i = 0; i < 3; i++) {
 
-		for (int j = 0; j < sizeof(EllipsePointsArray)[1]; j++) {
+		for (int j = 0; j < 3; j++) {
 			EllipsePointsArray[i][j] = 0.0;
 
 		}
@@ -710,7 +711,32 @@ void Draw_Ellipse()
 //		Arc_points->InsertNextPoint(x_arc, y_arc, 0.0);
 //
 //	}
+//for (int i = 0; i < 3; i++) {
 //
+//for (int j = 0; j < 3; j++) {
+//	ArcPointsArray[i][j] = 0.0;
+//
+//}
+//	}
+//	for (int i = 0; i < 3; i++) {
+//
+//		if (i == 0) {
+//			ArcPointsArray[i][0] = picked2[0];
+//			ArcPointsArray[i][1] = picked2[1];
+//			ArcPointsArray[i][2] = picked2[2];
+//		}
+//		if (i == 1) {
+//			ArcPointsArray[i][0] = picked3[0];
+//			ArcPointsArray[i][1] = picked3[1];
+//			ArcPointsArray[i][2] = picked3[2];
+//		}
+//		if (i == 2) {
+//			ArcPointsArray[i][0] = picked[0];
+//			ArcPointsArray[i][1] = picked[1];
+//			ArcPointsArray[i][2] = picked[2];
+//		}
+//
+//	}
 //	Set_line_shape(Arc_lineSource, Arc_points, Arc_mapper, Arc_actor, renderer);
 //	renderWindow->Render();
 //}
@@ -729,34 +755,34 @@ void Draw_Arc(double Raduis, double Start_angle, double End_Angle)
 		Arc_points->InsertNextPoint(x_arc, y_arc, 0.0);
 
 	}
-	for (int i = 0; i < sizeof(ArcPointsArray)[0]; i++) {
 
-		for (int j = 0; j < sizeof(ArcPointsArray)[1]; j++) {
-			ArcPointsArray[i][j] = 0.0;
+	Set_line_shape(Arc_lineSource, Arc_points, Arc_mapper, Arc_actor, renderer);
+	renderWindow->Render();
+
+	for (int i = 0; i < 3; i++) {
+
+		
+			ArcPointsArray[i] = 0.0;
 
 		}
-	}
+	
 	for (int i = 0; i < 3; i++) {
 
 		if (i == 0) {
-			ArcPointsArray[i][0] = picked2[0];
-			ArcPointsArray[i][1] = picked2[1];
-			ArcPointsArray[i][2] = picked2[2];
+			ArcPointsArray[i] = Raduis;
+			
 		}
 		if (i == 1) {
-			ArcPointsArray[i][0] = picked3[0];
-			ArcPointsArray[i][1] = picked3[1];
-			ArcPointsArray[i][2] = picked3[2];
+			ArcPointsArray[i] =  startAngle;
+			
 		}
 		if (i == 2) {
-			ArcPointsArray[i][0] = picked[0];
-			ArcPointsArray[i][1] = picked[1];
-			ArcPointsArray[i][2] = picked[2];
+			ArcPointsArray[i] = endAngle;
+			
 		}
 
 	}
-	Set_line_shape(Arc_lineSource, Arc_points, Arc_mapper, Arc_actor, renderer);
-	renderWindow->Render();
+	
 }
 
 
@@ -832,7 +858,17 @@ bool ReadFile(char name[100]) {
 	fopen_s(&file, name, "r");
 	cout << "file to be read  " << file;
 	if (file != NULL) {
+		
 		if (Shapes_drawn.find("Line") != Shapes_drawn.end()) {
+
+			isLine = 1;
+			isEllipse = 0;
+			isArc = 0;
+			isRegularPolygon = 0;
+			isPolygon = 0;
+			isPolyline = 0;
+			isCircle = 0;
+
 			fscanf_s(file, "Line,(%lf,%lf,%lf),(%lf,%lf,%lf),%d,%s\n", &x, &y, &z, &x2, &y2, &z2, &LineWidth, LineColor, sizeof(LineColor));
 							
 			for (int i = 0; i < 3; i++) {
@@ -851,7 +887,7 @@ bool ReadFile(char name[100]) {
 			}
 			SetFirstPoint();
 			SetSecondPoint();
-			SetSecondPoint();
+			
 			printf("x: %lf, y: %lf, z: %lf\n", x, y, z);
 			printf("x2: %lf, y2: %lf, z2: %lf\n", x2, y2, z2);
 			printf("LineWidth: %d\n", LineWidth);
@@ -860,6 +896,15 @@ bool ReadFile(char name[100]) {
 			
 		}
 		if (Shapes_drawn.find("Circle") != Shapes_drawn.end()) {
+
+			isLine = 0;
+			isEllipse = 0;
+			isArc = 0;
+			isRegularPolygon = 0;
+			isPolygon = 0;
+			isPolyline = 0;
+			isCircle = 1;
+
 			fscanf_s(file, "Circle,(%lf,%lf,%lf),(%lf,%lf,%lf),%d,%s\n", &x, &y, &z, &x2, &y2, &z2, &LineWidth, LineColor, sizeof(LineColor));
 							
 			for (int i = 0; i < 3; i++) {
@@ -878,11 +923,80 @@ bool ReadFile(char name[100]) {
 			}
 			Draw_Circle();
 		}
-		if (Shapes_drawn.find("Polyline") != Shapes_drawn.end()) {
-			fscanf_s(file, "Polyline,%d",&x2);
-			x2+=2;
+		if (Shapes_drawn.find("Ellipse") != Shapes_drawn.end()) {
+			isLine = 0;
+			isEllipse = 0;
+			isArc = 0;
+			isRegularPolygon = 0;
+			isPolygon = 0;
+			isPolyline = 0;
+			isCircle = 1;
 			
-			for (int i = 0; i < x2; i++) {
+			fscanf_s(file, "Ellipse,(%lf,%lf,%lf),(%lf,%lf,%lf),(%lf,%lf,%lf),%d,%s\n", &x, &y, &z, &x2, &y2, &z2, &x3, &y3, &z3, &LineWidth, LineColor, sizeof(LineColor));
+
+			for (int i = 0; i < 3; i++) {
+				if (i == 0) {
+					picked[i] = x3;
+					picked2[i] = x;
+					picked3[i] = x2;
+				}
+				if (i == 1) {
+					picked[i] = y3;
+					picked2[i] = y;
+					picked3[i] = y2;
+				}
+				if (i == 2) {
+					picked[i] = z3;
+					picked2[i] = z;
+					picked3[i] = z2;
+				}
+			}
+			Draw_Ellipse();
+		}
+		if (Shapes_drawn.find("Arc") != Shapes_drawn.end()) {
+			isLine = 0;
+			isEllipse = 0;
+			isArc = 1;
+			isRegularPolygon = 0;
+			isPolygon = 0;
+			isPolyline = 0;
+			isCircle = 0;
+
+			fscanf_s(file, "Arc,%lf,%lf,%lf,%d,%s\n", &x, &y, &z, &LineWidth, LineColor, sizeof(LineColor));
+
+			
+					
+			r = x;
+					
+		
+				
+			sa = y;
+					
+				
+				
+			ea = z;
+				
+			
+			Draw_Arc(r, sa, ea);
+		}
+		int num = 0;
+		if (Shapes_drawn.find("Polyline") != Shapes_drawn.end()) {
+
+			isLine = 0;
+			isEllipse = 0;
+			isArc = 0;
+			isRegularPolygon = 0;
+			isPolygon = 0;
+			isPolyline = 1;
+			isCircle = 0;
+			
+			fscanf_s(file, "Polyline,%d",&num);
+			
+			/*int xpolyl=0;
+			int ypolyl=0;
+			int zpolyl=0;*/
+
+			for (int i = 0; i < num; i++) {
 				fscanf_s(file, ",(%lf,%lf,%lf)", &x, &y, &z);
 				picked[0] = x;
 				picked[1] = y;
@@ -897,8 +1011,8 @@ bool ReadFile(char name[100]) {
 			renderWindow->Render();
 
 		}
-		printf("x: %lf, y: %lf, z: %lf\n", x, y, z);
-		printf("x2: %lf, y2: %lf, z2: %lf\n", x2, y2, z2);
+		printf("num: %d", num);
+		
 		printf("LineWidth: %d\n", LineWidth);
 		printf("LineColor: %s\n", LineColor);
 		cout << "picked= " << picked[1] << "picked2= " << picked2[1] << endl;
@@ -947,13 +1061,14 @@ bool  WriteFile(string name) {
 		}
 		if (Shapes_drawn.find("Arc") != Shapes_drawn.end()) {
 			my_file << "Arc,";
-			for (int i = 0; i < sizeof(ArcPointsArray) / sizeof(ArcPointsArray[0]); i++) {
-				my_file << "(" << ArcPointsArray[i][0] << "," << ArcPointsArray[i][1] << "," << ArcPointsArray[i][2] << "),";
-			}
+			
+				my_file  << ArcPointsArray[0] << "," << ArcPointsArray[1] << "," << ArcPointsArray[2] << ",";
+			
 			my_file << LineWidth << "," << LineColor << endl;
 		}
 		if (Shapes_drawn.find("Polyline") != Shapes_drawn.end()) {
-			my_file << "Polyline,"<<counterPoly<<",";
+			int Polyline=counterPoly+1;
+			my_file << "Polyline,"<<Polyline<<",";
 			for (int i = 0; i < sizeof(PolylinePointsArray) / sizeof(PolylinePointsArray[0]); i++) {
 				if (PolylinePointsArray[i][0] == 0 && PolylinePointsArray[i][1] == 0 && PolylinePointsArray[i][2] == 0) {
 					break;
@@ -963,7 +1078,8 @@ bool  WriteFile(string name) {
 			my_file << LineWidth << "," << LineColor << endl;
 		}
 		if (Shapes_drawn.find("Polygon") != Shapes_drawn.end()) {
-			my_file << "Polygon," << counterPolygon << ",";
+			int Polygon=counterPolygon+1;
+			my_file << "Polygon," << Polygon << ",";
 			for (int i = 0; i < sizeof(PolygonPointsArray) / sizeof(PolygonPointsArray[0]); i++) {
 
 				if (PolygonPointsArray[i][0] == 0 && PolygonPointsArray[i][1] == 0 && PolygonPointsArray[i][2] == 0) {
@@ -1149,6 +1265,11 @@ namespace {
 				if (isLine) {
 
 					SetSecondPoint();
+					
+					if (FlagLineWriteFirstTime) {
+						Shapes_drawn.insert("Line");
+						FlagLineWriteFirstTime = 0;
+					}
 					flag = 0;
 				}
 
@@ -1451,10 +1572,7 @@ int main(int argc, char* argv[])
 	sliderEA->setRange(0, 360);
 	sliderEA->setValue(90);
 
-	bool FlagLineWriteFirstTime = 1;
-	if (FlagLineWriteFirstTime) {
-		Shapes_drawn.insert("Line");
-	}
+	
 	QObject::connect(shape_comboBox, (&QComboBox::currentIndexChanged), [&]() {
 
 		string selectedText = shape_comboBox->currentText().toStdString();
