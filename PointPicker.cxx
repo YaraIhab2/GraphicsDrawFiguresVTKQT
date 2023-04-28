@@ -209,6 +209,7 @@
 #include <QInputDialog>
 #include <QComboBox>
 #include <QSpinBox>
+#include<QMessageBox>
 #include <vtkActor.h>
 #include <vtkCamera.h>
 #include <vtkCellArray.h>
@@ -241,6 +242,9 @@ int endAngle = 0;
 //_______________________________________________________________//
 
 vtkNew<vtkPointPicker> pointPicker;
+
+vtkNew<vtkNamedColors> colors;
+vtkNew<vtkNamedColors> namedColors;
 
 //_____________________Line source,actor,mapper for each shape________________________________//
 
@@ -304,13 +308,13 @@ vtkSmartPointer<vtkRenderer> renderer = vtkSmartPointer<vtkRenderer>::New();
 vtkSmartPointer<vtkGenericOpenGLRenderWindow> renderWindow = vtkSmartPointer<vtkGenericOpenGLRenderWindow>::New();
 vtkNew<vtkRenderWindowInteractor> renderWindowInteractor;
 // vtkSmartPointer<vtkRenderWindow> renderWindow = vtkSmartPointer<vtkRenderWindow>::New();
+//For coordinates text box
 std::stringstream ss; 
 vtkSmartPointer <vtkTextWidget> textWidget = vtkSmartPointer<vtkTextWidget>::New();
 vtkSmartPointer<vtkTextActor> textActor = vtkSmartPointer<vtkTextActor>::New();
-
 string pt;
 string pt2;
-
+//
 bool polyL = false;
 bool Line = true;
 bool regpoly = false;
@@ -503,7 +507,7 @@ void Draw_Circle()
 	double Raduis = sqrt(pow((picked[0] - picked2[0]), 2.0) + pow(picked[1] - picked2[1], 2.0));
 	vtkSmartPointer<vtkPoints> Circle_points = vtkSmartPointer<vtkPoints>::New();
 	int number_of_points = 120;
-	lineSource->SetResolution(number_of_points);  //determines the quality of the generated line or polyline, with higher values of number_of_points leading to smoother and more precise lines.
+	Circle_lineSource->SetResolution(number_of_points);  //determines the quality of the generated line or polyline, with higher values of number_of_points leading to smoother and more precise lines.
 	for (int i = 0; i <= number_of_points; i++)
 	{
 		double t_parameter = static_cast<double>(i) / number_of_points;   // division is performed using floating-point arithmetic rather than integer division.
@@ -776,8 +780,48 @@ void DrawPoint() {
 	return;
 }
 //Actor, colorcombobox
-void change_color()
+void change_color(QString color_chosen ,string selected_shape)
 {
+	//Shape_actor->GetProperty()->SetColor(colors->GetColor3d(color_chosen.toStdString()).GetData());
+
+	if (selected_shape == "Circle")
+	{
+		Circle_actor->GetProperty()->SetColor(colors->GetColor3d(color_chosen.toStdString()).GetData());
+		cout << "a33333333333";
+	}
+	else if (selected_shape == "Ellipse")
+	{
+		Ellipse_actor->GetProperty()->SetColor(colors->GetColor3d(color_chosen.toStdString()).GetData());
+
+	}
+
+	else if (selected_shape == "Polyline")
+	{
+		Polyline_actor->GetProperty()->SetColor(colors->GetColor3d(color_chosen.toStdString()).GetData());
+
+	}
+
+	else if (selected_shape == "Regular Polygon")
+	{
+		Regpolygon_actor->GetProperty()->SetColor(colors->GetColor3d(color_chosen.toStdString()).GetData());
+	}
+
+	else if (selected_shape == "Polygon")
+	{
+		Polygon_actor->GetProperty()->SetColor(colors->GetColor3d(color_chosen.toStdString()).GetData());
+
+	}
+	else if (selected_shape == "Arc")
+	{
+		Arc_actor->GetProperty()->SetColor(colors->GetColor3d(color_chosen.toStdString()).GetData());
+
+	}
+	else if (selected_shape == "Line")
+	{
+		actor->GetProperty()->SetColor(colors->GetColor3d(color_chosen.toStdString()).GetData());
+
+	}
+
 
 }
 
@@ -827,6 +871,8 @@ namespace {
 					SetFirstPoint();
 					SetSecondPoint();
 
+					Shapes_drawn.insert("Line");
+
 				}
 				if (isPolyline) {
 					if (countIsLine == 2) {
@@ -839,6 +885,7 @@ namespace {
 
 					}
 					Draw_Polyline();
+					Shapes_drawn.insert("Polyline");
 					renderWindow->Render();
 					flag = 0;
 				}
@@ -854,6 +901,7 @@ namespace {
 
 					}
 					Draw_Polygon();
+					Shapes_drawn.insert("Polygon");
 					renderWindow->Render();
 					flag = 0;
 				}
@@ -873,6 +921,8 @@ namespace {
 				if (isRegularPolygon)
 				{
 					Draw_Regular_Polygon();
+					Shapes_drawn.insert("Regular Polygon");
+
 					renderWindow->Render();
 					flag = 0;
 					return;
@@ -880,6 +930,7 @@ namespace {
 				}
 				if (isArc) {
 					Draw_Arc();
+					Shapes_drawn.insert("Arc");
 					flag = 0;
 				}
 
@@ -897,6 +948,7 @@ namespace {
 
 
 				Draw_Circle();
+				Shapes_drawn.insert("Circle");
 				renderWindow->Render();
 				//renderer->RemoveAllViewProps();
 				//transformation(mapper, actor, 0, 0, 0);
@@ -910,6 +962,7 @@ namespace {
 
 
 				Draw_Ellipse();
+				Shapes_drawn.insert("Ellipse");
 				renderWindow->Render();
 				flag = 0;
 
@@ -941,8 +994,7 @@ namespace {
 
 int main(int argc, char* argv[])
 {
-	vtkNew<vtkNamedColors> colors;
-	vtkNew<vtkNamedColors> namedColors;
+	
 	QSurfaceFormat::setDefaultFormat(QVTKOpenGLNativeWidget::defaultFormat());   //line sets the default format for Qt surface to be used with VTK
 	// The QSurfaceFormat is a class that defines the format for OpenGL surfaces. In this case, the QVTKOpenGLNativeWidget is used as the default format, which is a widget that provides a native OpenGL rendering context for VTK.
 
@@ -969,6 +1021,7 @@ int main(int argc, char* argv[])
 	QSpinBox* spinBox = new QSpinBox();
 	QDoubleSpinBox* Scaling_spinbox = new QDoubleSpinBox();
 	QTextEdit* textBox = new QTextEdit();
+	
 	/*
 	///////////////////////////////FOR POLYLINE/////////
 	// Create a polydata to store everything in
@@ -1169,7 +1222,7 @@ int main(int argc, char* argv[])
 			isPolygon = 0;
 			isPolyline = 0;
 			isCircle = 1;
-			Shapes_drawn.insert(selectedText);
+
 			break;
 		case 'L':
 			if (spinNumSides->value() != NULL) {
@@ -1182,6 +1235,8 @@ int main(int argc, char* argv[])
 			isPolygon = 0;
 			isPolyline = 0;
 			isCircle = 0;
+			
+
 			break;
 
 		case 'E':
@@ -1195,6 +1250,8 @@ int main(int argc, char* argv[])
 			isPolygon = 0;
 			isPolyline = 0;
 			isCircle = 0;
+		
+
 			break;
 		case 'R':
 			isLine = 0;
@@ -1204,6 +1261,7 @@ int main(int argc, char* argv[])
 			isPolygon = 0;
 			isPolyline = 0;
 			isCircle = 0;
+		
 
 			
 			spinNumSides->setMinimum(0);
@@ -1225,6 +1283,8 @@ int main(int argc, char* argv[])
 			isPolygon = 0;
 			isPolyline = 0;
 			isCircle = 0;
+
+
 			break;
 		case 'P':
 			if (spinNumSides->value() != NULL) {
@@ -1239,6 +1299,8 @@ int main(int argc, char* argv[])
 				isPolygon = 0;
 				isPolyline = 1;
 				isCircle = 0;
+			
+
 				break;
 			}
 			else {
@@ -1253,6 +1315,8 @@ int main(int argc, char* argv[])
 				isPolygon = 1;
 				isPolyline = 0;
 				isCircle = 0;
+		
+
 				break;
 			}
 		}
@@ -1377,11 +1441,73 @@ int main(int argc, char* argv[])
 		//Another function change color
 
 		selectedText = color_comboBox->currentText();
+		QMessageBox Color_changebox;
+		Color_changebox.setText("                        Choose an option:");
+		Color_changebox.setStandardButtons(QMessageBox::Ok | QMessageBox::Cancel);  
+
+	    Color_changebox.addButton(QMessageBox::tr("All shapes"), QMessageBox::ActionRole);
+		Color_changebox.addButton(QMessageBox::tr("Last Shape"), QMessageBox::ActionRole);
+
+		
+
+		QComboBox* Shapes_combobox = new QComboBox(&Color_changebox);
+
+		for (const auto& shape : Shapes_drawn)
+		{
+			Shapes_combobox->addItem(QString::fromStdString(shape));
+			
+		}
+
+		Color_changebox.exec(); 
+
+	
+		int result = Color_changebox.result();
+		
+		  
+			if (result == 0)
+			{
+				//All shapes chosen
+				for (const auto& shape : Shapes_drawn)   //loop on all the drawn shapes 
+				{
+					 string shape_str = shape; 
+
+					change_color(selectedText, shape_str); 
+
+				}
+
+			}
+
+			else if (result == 1)
+			{
+				//Last shape chosen
+				if (!Shapes_drawn.empty())
+				{
+					string last_shape = *Shapes_drawn.rbegin(); // get the last shape drawn 
+					change_color(selectedText, last_shape);
+				}
+
+			}
+
+			else
+			{
+				//Shape from Dropdown list selected
+				std::string selectedShape = Shapes_combobox->currentText().toStdString(); 
+				change_color(selectedText, selectedShape);
 
 
+			}
+
+		
+
+
+		
+		
+
+		
+		
 		// update selectedText with the current selected item
-		actor->GetProperty()->SetColor(colors->GetColor3d(selectedText.toStdString()).GetData());
-		qstrcpy(LineColor, qPrintable(selectedText));
+		//actor->GetProperty()->SetColor(colors->GetColor3d(selectedText.toStdString()).GetData());
+        //qstrcpy(LineColor, qPrintable(selectedText));
 
 
 
@@ -1481,4 +1607,3 @@ int main(int argc, char* argv[])
 
 
 }
-
