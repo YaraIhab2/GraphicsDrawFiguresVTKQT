@@ -870,6 +870,16 @@ bool ReadFile(char name[100]) {
 			isPolygon = 0;
 			isPolyline = 0;
 			isCircle = 0;
+			picked[0] = 0;
+			picked[1] = 0;
+			picked[2] = 0;
+
+			picked2[0] = 0;
+			picked2[1] = 0;
+			picked2[2] = 0;
+
+			x,y,z,x2,y2,z2,x3,y3,z3 = 0;
+			
 
 			fscanf_s(file, "Line,(%lf,%lf,%lf),(%lf,%lf,%lf),%d,%s\n", &x, &y, &z, &x2, &y2, &z2, &LineWidth, LineColor, sizeof(LineColor));
 
@@ -906,7 +916,14 @@ bool ReadFile(char name[100]) {
 			isPolygon = 0;
 			isPolyline = 0;
 			isCircle = 1;
+			picked[0] = 0;
+			picked[1] = 0;
+			picked[2] = 0;
 
+			picked2[0] = 0;
+			picked2[1] = 0;
+			picked2[2] = 0;
+			x, y, z, x2, y2, z2, x3, y3, z3 = 0;
 			fscanf_s(file, "Circle,(%lf,%lf,%lf),(%lf,%lf,%lf),%d,%s\n", &x, &y, &z, &x2, &y2, &z2, &LineWidth, LineColor, sizeof(LineColor));
 
 			for (int i = 0; i < 3; i++) {
@@ -933,6 +950,18 @@ bool ReadFile(char name[100]) {
 			isPolygon = 0;
 			isPolyline = 0;
 			isCircle = 1;
+			picked[0] = 0;
+			picked[1] = 0;
+			picked[2] = 0;
+
+			picked2[0] = 0;
+			picked2[1] = 0;
+			picked2[2] = 0;
+
+			picked3[0] = 0;
+			picked3[1] = 0;
+			picked3[2] = 0;
+			x, y, z, x2, y2, z2, x3, y3, z3 = 0;
 
 			fscanf_s(file, "Ellipse,(%lf,%lf,%lf),(%lf,%lf,%lf),(%lf,%lf,%lf),%d,%s\n", &x, &y, &z, &x2, &y2, &z2, &x3, &y3, &z3, &LineWidth, LineColor, sizeof(LineColor));
 
@@ -992,6 +1021,11 @@ bool ReadFile(char name[100]) {
 			isPolyline = 1;
 			isCircle = 0;
 
+			picked[0] = 0;
+			picked[1] = 0;
+			picked[2] = 0;
+			x, y, z, x2, y2, z2, x3, y3, z3 = 0;
+			num = 0;
 			fscanf_s(file, "Polyline,%d", &num);
 
 			/*int xpolyl=0;
@@ -1004,7 +1038,7 @@ bool ReadFile(char name[100]) {
 				picked[1] = y;
 				picked[2] = z;
 				if(i==0){
-				counterPoly = 0;
+				counterPoly = -1;
 				}
 				Draw_Polyline();
 
@@ -1032,6 +1066,11 @@ bool ReadFile(char name[100]) {
 			isPolyline = 0;
 			isCircle = 0;
 
+			picked[0] = 0;
+			picked[1] = 0;
+			picked[2] = 0;
+			num = 0;
+			x, y, z, x2, y2, z2, x3, y3, z3 = 0;
 			fscanf_s(file, "Polygon,%d", &num);
 
 			/*int xpolyl=0;
@@ -1044,7 +1083,7 @@ bool ReadFile(char name[100]) {
 				picked[1] = y;
 				picked[2] = z;
 				if (i == 0) {
-					counterPolygon = i;
+					counterPolygon = -1;
 				}
 				Draw_Polygon();
 
@@ -1065,6 +1104,15 @@ bool ReadFile(char name[100]) {
 			isPolyline = 0;
 			isCircle = 0;
 
+			picked[0] = 0;
+			picked[1] = 0;
+			picked[2] = 0;
+
+			picked2[0] = 0;
+			picked2[1] = 0;
+			picked2[2] = 0;
+			num = 0;
+			x, y, z, x2, y2, z2, x3, y3, z3 = 0;
 			fscanf_s(file, "Regular Polygon,%d,(%lf,%lf,%lf),(%lf,%lf,%lf),%d,%s\n", &num,&x, &y, &z, &x2, &y2, &z2, &LineWidth, LineColor, sizeof(LineColor));
 
 			for (int i = 0; i < 3; i++) {
