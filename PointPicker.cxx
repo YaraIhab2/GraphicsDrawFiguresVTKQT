@@ -235,7 +235,7 @@ double picked2[3] = {};
 double picked3[3] = {};
 double x = 0, y = 0, z = 0, z2 = 0, x2 = 0, y2 = 0;
 double x3, y3, z3 = 0;
-
+bool flag = 0;
 
 int LineWidth = 3;
 
@@ -808,8 +808,14 @@ void Draw_Ellipse()
 
 void Draw_Arc(double Start_angle = arcStart, double End_Angle = arcEnd)
 {
+	
 	double raduis = sqrt(pow((picked[0] - picked2[0]), 2.0) + pow(picked[1] - picked2[1], 2.0));
+	/*if (flag == 1) {
+		raduis = ArcPointsArray[0];
+
+	}*/
 	ArcR = raduis;
+	cout << "Radius arc " << raduis;
 	vtkSmartPointer<vtkPoints> Arc_points = vtkSmartPointer<vtkPoints>::New();
 	int number_of_points = 120;
 	lineSource->SetResolution(number_of_points);
@@ -840,11 +846,11 @@ void Draw_Arc(double Start_angle = arcStart, double End_Angle = arcEnd)
 
 		}
 		if (i == 1) {
-			ArcPointsArray[i] = startAngle;
+			ArcPointsArray[i] = Start_angle;
 
 		}
 		if (i == 2) {
-			ArcPointsArray[i] = endAngle;
+			ArcPointsArray[i] = End_Angle;
 
 		}
 
@@ -950,15 +956,15 @@ bool ReadFile(char name[100]) {
 
 			for (int i = 0; i < 3; i++) {
 				if (i == 0) {
-					picked[i] = x2;
+					picked3[i] = x2;
 					picked2[i] = x;
 				}
 				if (i == 1) {
-					picked[i] = y2;
+					picked3[i] = y2;
 					picked2[i] = y;
 				}
 				if (i == 2) {
-					picked[i] = z2;
+					picked3[i] = z2;
 					picked2[i] = z;
 				}
 			}
@@ -1073,7 +1079,8 @@ bool ReadFile(char name[100]) {
 			arcEnd = z;
 
 
-			Draw_Arc();
+			Draw_Arc( arcStart, arcEnd);
+			flag = 1;
 		}
 		int num = 0;
 		if (Shapes_drawn.find("Polyline") != Shapes_drawn.end()) {
@@ -2428,6 +2435,11 @@ int main(int argc, char* argv[])
 			Scale_x = QInputDialog::getDouble(nullptr, "Scale_x ", "Scaling x");
 			Scale_y = QInputDialog::getDouble(nullptr, "Scale_y ", "Scaling in y");
 		}
+
+
+
+
+
 
 
 		QMessageBox Translation_Box;
