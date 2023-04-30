@@ -382,6 +382,13 @@ void SetSecondPoint() {
 			LinePointsArray[i][2] = picked[2];
 		}
 	}
+
+	mapper->SetInputConnection(lineSource->GetOutputPort());
+	mapper->Update();
+	
+	actor->SetMapper(mapper);
+	renderer->AddActor(actor);
+	renderWindow->AddRenderer(renderer);
 }
 
 
@@ -407,6 +414,15 @@ void Set_line_shape(vtkLineSource* Shape_line, vtkPoints* Shape_points, vtkPolyD
 int counterPoly = -1;
 int counterPolygon = -1;
 void Draw_Polyline() {
+	if (counterPoly == -1) {
+		for (int i = 0; i < sizeof(pointsArray)[0]; i++) {
+
+			for (int j = 0; j < sizeof(pointsArray)[1]; j++) {
+				pointsArray[i][j] = 0.0;
+
+			}
+		}
+	}
 
 	vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
 	counterPoly++;
@@ -458,6 +474,15 @@ void Draw_Polyline() {
 }
 void Draw_Polygon() {
 
+	if (counterPolygon == -1) {
+		for (int i = 0; i < sizeof(pointsArray)[0]; i++) {
+
+			for (int j = 0; j < sizeof(pointsArray)[1]; j++) {
+				pointsArray[i][j] = 0.0;
+
+			}
+		}
+	}
 	vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
 	counterPolygon++;
 	countIsPolygon = 1;
@@ -479,7 +504,7 @@ void Draw_Polygon() {
 			pointsArray[counterPolygon][1] = 0;
 			pointsArray[counterPolygon][2] = 0;
 		}*/
-		points->InsertNextPoint(pointsArray[j][0], pointsArray[j][1], 0);
+		points->InsertNextPoint(pointsArray[j][0], pointsArray[j][1], pointsArray[j][2]);
 		if (j == counterPolygon) {
 			points->InsertNextPoint(pointsArray[0][0], pointsArray[0][1], pointsArray[0][2]);
 		}
@@ -489,9 +514,9 @@ void Draw_Polygon() {
 
 	//lineSource->SetPoints(points);
 	//mapper->SetInputConnection(lineSource->GetOutputPort());
-	//mapper->Update();
+		//mapper->Update();
 	//actor->SetMapper(mapper);
-	if (counterPolygon == 1) {
+	if (counterPolygon == 0) {
 		for (int i = 0; i < sizeof(PolygonPointsArray)[0]; i++) {
 
 			for (int j = 0; j < sizeof(PolygonPointsArray)[1]; j++) {
@@ -820,7 +845,7 @@ void Draw_Regular_Polygon()
 	}
 
 
-	for (int i = 0; i < number_of_points; i++) {
+	for (int i = 0; i < 2; i++) {
 		if (i == 0) {
 			RegPolygonPointsArray[i][0] = picked2[0];
 			RegPolygonPointsArray[i][1] = picked2[1];
@@ -1080,7 +1105,7 @@ bool ReadFile(char name[100]) {
 			for (int i = 0; i < num; i++) {
 				fscanf_s(file, ",(%lf,%lf,%lf)", &x, &y, &z);
 				picked[0] = x;
-				picked[1] = y;
+				picked[1] = y; 
 				picked[2] = z;
 				if (i == 0) {
 					counterPolygon = -1;
@@ -1185,10 +1210,10 @@ bool  WriteFile(string name) {
 		if (Shapes_drawn.find("Polyline") != Shapes_drawn.end()) {
 			int Polyline = counterPoly + 1;
 			my_file << "Polyline," << Polyline << ",";
-			for (int i = 0; i < sizeof(PolylinePointsArray) / sizeof(PolylinePointsArray[0]); i++) {
-				if (PolylinePointsArray[i][0] == 0 && PolylinePointsArray[i][1] == 0 && PolylinePointsArray[i][2] == 0) {
+			for (int i = 0; i < Polyline; i++) {
+				/*if (PolylinePointsArray[i][0] == 0 && PolylinePointsArray[i][1] == 0 && PolylinePointsArray[i][2] == 0) {
 					break;
-				}
+				}*/
 				my_file << "(" << PolylinePointsArray[i][0] << "," << PolylinePointsArray[i][1] << "," << PolylinePointsArray[i][2] << "),";
 			}
 			my_file << LineWidth << "," << LineColor << endl;
@@ -1196,11 +1221,11 @@ bool  WriteFile(string name) {
 		if (Shapes_drawn.find("Polygon") != Shapes_drawn.end()) {
 			int Polygon = counterPolygon + 1;
 			my_file << "Polygon," << Polygon << ",";
-			for (int i = 0; i < sizeof(PolygonPointsArray) / sizeof(PolygonPointsArray[0]); i++) {
+			for (int i = 0; i < Polygon; i++) {
 
-				if (PolygonPointsArray[i][0] == 0 && PolygonPointsArray[i][1] == 0 && PolygonPointsArray[i][2] == 0) {
+				/*if (PolygonPointsArray[i][0] == 0 && PolygonPointsArray[i][1] == 0 && PolygonPointsArray[i][2] == 0) {
 					break;
-				}
+				}*/
 				my_file << "(" << PolygonPointsArray[i][0] << "," << PolygonPointsArray[i][1] << "," << PolygonPointsArray[i][2] << "),";
 			}
 			my_file << LineWidth << "," << LineColor << endl;
@@ -1938,21 +1963,16 @@ int main(int argc, char* argv[])
 
 
 	///////////////////////LINE/////////////////////////////
-
+	actor->GetProperty()->SetColor(colors->GetColor3d(selectedText.toStdString()).GetData());
+	/*LineColor = selectedText.toStdString().c_str();
+	actor->GetProperty()->SetLineWidth(spinBox->value());*/
+	LineWidth = spinBox->value();
 
 	//Draw_Circle(3);
 //	Draw_Arc();
 	//Draw_Ellipse();
 
-	mapper->SetInputConnection(lineSource->GetOutputPort());
-	mapper->Update();
-	actor->GetProperty()->SetColor(colors->GetColor3d(selectedText.toStdString()).GetData());
-	/*LineColor = selectedText.toStdString().c_str();
-	actor->GetProperty()->SetLineWidth(spinBox->value());*/
-	LineWidth = spinBox->value();
-	actor->SetMapper(mapper);
-	renderer->AddActor(actor);
-	renderWindow->AddRenderer(renderer);
+	
 
 	//renderWindow->SetInteractor(renderWindowInteractor);
 
@@ -1975,11 +1995,11 @@ int main(int argc, char* argv[])
 		ReadFile(read);
 		spinBox->setValue(LineWidth);
 		color_comboBox->setCurrentText(LineColor);
-		vtkSmartPointer<vtkLineSource> lineSource = vtkSmartPointer<vtkLineSource>::New();
+		//vtkSmartPointer<vtkLineSource> lineSource = vtkSmartPointer<vtkLineSource>::New();
 		actor->GetProperty()->SetLineWidth(LineWidth);
 		actor->GetProperty()->SetColor(colors->GetColor3d(LineColor).GetData());
-		SetFirstPoint();
-		SetSecondPoint();
+		//SetFirstPoint();
+		//SetSecondPoint();
 		lineSource->Update();
 		cout << picked[1] << "                         " << picked2[1];
 		mapper->Update();
