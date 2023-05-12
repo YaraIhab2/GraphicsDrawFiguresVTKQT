@@ -225,6 +225,9 @@
 #include <set>
 #include <QtWidgets/QFormLayout>
 #include <QMessageBox>
+
+bool isCube = 1;
+
 using namespace std;
 //__________Initializing some global variables___________________//
 bool widget = 0;
@@ -323,7 +326,26 @@ vtkSmartPointer<vtkLineSource> Rossette_lineSource = vtkSmartPointer<vtkLineSour
 vtkSmartPointer<vtkPolyDataMapper> Rossette_mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
 vtkSmartPointer<vtkActor> Rossette_actor = vtkSmartPointer<vtkActor>::New();
 
+//Sphere
+vtkSmartPointer<vtkLineSource> Sphere_LineSource = vtkSmartPointer<vtkLineSource>::New();
+vtkSmartPointer<vtkPolyDataMapper> Sphere_Mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+vtkSmartPointer<vtkActor> Sphere_Actor = vtkSmartPointer<vtkActor>::New();
+vtkSmartPointer<vtkCellArray> Sphere_Triangles = vtkSmartPointer<vtkCellArray>::New();
+double SpherePointsArray[2][3];
 
+//Cube
+vtkSmartPointer<vtkLineSource> Cube_LineSource = vtkSmartPointer<vtkLineSource>::New();
+vtkSmartPointer<vtkPolyDataMapper> Cube_Mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+vtkSmartPointer<vtkActor> Cube_Actor = vtkSmartPointer<vtkActor>::New();
+vtkSmartPointer<vtkCellArray> Cube_Triangles = vtkSmartPointer<vtkCellArray>::New();
+double CubePointsArray[2][3];
+
+//Ellipsoid
+vtkSmartPointer<vtkLineSource> Ellipsoid_LineSource = vtkSmartPointer<vtkLineSource>::New();
+vtkSmartPointer<vtkPolyDataMapper> Ellipsoid_Mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
+vtkSmartPointer<vtkActor> Ellipsoid_Actor = vtkSmartPointer<vtkActor>::New();
+vtkSmartPointer<vtkCellArray> Ellipsoid_Triangles = vtkSmartPointer<vtkCellArray>::New();
+double EllipsoidPointsArray[2][3];
 
 
 
@@ -422,6 +444,11 @@ void InsertPolyPoint() {
 void Set_line_shape(vtkLineSource* Shape_line, vtkPoints* Shape_points, vtkPolyDataMapper* Shape_mapper, vtkActor* Shape_actor, vtkRenderer* renderer)
 {
 	Shape_line->SetPoints(Shape_points);
+
+	if (isCube) {
+		vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer<vtkPolyData>::New();
+		polyData->SetLines(Shape_line->GetOutput()->GetLines());
+	}
 	Shape_mapper->SetInputConnection(Shape_line->GetOutputPort());
 	Shape_mapper->Update();
 	Shape_actor->SetMapper(Shape_mapper);
@@ -808,7 +835,7 @@ void Draw_Ellipse()
 
 void Draw_Arc(double Start_angle = arcStart, double End_Angle = arcEnd)
 {
-	
+
 	double raduis = sqrt(pow((picked[0] - picked2[0]), 2.0) + pow(picked[1] - picked2[1], 2.0));
 	/*if (flag == 1) {
 		raduis = ArcPointsArray[0];
@@ -905,6 +932,112 @@ void Draw_Regular_Polygon()
 	}
 }
 
+void DrawSphere() {
+
+	vtkSmartPointer<vtkPoints> Sphere_Points = vtkSmartPointer<vtkPoints>::New();
+
+	// Create a set of points that define the vertices of the sphere
+	double cx = picked2[0];
+	double cy = picked2[1];
+	double cz = picked2[2];
+
+	double radius = sqrt(pow((picked[0] - picked2[0]), 2.0) + pow(picked[1] - picked2[1], 2.0) + pow(picked[2] - picked2[2], 2.0));
+
+	const int nPhi = 20;
+	const int nTheta = 20;
+	for (int i = 0; i <= nTheta; i++) {
+		double theta = i * vtkMath::Pi() / nTheta;
+		for (int j = 0; j <= nPhi; j++) {
+			double phi = j * 2 * vtkMath::Pi() / nPhi;
+			double x = cx + radius * sin(theta) * cos(phi);
+			double y = cy + radius * sin(theta) * sin(phi);
+			double z = cz + radius * cos(theta);
+			Sphere_Points->InsertNextPoint(x, y, z);
+		}
+	}
+
+	// Create a set of triangles that define the surface of the sphere
+
+	for (int i = 0; i < nTheta; i++) {
+		for (int j = 0; j < nPhi; j++) {
+			int p0 = i * (nPhi + 1) + j;
+			int p1 = (i + 1) * (nPhi + 1) + j;
+			int p2 = i * (nPhi + 1) + (j + 1);
+			int p3 = (i + 1) * (nPhi + 1) + (j + 1);
+			vtkSmartPointer<vtkIdList> triangle = vtkSmartPointer<vtkIdList>::New();
+			triangle->InsertNextId(p0);
+			triangle->InsertNextId(p1);
+			triangle->InsertNextId(p3);
+			Sphere_Triangles->InsertNextCell(triangle);
+			triangle->Reset();
+			triangle->InsertNextId(p0);
+			triangle->InsertNextId(p3);
+			triangle->InsertNextId(p2);
+			Sphere_Triangles->InsertNextCell(triangle);
+		}
+	}
+
+	Set_line_shape(Sphere_LineSource, Sphere_Points, Sphere_Mapper, Sphere_Actor, renderer);
+
+}
+void DrawCube() {
+
+	vtkSmartPointer<vtkPoints> Cube_Points = vtkSmartPointer<vtkPoints>::New();
+	double length = fabs(picked2[0] - picked[0]);
+	double cubeVertices[8][3] = { {picked2[0], picked2[1], picked2[2]}, {picked2[0], picked2[1], picked2[2]+length}, {picked2[0], picked2[1]+length, picked2[2]}, {picked2[0], picked2[1]+length, picked2[2]+length},
+								 {picked2[0] + length, picked2[1], picked2[2]}, {picked2[0] + length, picked2[1], picked2[2] + length}, {picked2[0] + length, picked2[1] + length, picked2[2]}, {picked2[0] + length, picked2[1] + length , picked2[2]+length} };
+
+	for (int i = 0; i++; i < 8) {
+
+
+		Cube_Points->InsertNextPoint(cubeVertices[i][0], cubeVertices[i][1], cubeVertices[i][2]);
+
+
+	}
+
+
+
+	
+
+
+	Set_line_shape(Cube_LineSource, Cube_Points, Cube_Mapper, Cube_Actor, renderer);
+
+}
+
+void DrawEllipsoid() {
+
+	vtkSmartPointer<vtkPoints> Ellipsoid_Points = vtkSmartPointer<vtkPoints>::New();
+	double center[3] = { picked2[0], picked2[1], picked2[2]};
+
+	// Define the semi-axes of the ellipsoid
+	double a = 2.0;
+	double b = 3.0;
+	double c = 4.0;
+
+	// Define the number of points in the ellipsoid mesh
+	int numPoints = 100;
+
+	// Create the points for the ellipsoid
+	for (int i = 0; i < numPoints; ++i) {
+		double theta = i * 2.0 * vtkMath::Pi() / numPoints;
+		for (int j = 0; j < numPoints; ++j) {
+			double phi = j * vtkMath::Pi() / numPoints;
+			double x = center[0] + a * sin(phi) * cos(theta);
+			double y = center[1] + b * sin(phi) * sin(theta);
+			double z = center[2] + c * cos(phi);
+			Ellipsoid_Points->InsertNextPoint(x, y, z);
+		}
+	}
+
+	// Create the cells (triangles) for the ellipsoid
+	vtkSmartPointer<vtkCellArray> cells = vtkSmartPointer<vtkCellArray>::New();
+	
+
+
+
+	Set_line_shape(Ellipsoid_LineSource, Ellipsoid_Points, Ellipsoid_Mapper, Ellipsoid_Actor, renderer);
+
+}
 
 bool ReadFile(char name[100]) {
 	int i = 0;
@@ -1079,7 +1212,7 @@ bool ReadFile(char name[100]) {
 			arcEnd = z;
 
 
-			Draw_Arc( arcStart, arcEnd);
+			Draw_Arc(arcStart, arcEnd);
 			flag = 1;
 		}
 		int num = 0;
@@ -1820,6 +1953,8 @@ void Transformation_Shearing_shape(string selected_shape, double shear_x)
 	}
 
 }
+bool isSphere = 0;
+
 
 namespace {
 
@@ -1907,6 +2042,9 @@ namespace {
 				for (int i = 0; i < 3; i++) {
 					picked3[i] = picked[i];
 				}
+				//////////////////////////////REMOVE NEXT LINE
+				isLine = 0;
+				////////////////////////////////REMOVE PREVIOUS LINE
 				if (isLine) {
 
 					SetSecondPoint();
@@ -1942,6 +2080,21 @@ namespace {
 				std::cout << "Picked2 value: " << picked2[0] << " " << picked2[1] << " "
 					<< picked2[2] << std::endl;
 				DrawPoint();
+
+			}
+
+			if (isSphere && flag == 2) {
+				DrawSphere();
+				renderWindow->Render();
+
+				flag = 0;
+
+			}
+			if (isCube && flag == 2) {
+				DrawCube();
+				renderWindow->Render();
+
+				flag = 0;
 
 			}
 
