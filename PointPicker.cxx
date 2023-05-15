@@ -983,21 +983,25 @@ void DrawSphere() {
 void DrawCube() {
 
 	vtkSmartPointer<vtkPoints> Cube_Points = vtkSmartPointer<vtkPoints>::New();
-	double length = fabs(picked2[0] - picked[0]);
-	double cubeVertices[8][3] = { {picked2[0], picked2[1], picked2[2]}, {picked2[0], picked2[1], picked2[2]+length}, {picked2[0], picked2[1]+length, picked2[2]}, {picked2[0], picked2[1]+length, picked2[2]+length},
-								 {picked2[0] + length, picked2[1], picked2[2]}, {picked2[0] + length, picked2[1], picked2[2] + length}, {picked2[0] + length, picked2[1] + length, picked2[2]}, {picked2[0] + length, picked2[1] + length , picked2[2]+length} };
 
-	for (int i = 0; i++; i < 8) {
+	double length = fabs(picked2[0] - picked[0]);
+	double cubeVertices[20][3] = { {picked2[0], picked2[1], picked2[2]},  {picked2[0] + length, picked2[1], picked2[2]}, {picked2[0] + length, picked2[1] - length, picked2[2]}, {picked2[0], picked2[1] - length, picked2[2]}, {picked2[0], picked2[1], picked2[2]}};
+
+	double cubeVertices2[20][3] = { {picked2[0], picked2[1], picked2[2] - length}, {picked2[0] + length, picked2[1] , picked2[2] - length},
+			{picked2[0] + length, picked2[1] - length, picked2[2] - length}, {picked2[0] , picked2[1] - length , picked2[2] - length}, {picked2[0], picked2[1], picked2[2] - length} };
+	for (int i = 0; i++; i < 5) {
 
 
 		Cube_Points->InsertNextPoint(cubeVertices[i][0], cubeVertices[i][1], cubeVertices[i][2]);
 
+	}
+	for (int i = 0; i++; i < 5) {
+
+
+		Cube_Points->InsertNextPoint(cubeVertices2[i][0], cubeVertices2[i][1], cubeVertices2[i][2]);
+
 
 	}
-
-
-
-	
 
 
 	Set_line_shape(Cube_LineSource, Cube_Points, Cube_Mapper, Cube_Actor, renderer);
