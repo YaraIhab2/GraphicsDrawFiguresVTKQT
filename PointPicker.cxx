@@ -226,7 +226,7 @@
 #include <QtWidgets/QFormLayout>
 #include <QMessageBox>
 
-bool isCube = 1;
+
 
 using namespace std;
 //__________Initializing some global variables___________________//
@@ -236,6 +236,13 @@ std::string last_shape;
 double picked[3];
 double picked2[3] = {};
 double picked3[3] = {};
+double Circle_center[3] = {};
+double RegPolyg_center[3] = {};
+double Ellipse_center[3] = {};
+double Arc_center[3] = {};
+double line_center[3] = {};
+double polygon_center[3] = {};
+double polyline_center[3] = {};
 double x = 0, y = 0, z = 0, z2 = 0, x2 = 0, y2 = 0;
 double x3, y3, z3 = 0;
 bool flag = 0;
@@ -251,6 +258,9 @@ char ArcColor[100];
 char RegPolygonColor[100];
 char PolylineColor[100];
 char PolygonColor[100];
+char SphereColor[100];
+char EllipsoidColor[100];
+char CubeColor[100];
 int countIsPolygon = 0;
 int startAngle = 0;
 int endAngle = 0;
@@ -374,11 +384,7 @@ int NumSides = 5;
 float Scale_factor = 1;
 int countPolyLinePoints = 0;
 
-//vtkSmartPointer<vtkPoints> points = vtkSmartPointer<vtkPoints>::New();
 
-//vtkSmartPointer<vtkPolyData> polyData = vtkSmartPointer <vtkPolyData>::New();
-//vtkSmartPointer<vtkPolyLine> polyLine = vtkSmartPointer<vtkPolyLine>::New();
-//vtkSmartPointer<vtkCellArray> cells = vtkSmartPointer<vtkCellArray>::New();
 int countIsLine = 0;
 bool isCircle = 0;
 bool isEllipse = 0;
@@ -387,6 +393,9 @@ bool isRegularPolygon = 0;
 bool isPolygon = 0;
 bool isPolyline = 0;
 bool isLine = 1;
+bool isSphere = 0;
+bool isEllipsoid = 0;
+bool isCube = 0;
 double pointsArray[100][3];
 //________________________Some Transformation Parameters_____________________//
 double Translation_x = 0;
@@ -589,51 +598,6 @@ void Draw_Polygon() {
 
 
 
-//void transformation(vtkPolyDataMapper* mapper, vtkActor* actor, double x_axis, double y_axis, double z_axis) {
-//	//vtkNew<vtkPolyDataMapper> originalMapper;
-//	mapper->SetInputConnection(lineSource->GetOutputPort());
-//
-//	//vtkNew<vtkActor> originalActor;
-//	actor->SetMapper(mapper);
-//	//originalActor->GetProperty()->SetColor(colors->GetColor3d("Blue").GetData());
-//
-//	// Set up the transform filter
-//
-//	vtkNew<vtkTransform> translation;
-//	//translation->Translate(x_axis, y_axis, z_axis);
-//	translation->Translate(2.0, 2.0, 0.0);
-//
-//	vtkNew<vtkTransformPolyDataFilter> transformFilter;
-//	transformFilter->SetInputConnection(lineSource->GetOutputPort());
-//	transformFilter->SetTransform(translation);
-//	transformFilter->Update();
-//
-//	// Set up the actor to display the transformed polydata
-//
-//	vtkNew<vtkPolyDataMapper> transformedMapper;
-//	transformedMapper->SetInputConnection(transformFilter->GetOutputPort());
-//
-//	vtkNew<vtkActor> transformedActor;
-//	transformedActor->SetMapper(transformedMapper);
-//	//transformedActor->GetProperty()->SetColor(colors->GetColor3d("Red").GetData());
-//
-//	// Set up the rest of the visualization pipeline
-//
-//	//vtkNew<vtkRenderer> renderer;
-//	//renderer->AddActor(originalActor);
-//	renderer->AddActor(transformedActor);
-//	//renderer->SetBackground(colors->GetColor3d("Green").GetData());
-//
-//	//vtkNew<vtkRenderWindow> renderWindow;
-//	renderWindow->AddRenderer(renderer);
-//
-//	//vtkNew<vtkRenderWindowInteractor> renderWindowInteractor;
-//	//renderWindowInteractor->SetRenderWindow(renderWindow);
-//
-//	//renderWindow->SetWindowName("TransformPolyData");
-//	//renderWindow->Render();
-//	//renderWindowInteractor->Start();
-//}
 
 //Linear Interpolation to get set of points representing the line
 void Draw_Line()
@@ -771,72 +735,15 @@ void Draw_Ellipse()
 	Set_line_shape(Ellipse_lineSource, Ellipse_points, Ellipse_mapper, Ellipse_actor, renderer);
 }
 
-//Needs Modifications
-//void Draw_Arc()
-//{
-//	//startAngle = M_PI_2;
-//	vtkSmartPointer<vtkPoints> Arc_points = vtkSmartPointer<vtkPoints>::New();
-//
-//	int number_of_points = 120;
-//
-//
-//	lineSource->SetResolution(number_of_points);
-//
-//	//Using Click (incomplete ASK)
-//
-//	double firstLine[3] = {picked3[0]- picked2[0], picked3[1] - picked2[1],0};
-//
-//	double Raduis = vtkMath::Distance2BetweenPoints(picked3,picked2 );
-//	
-//	double Raduis2 = vtkMath::Distance2BetweenPoints(picked2, picked);
-//	double secondLine[3] = { ((picked[0] - picked2[0])/Raduis2)* Raduis,((picked[1] - picked2[1])/Raduis2)*Raduis,0 };
-//
-//
-//	double angle=acos(vtkMath::RadiansFromDegrees(firstLine[0]*secondLine[0]+firstLine[1]*secondLine[1]))/(Raduis*Raduis);
-//	
-//	double Angle_increment = (angle) / (number_of_points - 1);
-//	for (int i = 0; i < number_of_points; i++)
-//	{
-//		double Current_angle = Angle_increment * i;
-//		double x_arc = picked2[0]+Raduis * cos(Current_angle);
-//		double y_arc = picked2[1]+Raduis * sin(Current_angle);
-//		Arc_points->InsertNextPoint(x_arc, y_arc, 0.0);
-//
-//	}
-//for (int i = 0; i < 3; i++) {
-//
-//for (int j = 0; j < 3; j++) {
-//	ArcPointsArray[i][j] = 0.0;
-//
-//}
-//	}
-//	for (int i = 0; i < 3; i++) {
-//
-//		if (i == 0) {
-//			ArcPointsArray[i][0] = picked2[0];
-//			ArcPointsArray[i][1] = picked2[1];
-//			ArcPointsArray[i][2] = picked2[2];
-//		}
-//		if (i == 1) {
-//			ArcPointsArray[i][0] = picked3[0];
-//			ArcPointsArray[i][1] = picked3[1];
-//			ArcPointsArray[i][2] = picked3[2];
-//		}
-//		if (i == 2) {
-//			ArcPointsArray[i][0] = picked[0];
-//			ArcPointsArray[i][1] = picked[1];
-//			ArcPointsArray[i][2] = picked[2];
-//		}
-//
-//	}
-//	Set_line_shape(Arc_lineSource, Arc_points, Arc_mapper, Arc_actor, renderer);
-//	renderWindow->Render();
-//}
 
-void Draw_Arc(double Start_angle = arcStart, double End_Angle = arcEnd)
+
+void Draw_Arc(double Start_angle = arcStart, double End_Angle = arcEnd, double rad=0.0)
 {
 
 	double raduis = sqrt(pow((picked[0] - picked2[0]), 2.0) + pow(picked[1] - picked2[1], 2.0));
+	if (rad != 0) {
+		raduis = rad;
+	}
 	/*if (flag == 1) {
 		raduis = ArcPointsArray[0];
 
@@ -909,10 +816,10 @@ void Draw_Regular_Polygon()
 	Set_line_shape(Regpolygon_linesource, Regpolygon_points, Regpolygon_mapper, Regpolygon_actor, renderer);
 
 
-	for (int i = 0; i < sizeof(PolygonPointsArray)[0]; i++) {
+	for (int i = 0; i < sizeof(RegPolygonPointsArray)[0]; i++) {
 
-		for (int j = 0; j < sizeof(PolygonPointsArray)[1]; j++) {
-			PolygonPointsArray[i][j] = 0.0;
+		for (int j = 0; j < sizeof(RegPolygonPointsArray)[1]; j++) {
+			RegPolygonPointsArray[i][j] = 0.0;
 
 		}
 	}
@@ -943,8 +850,8 @@ void DrawSphere() {
 
 	double radius = sqrt(pow((picked[0] - picked2[0]), 2.0) + pow(picked[1] - picked2[1], 2.0) + pow(picked[2] - picked2[2], 2.0));
 
-	const int nPhi = 20;
-	const int nTheta = 20;
+	const int nPhi = 50;
+	const int nTheta = 50;
 	for (int i = 0; i <= nTheta; i++) {
 		double theta = i * vtkMath::Pi() / nTheta;
 		for (int j = 0; j <= nPhi; j++) {
@@ -976,42 +883,116 @@ void DrawSphere() {
 			Sphere_Triangles->InsertNextCell(triangle);
 		}
 	}
+	for (int i = 0; i < 2; i++) {
 
+		for (int j = 0; j < 3; j++) {
+			SpherePointsArray[i][j] = 0.0;
+
+		}
+	}
+
+
+	for (int i = 0; i < 2; i++) {
+		if (i == 0) {
+			SpherePointsArray[i][0] = picked2[0];
+			SpherePointsArray[i][1] = picked2[1];
+			SpherePointsArray[i][2] = picked2[2];
+		}
+		if (i == 1) {
+			SpherePointsArray[i][0] = picked[0];
+			SpherePointsArray[i][1] = picked[1];
+			SpherePointsArray[i][2] = picked[2];
+		}
+	}
 	Set_line_shape(Sphere_LineSource, Sphere_Points, Sphere_Mapper, Sphere_Actor, renderer);
-
+	
 }
 void DrawCube() {
 
 	vtkSmartPointer<vtkPoints> Cube_Points = vtkSmartPointer<vtkPoints>::New();
 
 	double length = fabs(picked2[0] - picked[0]);
-	double cubeVertices[20][3] = { {picked2[0], picked2[1], picked2[2]},  {picked2[0] + length, picked2[1], picked2[2]}, {picked2[0] + length, picked2[1] - length, picked2[2]}, {picked2[0], picked2[1] - length, picked2[2]}, {picked2[0], picked2[1], picked2[2]}};
 
-	double cubeVertices2[20][3] = { {picked2[0], picked2[1], picked2[2] - length}, {picked2[0] + length, picked2[1] , picked2[2] - length},
-			{picked2[0] + length, picked2[1] - length, picked2[2] - length}, {picked2[0] , picked2[1] - length , picked2[2] - length}, {picked2[0], picked2[1], picked2[2] - length} };
-	for (int i = 0; i++; i < 5) {
+	double cubeVertices[16][3] = { {picked2[0]			,				picked2[1]			,			picked2[2]},
+									{picked2[0] + length	,				picked2[1]			,			picked2[2]},
+									{picked2[0] + length	,			picked2[1] + length		,			picked2[2]},
+									{picked2[0]			,			picked2[1] + length		,			picked2[2]},
+									{picked2[0]			,				picked2[1]			,			picked2[2]},
+									{picked2[0]			,				picked2[1]			,			picked2[2] + length},
+									{picked2[0] + length	,				picked2[1]			,			picked2[2] + length},
+									{picked2[0] + length	,				picked2[1]			,			picked2[2]},
+									{picked2[0] + length	,				picked2[1]			,			picked2[2] + length},
+									{picked2[0] + length	,			picked2[1] + length		,			picked2[2] + length},
+									{picked2[0] + length	,			picked2[1] + length		,			picked2[2]},
+									{picked2[0] + length	,			picked2[1] + length		,			picked2[2] + length},
+									{picked2[0]			,			picked2[1] + length		,			picked2[2] + length},
+									{picked2[0]			,			picked2[1] + length		,			picked2[2]},
+									{picked2[0]			,			picked2[1] + length		,			picked2[2] + length},
+									{picked2[0]			,				picked2[1]			,			picked2[2] + length} };
 
-
-		Cube_Points->InsertNextPoint(cubeVertices[i][0], cubeVertices[i][1], cubeVertices[i][2]);
-
+	for (int i = 0; i < 16; i++) {
+		Cube_Points->InsertNextPoint(cubeVertices[i]);
 	}
-	for (int i = 0; i++; i < 5) {
 
+	vtkSmartPointer<vtkCellArray> Cube_Lines = vtkSmartPointer<vtkCellArray>::New();
+	Cube_Lines->InsertNextCell(5);
+	Cube_Lines->InsertCellPoint(0);
+	Cube_Lines->InsertCellPoint(1);
+	Cube_Lines->InsertCellPoint(2);
+	Cube_Lines->InsertCellPoint(3);
+	Cube_Lines->InsertCellPoint(0);
 
-		Cube_Points->InsertNextPoint(cubeVertices2[i][0], cubeVertices2[i][1], cubeVertices2[i][2]);
+	Cube_Lines->InsertNextCell(5);
+	Cube_Lines->InsertCellPoint(4);
+	Cube_Lines->InsertCellPoint(5);
+	Cube_Lines->InsertCellPoint(6);
+	Cube_Lines->InsertCellPoint(7);
+	Cube_Lines->InsertCellPoint(4);
 
+	Cube_Lines->InsertNextCell(4);
+	Cube_Lines->InsertCellPoint(0);
+	Cube_Lines->InsertCellPoint(4);
+	Cube_Lines->InsertCellPoint(7);
+	Cube_Lines->InsertCellPoint(3);
 
+	Cube_Lines->InsertNextCell(4);
+	Cube_Lines->InsertCellPoint(1);
+	Cube_Lines->InsertCellPoint(5);
+	Cube_Lines->InsertCellPoint(6);
+	Cube_Lines->InsertCellPoint(2);
+
+	//vtkSmartPointer<vtkLineSource> Cube_LineSource = vtkSmartPointer<vtkLineSource>::New();
+	//Cube_LineSource->SetPoints(Cube_Points);
+	//Cube_LineSource->SetLines(Cube_Lines);
+	for (int i = 0; i < 2; i++) {
+
+		for (int j = 0; j < 3; j++) {
+			CubePointsArray[i][j] = 0.0;
+
+		}
 	}
 
 
+	for (int i = 0; i < 2; i++) {
+		if (i == 0) {
+			CubePointsArray[i][0] = picked2[0];
+			CubePointsArray[i][1] = picked2[1];
+			CubePointsArray[i][2] = picked2[2];
+		}
+		if (i == 1) {
+			CubePointsArray[i][0] = picked[0];
+			CubePointsArray[i][1] = picked[1];
+			CubePointsArray[i][2] = picked[2];
+		}
+	}
 	Set_line_shape(Cube_LineSource, Cube_Points, Cube_Mapper, Cube_Actor, renderer);
 
 }
 
-void DrawEllipsoid() {
+void Draw_Ellipsoid() {
 
 	vtkSmartPointer<vtkPoints> Ellipsoid_Points = vtkSmartPointer<vtkPoints>::New();
-	double center[3] = { picked2[0], picked2[1], picked2[2]};
+	double center[3] = { picked2[0], picked2[1], picked2[2] };
 
 	// Define the semi-axes of the ellipsoid
 	double a = 2.0;
@@ -1035,13 +1016,72 @@ void DrawEllipsoid() {
 
 	// Create the cells (triangles) for the ellipsoid
 	vtkSmartPointer<vtkCellArray> cells = vtkSmartPointer<vtkCellArray>::New();
-	
 
+	for (int i = 0; i < 3; i++) {
+
+		for (int j = 0; j < 3; j++) {
+			EllipsoidPointsArray[i][j] = 0.0;
+
+		}
+	}
+
+
+
+	for (int i = 0; i < 3; i++) {
+
+		if (i == 0) {
+			EllipsoidPointsArray[i][0] = picked2[0];
+			EllipsoidPointsArray[i][1] = picked2[1];
+			EllipsoidPointsArray[i][2] = picked2[2];
+		}
+		if (i == 1) {
+			EllipsoidPointsArray[i][0] = picked3[0];
+			EllipsoidPointsArray[i][1] = picked3[1];
+			EllipsoidPointsArray[i][2] = picked3[2];
+		}
+		if (i == 2) {
+			EllipsoidPointsArray[i][0] = picked[0];
+			EllipsoidPointsArray[i][1] = picked[1];
+			EllipsoidPointsArray[i][2] = picked[2];
+		}
+
+	}
 
 
 	Set_line_shape(Ellipsoid_LineSource, Ellipsoid_Points, Ellipsoid_Mapper, Ellipsoid_Actor, renderer);
 
 }
+
+
+/*
+void Draw_Ellipsoid()
+	{
+		double Semi_AxisX = sqrt(pow((picked3[0] - picked2[0]), 2.0) + pow(picked3[1] - picked2[1], 2.0));
+		double Semi_AxisY = sqrt(pow((picked[0] - picked2[0]), 2.0) + pow(picked[1] - picked2[1], 2.0));
+		double Semi_AxisZ = 1;
+
+		vtkSmartPointer<vtkPoints> Ellipsoid_points = vtkSmartPointer<vtkPoints>::New();
+		int number_of_points = 120;
+		lineSource->SetResolution(number_of_points);
+
+		for (int j = 0; j <= number_of_points; j++)
+		{
+			double x_ellipse, y_ellipse, z_ellipse;
+
+			double t_parameter = static_cast<double>(j) / number_of_points;
+
+			x_ellipse = picked2[0] + Semi_AxisX * cos(2 * vtkMath::Pi() * t_parameter);
+			y_ellipse = picked2[1] + Semi_AxisY * sin(2 * vtkMath::Pi() * t_parameter);
+			z_ellipse = picked2[2] + Semi_AxisZ * cos(2 * vtkMath::Pi() * t_parameter);
+
+			Ellipsoid_points->InsertNextPoint(x_ellipse, y_ellipse, z_ellipse);
+		}
+
+		Set_line_shape(Ellipsoid_LineSource, Ellipsoid_points, Ellipsoid_Mapper, Ellipsoid_Actor, renderer);
+	}
+
+	*/
+
 
 bool ReadFile(char name[100]) {
 	int i = 0;
@@ -1216,7 +1256,7 @@ bool ReadFile(char name[100]) {
 			arcEnd = z;
 
 
-			Draw_Arc(arcStart, arcEnd);
+			Draw_Arc(arcStart, arcEnd, ArcR);
 			flag = 1;
 		}
 		int num = 0;
@@ -1342,6 +1382,112 @@ bool ReadFile(char name[100]) {
 			Draw_Regular_Polygon();
 
 		}
+		if (Shapes_drawn.find("Ellipsoid") != Shapes_drawn.end()) {
+			isLine = 0;
+			isEllipse = 0;
+			isArc = 0;
+			isRegularPolygon = 0;
+			isPolygon = 0;
+			isPolyline = 0;
+			isCircle = 1;
+			picked[0] = 0;
+			picked[1] = 0;
+			picked[2] = 0;
+
+			picked2[0] = 0;
+			picked2[1] = 0;
+			picked2[2] = 0;
+
+			picked3[0] = 0;
+			picked3[1] = 0;
+			picked3[2] = 0;
+			x, y, z, x2, y2, z2, x3, y3, z3 = 0;
+
+			fscanf_s(file, "Ellipsoid,(%lf,%lf,%lf),(%lf,%lf,%lf),(%lf,%lf,%lf),%d,%s\n", &x, &y, &z, &x2, &y2, &z2, &x3, &y3, &z3, &LineWidth, LineColor, sizeof(LineColor));
+
+			for (int i = 0; i < 3; i++) {
+				if (i == 0) {
+					picked[i] = x3;
+					picked2[i] = x;
+					picked3[i] = x2;
+				}
+				if (i == 1) {
+					picked[i] = y3;
+					picked2[i] = y;
+					picked3[i] = y2;
+				}
+				if (i == 2) {
+					picked[i] = z3;
+					picked2[i] = z;
+					picked3[i] = z2;
+				}
+			}
+			Draw_Ellipsoid();
+		}
+		if (Shapes_drawn.find("Cube") != Shapes_drawn.end()) {
+
+
+
+			fscanf_s(file, "Cube,(%lf,%lf,%lf),(%lf,%lf,%lf),%d,%s\n", &x, &y, &z, &x2, &y2, &z2, &LineWidth, LineColor, sizeof(LineColor));
+
+			for (int i = 0; i < 3; i++) {
+				if (i == 0) {
+					picked[i] = x2;
+					picked2[i] = x;
+				}
+				if (i == 1) {
+					picked[i] = y2;
+					picked2[i] = y;
+				}
+				if (i == 2) {
+					picked[i] = z2;
+					picked2[i] = z;
+				}
+			}
+			DrawCube();
+
+			printf("x: %lf, y: %lf, z: %lf\n", x, y, z);
+			printf("x2: %lf, y2: %lf, z2: %lf\n", x2, y2, z2);
+			printf("LineWidth: %d\n", LineWidth);
+			printf("LineColor: %s\n", LineColor);
+			cout << "picked= " << picked[1] << "picked2= " << picked2[1] << endl;
+
+		}
+		if (Shapes_drawn.find("Sphere") != Shapes_drawn.end()) {
+
+			isLine = 0;
+			isEllipse = 0;
+			isArc = 0;
+			isRegularPolygon = 0;
+			isPolygon = 0;
+			isPolyline = 0;
+			isCircle = 1;
+			picked[0] = 0;
+			picked[1] = 0;
+			picked[2] = 0;
+
+			picked2[0] = 0;
+			picked2[1] = 0;
+			picked2[2] = 0;
+			x, y, z, x2, y2, z2, x3, y3, z3 = 0;
+			fscanf_s(file, "Sphere,(%lf,%lf,%lf),(%lf,%lf,%lf),%d,%s\n", &x, &y, &z, &x2, &y2, &z2, &LineWidth, LineColor, sizeof(LineColor));
+
+			for (int i = 0; i < 3; i++) {
+				if (i == 0) {
+					picked[i] = x2;
+					picked2[i] = x;
+				}
+				if (i == 1) {
+					picked[i] = y2;
+					picked2[i] = y;
+				}
+				if (i == 2) {
+					picked[i] = z2;
+					picked2[i] = z;
+				}
+			}
+			DrawSphere();
+		}
 
 	}
 
@@ -1425,6 +1571,30 @@ bool  WriteFile(string name) {
 
 			}
 			my_file << LineWidth << "," << LineColor << endl;
+
+		}
+		if (Shapes_drawn.find("Ellipsoid") != Shapes_drawn.end()) {
+			my_file << "Ellipsoid,";
+			for (int i = 0; i < sizeof(EllipsoidPointsArray) / sizeof(EllipsoidPointsArray[0]); i++) {
+				my_file << "(" << EllipsoidPointsArray[i][0] << "," << EllipsoidPointsArray[i][1] << "," << EllipsoidPointsArray[i][2] << "),";
+			}
+			my_file << LineWidth << "," << LineColor << endl;
+		}
+
+		if (Shapes_drawn.find("Cube") != Shapes_drawn.end()) {
+			my_file << "Cube,";
+			for (int i = 0; i < sizeof(CubePointsArray) / sizeof(CubePointsArray[0]); i++) {
+				my_file << "(" << CubePointsArray[i][0] << "," << CubePointsArray[i][1] << "," << CubePointsArray[i][2] << "),";
+			}
+			my_file << LineWidth << "," << LineColor << endl;
+		}
+
+		if (Shapes_drawn.find("Sphere") != Shapes_drawn.end()) {
+			my_file << "Sphere,";
+			for (int i = 0; i < sizeof(SpherePointsArray) / sizeof(SpherePointsArray[0]); i++) {
+				my_file << "(" << SpherePointsArray[i][0] << "," << SpherePointsArray[i][1] << "," << SpherePointsArray[i][2] << "),";
+			}
+			my_file << LineWidth << "," << LineColor << endl;
 		}
 		my_file.close();
 
@@ -1495,19 +1665,7 @@ void DrawPoint() {
 void Delete_Shape(string selected_shape)
 {
 
-	/*if (!Shapes_drawn.empty()) {
-		if (Shapes_drawn.find(selected_shape) != Shapes_drawn.end())
-		{
-			Shapes_drawn.erase(selected_shape);
 
-			if (!Shapes_drawn.empty())
-			{
-				auto iterator = std::prev(Shapes_drawn.end());
-				last_shape = *iterator;
-			}
-
-		}
-	}*/
 
 
 	if (selected_shape == "Circle")
@@ -1547,7 +1705,19 @@ void Delete_Shape(string selected_shape)
 		lineSource->SetPoints(Empty_points);
 	}
 
+	else if (selected_shape == "Sphere")
+	{
+		Sphere_LineSource->SetPoints(Empty_points);
+	}
+	else if (selected_shape == "Ellipsoid")
+	{
+		Ellipsoid_LineSource->SetPoints(Empty_points);
+	}
 
+	else if (selected_shape == "Cube")
+	{
+		Cube_LineSource->SetPoints(Empty_points);
+	}
 
 }
 
@@ -1590,6 +1760,21 @@ void change_width_shape(int width_shape, string selected_shape)
 	{
 		actor->GetProperty()->SetLineWidth(width_shape);
 	}
+
+	else if (selected_shape == "Sphere")
+	{
+		Sphere_Actor->GetProperty()->SetLineWidth(width_shape);
+	}
+
+	else if (selected_shape == "Ellipsoid")
+	{
+		Ellipsoid_Actor->GetProperty()->SetLineWidth(width_shape);
+	}
+	else if (selected_shape == "Cube")
+	{
+		Cube_Actor->GetProperty()->SetLineWidth(width_shape);
+	}
+
 
 
 }
@@ -1644,6 +1829,26 @@ void change_color(QString color_chosen, string selected_shape)
 		qstrcpy(LineColor, qPrintable(color_chosen));
 
 	}
+	else if (selected_shape == "Sphere")
+	{
+		Sphere_Actor->GetProperty()->SetColor(colors->GetColor3d(color_chosen.toStdString()).GetData());
+		qstrcpy(SphereColor, qPrintable(color_chosen));
+
+	}
+
+	else if (selected_shape == "Ellipsoid")
+	{
+		Ellipsoid_Actor->GetProperty()->SetColor(colors->GetColor3d(color_chosen.toStdString()).GetData());
+		qstrcpy(EllipsoidColor, qPrintable(color_chosen));
+
+	}
+
+	else if (selected_shape == "Cube")
+	{
+		Cube_Actor->GetProperty()->SetColor(colors->GetColor3d(color_chosen.toStdString()).GetData());
+		qstrcpy(CubeColor, qPrintable(color_chosen));
+
+	}
 
 
 }
@@ -1661,18 +1866,9 @@ void Translation(vtkLineSource* shapeSource, vtkPolyDataMapper* shapemapper, dou
 	vtkSmartPointer<vtkPoints> oldPoints = vtkSmartPointer<vtkPoints>::New();
 
 	vtkSmartPointer<vtkPoints> newPoints = vtkSmartPointer<vtkPoints>::New();
-	//if (shapeSource == &(*lineSource))
-	//{
-	//	// If it is a line source, get the endpoints and put them in oldPoints
-	//	double point1[3]; 
-	//	double point2[3]; 
-	//	lineSource->GetPoint1(point1);   
-	//	lineSource->GetPoint2(point2); 
-	//	oldPoints->InsertNextPoint(point1); 
-	//	oldPoints->InsertNextPoint(point2); 
-	//	 
 
-	//}
+
+
 
 	oldPoints->DeepCopy(shapeSource->GetPoints());  // All other shapes 
 
@@ -1825,18 +2021,7 @@ void transformation_scaling(vtkLineSource* shapeSource, double x_axis, double y_
 	vtkSmartPointer<vtkPoints> oldPoints = vtkSmartPointer<vtkPoints>::New();
 
 	vtkSmartPointer<vtkPoints> newPoints = vtkSmartPointer<vtkPoints>::New();
-	//if (shapeSource == &(*lineSource))  
-	//{
-	//	// If it is a line source, get the endpoints and put them in oldPoints
-	//	double point1[3];
-	//	double point2[3];
-	//	lineSource->GetPoint1(point1); 
-	//	lineSource->GetPoint2(point2); 
-	//	oldPoints->InsertNextPoint(point1); 
-	//	oldPoints->InsertNextPoint(point2); 
 
-
-	//}
 
 
 	oldPoints->DeepCopy(shapeSource->GetPoints());
@@ -1957,7 +2142,7 @@ void Transformation_Shearing_shape(string selected_shape, double shear_x)
 	}
 
 }
-bool isSphere = 0;
+
 
 
 namespace {
@@ -2047,7 +2232,7 @@ namespace {
 					picked3[i] = picked[i];
 				}
 				//////////////////////////////REMOVE NEXT LINE
-				isLine = 0;
+			//	isLine = 0;
 				////////////////////////////////REMOVE PREVIOUS LINE
 				if (isLine) {
 
@@ -2089,17 +2274,19 @@ namespace {
 
 			if (isSphere && flag == 2) {
 				DrawSphere();
+				Update_Shape("Sphere");
 				renderWindow->Render();
 
 				flag = 0;
-
+				return;
 			}
 			if (isCube && flag == 2) {
 				DrawCube();
+				Update_Shape("Cube");
 				renderWindow->Render();
 
 				flag = 0;
-
+				return;
 			}
 
 			if (isCircle && flag == 2) {
@@ -2137,6 +2324,18 @@ namespace {
 				Draw_Ellipse();
 				//	Shapes_drawn.insert("Ellipse");
 				Update_Shape("Ellipse");
+				renderWindow->Render();
+				flag = 0;
+
+				return;
+			}
+			if (isEllipsoid && flag == 3) {
+
+
+
+				Draw_Ellipsoid();
+				//	Shapes_drawn.insert("Ellipse");
+				Update_Shape("Ellipsoid");
 				renderWindow->Render();
 				flag = 0;
 
@@ -2311,7 +2510,7 @@ int main(int argc, char* argv[])
 
 	spinBox->setMinimum(0);
 	spinBox->setMaximum(100);
-	spinBox->setSingleStep(1);
+	spinBox->setSingleStep(10);
 	spinBox->setValue(1);
 
 	dockLayout->addWidget(spinBox);
@@ -2326,6 +2525,9 @@ int main(int argc, char* argv[])
 	shape_comboBox->addItem("Circle");
 	shape_comboBox->addItem("Arc");
 	shape_comboBox->addItem("Ellipse");
+	shape_comboBox->addItem("Sphere");
+	shape_comboBox->addItem("Ellipsoid");
+	shape_comboBox->addItem("Cube");
 	dockLayout->addWidget(shape_comboBox);
 
 	/*QComboBox* Transformation_combobox = new QComboBox();
@@ -2367,19 +2569,38 @@ int main(int argc, char* argv[])
 
 		switch (selectedText[0]) {
 		case 'C':
+			if (selectedText[1] == 'i')
+			{
+				isEllipsoid = 0;
+				isSphere = 0;
+				isLine = 0;
+				isEllipse = 0;
+				isArc = 0;
+				isRegularPolygon = 0;
+				isPolygon = 0;
+				isPolyline = 0;
+				isCircle = 1;
+				isCube = 0;
+				break;
+			}
+			else
+			{
+				isEllipsoid = 0;
+				isSphere = 0;
+				isLine = 0;
+				isEllipse = 0;
+				isArc = 0;
+				isRegularPolygon = 0;
+				isPolygon = 0;
+				isPolyline = 0;
+				isCircle = 0;
+				isCube = 1;
+				break;
+			}
 
-			isLine = 0;
-			isEllipse = 0;
-			isArc = 0;
-			isRegularPolygon = 0;
-			isPolygon = 0;
-			isPolyline = 0;
-			isCircle = 1;
-
-			break;
 		case 'L':
-
-
+			isEllipsoid = 0;
+			isSphere = 0;
 			isLine = 1;
 			isEllipse = 0;
 			isArc = 0;
@@ -2388,33 +2609,71 @@ int main(int argc, char* argv[])
 			isPolyline = 0;
 			isCircle = 0;
 			FlagLineWriteFirstTime = 0;
+			isCube = 0;
 
 			break;
-
-		case 'E':
-
-			/*dockLayout->removeWidget(sliderR);
-			dockLayout->removeWidget(sliderSA);
-			dockLayout->removeWidget(sliderEA);*/
-
-			/*if (spinNumSides->value() != NULL) {
-				dockLayout->removeWidget(spinNumSides);
-			}*/
+		case 'S':
+			isEllipsoid = 0;
+			isSphere = 1;
 			isLine = 0;
-			isEllipse = 1;
+			isEllipse = 0;
 			isArc = 0;
 			isRegularPolygon = 0;
 			isPolygon = 0;
 			isPolyline = 0;
 			isCircle = 0;
-
+			FlagLineWriteFirstTime = 0;
+			isCube = 0;
 			break;
+
+
+		case 'E':
+
+
+			if (selectedText[6] == 'e') {
+				/*dockLayout->removeWidget(sliderR);
+				dockLayout->removeWidget(sliderSA);
+				dockLayout->removeWidget(sliderEA);*/
+
+				/*if (spinNumSides->value() != NULL) {
+					dockLayout->removeWidget(spinNumSides);
+				}*/
+				isEllipsoid = 0;
+				isSphere = 0;
+				isLine = 0;
+				isEllipse = 1;
+				isArc = 0;
+				isRegularPolygon = 0;
+				isPolygon = 0;
+				isPolyline = 0;
+				isCircle = 0;
+				isCube = 0;
+				break;
+			}
+
+			else {
+
+				countIsPolygon++;
+				isLine = 0;
+				isEllipse = 0;
+				isArc = 0;
+				isRegularPolygon = 0;
+				isPolygon = 0;
+				isPolyline = 0;
+				isCircle = 0;
+				isSphere = 0;
+				isEllipsoid = 1;
+				isCube = 0;
+				break;
+			}
+
 		case 'R':
 
 			/*dockLayout->removeWidget(sliderR);
 			dockLayout->removeWidget(sliderSA);
 			dockLayout->removeWidget(sliderEA);*/
-
+			isEllipsoid = 0;
+			isSphere = 0;
 			isLine = 0;
 			isEllipse = 0;
 			isArc = 0;
@@ -2422,6 +2681,7 @@ int main(int argc, char* argv[])
 			isPolygon = 0;
 			isPolyline = 0;
 			isCircle = 0;
+			isCube = 0;
 
 
 			/*	spinNumSides->setMinimum(0);
@@ -2436,6 +2696,8 @@ int main(int argc, char* argv[])
 			/*if (spinNumSides->value() != NULL) {
 				dockLayout->removeWidget(spinNumSides);
 			}*/
+			isEllipsoid = 0;
+			isSphere = 0;
 			isLine = 0;
 			isEllipse = 0;
 			isArc = 1;
@@ -2443,6 +2705,7 @@ int main(int argc, char* argv[])
 			isPolygon = 0;
 			isPolyline = 0;
 			isCircle = 0;
+			isCube = 0;
 
 
 			/*dockLayout->addWidget(sliderR);
@@ -2470,12 +2733,7 @@ int main(int argc, char* argv[])
 					//layoutContainer.show();
 			break;
 		case 'P':
-			/*if (spinNumSides->value() != NULL) {
-				dockLayout->removeWidget(spinNumSides);
-			}*/
-			/*dockLayout->removeWidget(sliderR);
-			dockLayout->removeWidget(sliderSA);
-			dockLayout->removeWidget(sliderEA);*/
+
 			if (selectedText[4] == 'l') {
 				countIsLine++;
 				isLine = 0;
@@ -2485,8 +2743,9 @@ int main(int argc, char* argv[])
 				isPolygon = 0;
 				isPolyline = 1;
 				isCircle = 0;
-
-
+				isSphere = 0;
+				isEllipsoid = 0;
+				isCube = 0;
 				break;
 			}
 			else {
@@ -2504,8 +2763,9 @@ int main(int argc, char* argv[])
 				isPolygon = 1;
 				isPolyline = 0;
 				isCircle = 0;
-
-
+				isSphere = 0;
+				isEllipsoid = 0;
+				isCube = 0;
 				break;
 			}
 		}
@@ -2541,7 +2801,7 @@ int main(int argc, char* argv[])
 	/////////////////Scaling_spinbox///////////////////
 	Scaling_spinbox->setMinimum(-5.0);
 	Scaling_spinbox->setMaximum(5.0);
-	Scaling_spinbox->setSingleStep(0.1);
+	Scaling_spinbox->setSingleStep(1.0);
 	Scaling_spinbox->setValue(1.0);
 
 	dockLayout->addWidget(Scaling_spinbox);
@@ -2566,7 +2826,7 @@ int main(int argc, char* argv[])
 	mainWindow.setCentralWidget(vtkRenderWidget);
 
 
-	QObject::connect(Transformation_combobox, (&QComboBox::currentIndexChanged), [&]() {
+	QObject::connect(Transformation_combobox, QOverload<int>::of(&QComboBox::activated), [&]() {
 
 		QString selectedTransformation = Transformation_combobox->currentText();
 
@@ -2898,7 +3158,7 @@ int main(int argc, char* argv[])
 	renderer->SetBackground(namedColors->GetColor3d("SlateGray").GetData());
 	///////////////////////////////////////////////////////////COMBOBOX WIDGET APPLIED/////////////////////////////////
 
-	QObject::connect(color_comboBox, (&QComboBox::currentIndexChanged), [&]() {
+	QObject::connect(color_comboBox, QOverload<int>::of(&QComboBox::activated), [&]() {
 		//Another function change color
 
 		selectedText = color_comboBox->currentText();
@@ -3040,59 +3300,7 @@ int main(int argc, char* argv[])
 		});
 
 
-	QObject::connect(Scaling_spinbox, static_cast<void(QDoubleSpinBox::*)(double)>(&QDoubleSpinBox::valueChanged), [&]() {
 
-		Scale_factor = Scaling_spinbox->value();
-		if (isCircle)
-		{
-			Draw_Circle();
-			renderWindow->Render();
-		}
-		else if (isRegularPolygon)
-		{
-			Draw_Regular_Polygon();
-			renderWindow->Render();
-		}
-
-		else if (isArc)
-		{
-			Draw_Arc(arcStart, arcEnd);
-			renderWindow->Render();
-
-		}
-
-		else if (isEllipse)
-		{
-			Draw_Ellipse();
-			renderWindow->Render();
-		}
-
-		});
-
-
-	/*QObject::connect(spinNumSides, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [&]() {
-
-		NumSides = spinNumSides->value();
-		Draw_Regular_Polygon();
-		renderWindow->Render();
-
-		});*/
-		/*QObject::connect(spinStartAngle, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [&]() {
-			startAngle = spinStartAngle->value();
-			Draw_Arc;
-			renderWindow->Render();
-			});
-		QObject::connect(spinEndAngle, static_cast<void(QSpinBox::*)(int)>(&QSpinBox::valueChanged), [&]() {
-			endAngle = spinEndAngle->value();
-			Draw_Arc;
-			renderWindow->Render();
-			});*/
-			////////////////////////////////////////////////////////////////////////////END/////////////////////////////
-
-			///////////////////////////////////////////////RENDERING, RENDERER, RENDERWINDOW, INTERACTOR//////////////////
-			//Connect renderWindowInteractor in ONLeftClick with current working interactor
-			// 
-			// 
 
 	renderWindow->SetInteractor(renderWindowInteractor);
 
