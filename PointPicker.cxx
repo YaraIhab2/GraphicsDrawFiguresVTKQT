@@ -233,6 +233,14 @@ std::string last_shape;
 double picked[3];
 double picked2[3] = {};
 double picked3[3] = {};
+double Circle_center[3] = {};
+double RegPolyg_center[3] = {};
+double Ellipse_center[3] = {};
+double Arc_center[3] = {};
+double line_center[3] = {};
+double polygon_center[3] = {};
+double polyline_center[3] = {};
+
 double x = 0, y = 0, z = 0, z2 = 0, x2 = 0, y2 = 0;
 double x3, y3, z3 = 0;
 
@@ -615,8 +623,8 @@ void Draw_Circle()
 	for (int i = 0; i <= number_of_points; i++)
 	{
 		double t_parameter = static_cast<double>(i) / number_of_points;   // division is performed using floating-point arithmetic rather than integer division.
-		double x_circle = Scale_factor * (picked2[0] + Raduis * cos(2 * vtkMath::Pi() * t_parameter));
-		double y_circle = Scale_factor * (picked2[1] + Raduis * sin(2 * vtkMath::Pi() * t_parameter));
+		double x_circle =  (picked2[0] + Raduis * cos(2 * vtkMath::Pi() * t_parameter));
+		double y_circle =  (picked2[1] + Raduis * sin(2 * vtkMath::Pi() * t_parameter));
 		Circle_points->InsertNextPoint(x_circle, y_circle, 0.0);
 
 	}
@@ -672,6 +680,10 @@ void Draw_Ellipse()
 		cout << "AxisRatio<1";
 	}*/
 
+	for (int i = 0; i < 3; i++) {
+		Ellipse_center[i] = picked2[i];   //Set Center of the circle
+	}
+
 	for (int j = 0; j <= number_of_points; j++)
 	{
 		double x_ellipse;
@@ -681,8 +693,8 @@ void Draw_Ellipse()
 
 
 
-		x_ellipse = Scale_factor * (picked2[0] + SemiMajorAxis * cos(2 * vtkMath::Pi() * (t_parameter + 0.25)));   //0.25?
-		y_ellipse = Scale_factor * (picked2[1] + SemiMinorAxis * sin(2 * vtkMath::Pi() * (t_parameter + 0.25)));
+		x_ellipse = (picked2[0] + SemiMajorAxis * cos(2 * vtkMath::Pi() * (t_parameter )));   //0.25?
+		y_ellipse =  (picked2[1] + SemiMinorAxis * sin(2 * vtkMath::Pi() * (t_parameter )));
 
 
 		/*else if (axisRatio > 1) {
@@ -849,8 +861,8 @@ void Draw_Regular_Polygon()
 	for (int point_indx = 0; point_indx <= number_of_points; point_indx++)
 	{
 		double Current_angle = Angle_increment * point_indx;
-		double x_regpolygon = Scale_factor * (picked2[0] + Raduis_regpolygon * cos(Current_angle));
-		double y_regpolygon = Scale_factor * (picked2[1] + Raduis_regpolygon * sin(Current_angle));
+		double x_regpolygon =  (picked2[0] + Raduis_regpolygon * cos(Current_angle));
+		double y_regpolygon = (picked2[1] + Raduis_regpolygon * sin(Current_angle));
 		Regpolygon_points->InsertNextPoint(x_regpolygon, y_regpolygon, 0.0);
 
 	}
@@ -1497,22 +1509,10 @@ void Update_Shape(const std::string& shape)
 void Translation(vtkLineSource* shapeSource, vtkPolyDataMapper* shapemapper, double translation_x = 0, double translation_y = 0, double translation_z = 0)
 {
 
-	//vtkSmartPointer<vtkPoints> oldPoints = shapeSource->GetPoints(); 
 	vtkSmartPointer<vtkPoints> oldPoints = vtkSmartPointer<vtkPoints>::New();  
 
 	vtkSmartPointer<vtkPoints> newPoints = vtkSmartPointer<vtkPoints>::New();  
-	//if (shapeSource == &(*lineSource))
-	//{
-	//	// If it is a line source, get the endpoints and put them in oldPoints
-	//	double point1[3]; 
-	//	double point2[3]; 
-	//	lineSource->GetPoint1(point1);   
-	//	lineSource->GetPoint2(point2); 
-	//	oldPoints->InsertNextPoint(point1); 
-	//	oldPoints->InsertNextPoint(point2); 
-	//	 
 
-	//}
 
 	oldPoints->DeepCopy(shapeSource->GetPoints());  // All other shapes 
 	
@@ -1544,7 +1544,10 @@ void Transformation_translation_shape(string selected_shape,double translation_x
 	{
 		Translation(Ellipse_lineSource, Ellipse_mapper, translation_x, translation_y);
 
-
+		
+		Ellipse_center[0] = Ellipse_center[0] + translation_x;
+		Ellipse_center[1] = Ellipse_center[1] + translation_y;
+		
 	}
 
 	else if (selected_shape == "Polyline")
@@ -1604,7 +1607,7 @@ void Transformation_rotating(vtkLineSource* shapeSource, vtkPolyDataMapper* mapp
 
 		point[0] = point[0] * cos(vtkMath::RadiansFromDegrees(angleOfRotation)) - point[1] * sin(vtkMath::RadiansFromDegrees(angleOfRotation)); 
 		point[1] = point[0] * sin(vtkMath::RadiansFromDegrees(angleOfRotation)) + point[1] * cos(vtkMath::RadiansFromDegrees(angleOfRotation)); 
-		point[2] = 1; 
+		point[2] = 0; 
 		newPoints->SetPoint(i, point);  
 	}
 	shapeSource->SetPoints(newPoints);  
@@ -1622,8 +1625,11 @@ void Transformation_Rotation_shape(string selected_shape, double Angle_rotation)
 	}
 	else if (selected_shape == "Ellipse")
 	{
+		Translation(Ellipse_lineSource, Ellipse_mapper, -Ellipse_center[0], -Ellipse_center[1]);
+
 		Transformation_rotating(Ellipse_lineSource, Ellipse_mapper, Angle_rotation);
 
+		Translation(Ellipse_lineSource, Ellipse_mapper, Ellipse_center[0], Ellipse_center[1]);
 
 	}
 
@@ -1738,7 +1744,7 @@ void Transformation_Scaling_shape(string selected_shape, double x_scale, double 
 
 }
 
-// line has only 2 points, so there is no meaning for most of the transformations on the line(2 points) !!!!
+
 void transformation_shearing(vtkLineSource* shapeSource, double shearingConstant)
 {
 	vtkSmartPointer<vtkPoints>newPoints = shapeSource->GetPoints();    
@@ -1838,11 +1844,9 @@ namespace {
 					picked2[i] = picked[i];
 				}
 				if (isLine) {
-					//SetFirstPoint();
 					SetSecondPoint(); 
 
-					//Shapes_drawn.insert("Line");
-					//Update_Shape("Line");
+
 				}
 				if (isPolyline) {
 					if (countIsLine == 2) {
@@ -1855,7 +1859,6 @@ namespace {
 
 					}
 					Draw_Polyline();
-				//	Shapes_drawn.insert("Polyline");
 					Update_Shape("Polyline");
 					renderWindow->Render();
 					flag = 0;
@@ -1872,7 +1875,6 @@ namespace {
 
 					}
 					Draw_Polygon();
-					//Shapes_drawn.insert("Polygon");
 					Update_Shape("Polygon");
 					renderWindow->Render();
 					flag = 0;
@@ -1888,29 +1890,21 @@ namespace {
 
 					SetSecondPoint();
 					Draw_Line();    
-					flag = 0;/*
-					if (FlagLineWriteFirstTime) {*/
-					//Shapes_drawn.insert("Line");
+					flag = 0;
+		
 					Update_Shape("Line");
-					/*	FlagLineWriteFirstTime = 0;
-					}*/
+				
 				}
 
 				if (isRegularPolygon)
 				{
 					Draw_Regular_Polygon();
-					//Shapes_drawn.insert("Regular Polygon");
 					Update_Shape("Regular Polygon");
 					renderWindow->Render();
 					flag = 0;
 					return;
 
 				}
-				/*if (isArc) {
-					Draw_Arc(arcR, arcStart, arcEnd );
-					Shapes_drawn.insert("Arc");
-					flag = 0;
-				}*/
 
 
 
@@ -1926,12 +1920,10 @@ namespace {
 
 
 				Draw_Circle();
-				//Shapes_drawn.insert("Circle");
+				
 				Update_Shape("Circle");
 				renderWindow->Render();
-				//renderer->RemoveAllViewProps();
-				//transformation(mapper, actor, 0, 0, 0);
-				//renderWindow->Render();
+
 				flag = 0;
 
 				return;
@@ -1940,12 +1932,9 @@ namespace {
 
 
 				Draw_Arc();
-				//Shapes_drawn.insert("Arc");
 				Update_Shape("Arc");
 				renderWindow->Render();
-				//renderer->RemoveAllViewProps();
-				//transformation(mapper, actor, 0, 0, 0);
-				//renderWindow->Render();
+		
 				flag = 0;
 
 				return;
@@ -1955,7 +1944,6 @@ namespace {
 
 
 				Draw_Ellipse();
-			//	Shapes_drawn.insert("Ellipse");
 				Update_Shape("Ellipse");
 				renderWindow->Render();
 				flag = 0;
@@ -2386,7 +2374,7 @@ int main(int argc, char* argv[])
 	mainWindow.setCentralWidget(vtkRenderWidget);
 
 
-	QObject::connect(Transformation_combobox, (&QComboBox::currentIndexChanged), [&]() {
+	QObject::connect(Transformation_combobox, QOverload<int>::of(&QComboBox::activated), [&]() {
 
 		QString selectedTransformation = Transformation_combobox->currentText();
 
@@ -2713,7 +2701,7 @@ int main(int argc, char* argv[])
 	renderer->SetBackground(namedColors->GetColor3d("SlateGray").GetData());
 	///////////////////////////////////////////////////////////COMBOBOX WIDGET APPLIED/////////////////////////////////
 	  
-	QObject::connect(color_comboBox, (&QComboBox::currentIndexChanged), [&]() {
+	QObject::connect(color_comboBox, QOverload<int>::of(&QComboBox::activated), [&]() {
 		//Another function change color
 		
 		selectedText = color_comboBox->currentText();
