@@ -355,7 +355,7 @@ vtkSmartPointer<vtkLineSource> Ellipsoid_LineSource = vtkSmartPointer<vtkLineSou
 vtkSmartPointer<vtkPolyDataMapper> Ellipsoid_Mapper = vtkSmartPointer<vtkPolyDataMapper>::New();
 vtkSmartPointer<vtkActor> Ellipsoid_Actor = vtkSmartPointer<vtkActor>::New();
 vtkSmartPointer<vtkCellArray> Ellipsoid_Triangles = vtkSmartPointer<vtkCellArray>::New();
-double EllipsoidPointsArray[2][3];
+double EllipsoidPointsArray[3][3];
 
 
 
@@ -995,9 +995,9 @@ void Draw_Ellipsoid() {
 	double center[3] = { picked2[0], picked2[1], picked2[2] };
 
 	// Define the semi-axes of the ellipsoid
-	double a = 2.0;
-	double b = 3.0;
-	double c = 4.0;
+	double a = sqrt(pow((picked3[0] - picked2[0]), 2.0) + pow(picked3[1] - picked2[1], 2.0));
+	double b = sqrt(pow((picked[0] - picked2[0]), 2.0) + pow(picked[1] - picked2[1], 2.0));
+	double c = (a+b)/2;
 
 	// Define the number of points in the ellipsoid mesh
 	int numPoints = 100;
