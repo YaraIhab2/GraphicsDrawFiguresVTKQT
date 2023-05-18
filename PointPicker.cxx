@@ -242,6 +242,9 @@ double Ellipse_center[3] = {};
 double Arc_center[3] = {};
 double line_center[3] = {};
 double polygon_center[3] = {};
+double sphere_center[3] = {};
+double ellipsoid_center[3] = {};
+double cube_center[3] = {};
 double polyline_center[3] = {};
 double x = 0, y = 0, z = 0, z2 = 0, x2 = 0, y2 = 0;
 double x3, y3, z3 = 0;
@@ -261,6 +264,7 @@ char PolygonColor[100];
 char SphereColor[100];
 char EllipsoidColor[100];
 char CubeColor[100];
+double sphere_radius = 1;
 int countIsPolygon = 0;
 int startAngle = 0;
 int endAngle = 0;
@@ -400,10 +404,13 @@ double pointsArray[100][3];
 //________________________Some Transformation Parameters_____________________//
 double Translation_x = 0;
 double Translation_y = 0;
+double Translation_z = 0;
 double Rotation_angle = 0;
 double Shearing_x = 0;
+double Shearing_x2 = 0;
 double Scale_x = 0;
 double Scale_y = 0;
+double Scale_z = 0;
 //___________________________________________________________________________//
 
 /////////////////////////////////////////Functions used by classes////////////////////////
@@ -612,6 +619,9 @@ void Draw_Line()
 		double z = 0;
 		line_points->InsertNextPoint(x, y, z);
 	}
+	line_center[0] = picked2[0] + 0.5 * (picked3[0] - picked2[0]); //For correct transformations
+	line_center[1] = picked2[1] + 0.5 * (picked3[1] - picked2[1]);
+
 
 	Set_line_shape(lineSource, line_points, mapper, actor, renderer);
 }
@@ -625,13 +635,18 @@ void Draw_Circle()
 	for (int i = 0; i <= number_of_points; i++)
 	{
 		double t_parameter = static_cast<double>(i) / number_of_points;   // division is performed using floating-point arithmetic rather than integer division.
-		double x_circle = Scale_factor * (picked2[0] + Raduis * cos(2 * vtkMath::Pi() * t_parameter));
-		double y_circle = Scale_factor * (picked2[1] + Raduis * sin(2 * vtkMath::Pi() * t_parameter));
+		double x_circle = (picked2[0] + Raduis * cos(2 * vtkMath::Pi() * t_parameter));
+		double y_circle = (picked2[1] + Raduis * sin(2 * vtkMath::Pi() * t_parameter));
 		Circle_points->InsertNextPoint(x_circle, y_circle, 0.0);
 
 	}
 
 	Set_line_shape(Circle_lineSource, Circle_points, Circle_mapper, Circle_actor, renderer);
+
+	for (int i = 0; i < 3; i++)
+	{
+		Circle_center[i] = picked2[i];
+	}
 
 	for (int i = 0; i < 2; i++) {
 
@@ -691,8 +706,8 @@ void Draw_Ellipse()
 
 
 
-		x_ellipse = Scale_factor * (picked2[0] + SemiMajorAxis * cos(2 * vtkMath::Pi() * (t_parameter + 0.25)));   //0.25?
-		y_ellipse = Scale_factor * (picked2[1] + SemiMinorAxis * sin(2 * vtkMath::Pi() * (t_parameter + 0.25)));
+		x_ellipse =  (picked2[0] + SemiMajorAxis * cos(2 * vtkMath::Pi() * (t_parameter + 0.25)));   //0.25?
+		y_ellipse =  (picked2[1] + SemiMinorAxis * sin(2 * vtkMath::Pi() * (t_parameter + 0.25)));
 
 
 		/*else if (axisRatio > 1) {
@@ -702,6 +717,11 @@ void Draw_Ellipse()
 		Ellipse_points->InsertNextPoint(x_ellipse, y_ellipse, 0.0);
 
 	}
+	for (int i = 0; i < 3; i++)
+	{
+		Ellipse_center[i] = picked2[i];
+	}
+
 
 	for (int i = 0; i < 3; i++) {
 
@@ -737,7 +757,8 @@ void Draw_Ellipse()
 
 
 
-void Draw_Arc(double Start_angle = arcStart, double End_Angle = arcEnd, double rad=0.0)
+
+void Draw_Arc(double Start_angle = arcStart, double End_Angle = arcEnd, double rad = 0.0)
 {
 
 	double raduis = sqrt(pow((picked[0] - picked2[0]), 2.0) + pow(picked[1] - picked2[1], 2.0));
@@ -765,6 +786,11 @@ void Draw_Arc(double Start_angle = arcStart, double End_Angle = arcEnd, double r
 
 	Set_line_shape(Arc_lineSource, Arc_points, Arc_mapper, Arc_actor, renderer);
 	renderWindow->Render();
+
+	for (int i = 0; i < 3; i++)
+	{
+		Arc_center[i] = picked2[i];
+	}
 
 	for (int i = 0; i < 3; i++) {
 
@@ -816,6 +842,11 @@ void Draw_Regular_Polygon()
 	Set_line_shape(Regpolygon_linesource, Regpolygon_points, Regpolygon_mapper, Regpolygon_actor, renderer);
 
 
+	for (int i = 0; i < 3; i++)
+	{
+		RegPolyg_center[i] = picked2[i];
+	}
+
 	for (int i = 0; i < sizeof(RegPolygonPointsArray)[0]; i++) {
 
 		for (int j = 0; j < sizeof(RegPolygonPointsArray)[1]; j++) {
@@ -846,22 +877,24 @@ void DrawSphere() {
 	// Create a set of points that define the vertices of the sphere
 	double cx = picked2[0];
 	double cy = picked2[1];
-	double cz = picked2[2];
+	double cz = 2;
 
-	double radius = sqrt(pow((picked[0] - picked2[0]), 2.0) + pow(picked[1] - picked2[1], 2.0) + pow(picked[2] - picked2[2], 2.0));
-
+	double radius = sqrt(pow((picked[0] - picked2[0]), 2.0) + pow(picked[1] - picked2[1], 2.0)) ;
+	//double radius = sphere_radius;
 	const int nPhi = 50;
 	const int nTheta = 50;
 	for (int i = 0; i <= nTheta; i++) {
 		double theta = i * vtkMath::Pi() / nTheta;
 		for (int j = 0; j <= nPhi; j++) {
 			double phi = j * 2 * vtkMath::Pi() / nPhi;
-			double x = cx + radius * sin(theta) * cos(phi);
-			double y = cy + radius * sin(theta) * sin(phi);
-			double z = cz + radius * cos(theta);
+			double x = cx+  radius * sin(theta) * cos(phi);
+			double y = cy+  radius * sin(theta) * sin(phi);
+			double z =   cz + radius * cos(theta);
 			Sphere_Points->InsertNextPoint(x, y, z);
 		}
 	}
+
+	
 
 	// Create a set of triangles that define the surface of the sphere
 
@@ -882,7 +915,11 @@ void DrawSphere() {
 			triangle->InsertNextId(p2);
 			Sphere_Triangles->InsertNextCell(triangle);
 		}
-	}
+	} 
+    sphere_center[0] = cx;
+	sphere_center[1] = cy;
+	sphere_center[2] = cz;
+
 	for (int i = 0; i < 2; i++) {
 
 		for (int j = 0; j < 3; j++) {
@@ -905,8 +942,9 @@ void DrawSphere() {
 		}
 	}
 	Set_line_shape(Sphere_LineSource, Sphere_Points, Sphere_Mapper, Sphere_Actor, renderer);
-	
+
 }
+
 void DrawCube() {
 
 	vtkSmartPointer<vtkPoints> Cube_Points = vtkSmartPointer<vtkPoints>::New();
@@ -961,6 +999,22 @@ void DrawCube() {
 	Cube_Lines->InsertCellPoint(6);
 	Cube_Lines->InsertCellPoint(2);
 
+
+	
+	for (int i = 0; i < 16; i++) {
+		double* vertex = Cube_Points->GetPoint(i);
+		cube_center[0] += vertex[0];
+		cube_center[1] += vertex[1];
+		cube_center[2] += vertex[2];
+	}
+	cube_center[0] = cubeVertices[0][0] + length;
+	cube_center[1] = cubeVertices[0][1] + length;
+	cube_center[2] = cubeVertices[0][1] + length;
+	//cube_center[2] =2;
+	//cube_center[0] /= 16.0;
+	//cube_center[1] /= 16.0;
+	//cube_center[2] =2;
+
 	//vtkSmartPointer<vtkLineSource> Cube_LineSource = vtkSmartPointer<vtkLineSource>::New();
 	//Cube_LineSource->SetPoints(Cube_Points);
 	//Cube_LineSource->SetLines(Cube_Lines);
@@ -989,15 +1043,18 @@ void DrawCube() {
 
 }
 
+/*
 void Draw_Ellipsoid() {
 
 	vtkSmartPointer<vtkPoints> Ellipsoid_Points = vtkSmartPointer<vtkPoints>::New();
 	double center[3] = { picked2[0], picked2[1], picked2[2] };
 
 	// Define the semi-axes of the ellipsoid
-	double a = sqrt(pow((picked3[0] - picked2[0]), 2.0) + pow(picked3[1] - picked2[1], 2.0));
-	double b = sqrt(pow((picked[0] - picked2[0]), 2.0) + pow(picked[1] - picked2[1], 2.0));
-	double c = (a+b)/2;
+	double b = sqrt(pow((picked3[0] - picked2[0]), 2.0) + pow(picked3[1] - picked2[1], 2.0));
+	double a = sqrt(pow((picked[0] - picked2[0]), 2.0) + pow(picked[1] - picked2[1], 2.0));
+	//double a = 2.0;
+	//double b = 3.0;
+	double c = 4.0;
 
 	// Define the number of points in the ellipsoid mesh
 	int numPoints = 100;
@@ -1012,6 +1069,11 @@ void Draw_Ellipsoid() {
 			double z = center[2] + c * cos(phi);
 			Ellipsoid_Points->InsertNextPoint(x, y, z);
 		}
+	}
+
+	for (int i = 0; i < 3; i++)
+	{
+		ellipsoid_center[i] = center[i];
 	}
 
 	// Create the cells (triangles) for the ellipsoid
@@ -1051,36 +1113,136 @@ void Draw_Ellipsoid() {
 	Set_line_shape(Ellipsoid_LineSource, Ellipsoid_Points, Ellipsoid_Mapper, Ellipsoid_Actor, renderer);
 
 }
-
-
+*/
 /*
-void Draw_Ellipsoid()
-	{
-		double Semi_AxisX = sqrt(pow((picked3[0] - picked2[0]), 2.0) + pow(picked3[1] - picked2[1], 2.0));
-		double Semi_AxisY = sqrt(pow((picked[0] - picked2[0]), 2.0) + pow(picked[1] - picked2[1], 2.0));
-		double Semi_AxisZ = 1;
+void Draw_Ellipsoid() {
+	vtkSmartPointer<vtkPoints> Ellipsoid_Points = vtkSmartPointer<vtkPoints>::New();
+	double center[3] = { picked2[0], picked2[1], picked2[2] };
 
-		vtkSmartPointer<vtkPoints> Ellipsoid_points = vtkSmartPointer<vtkPoints>::New();
-		int number_of_points = 120;
-		lineSource->SetResolution(number_of_points);
+	// Define the semi-axes of the ellipsoid
+	double b = sqrt(pow((picked3[0] - picked2[0]), 2.0) + pow(picked3[1] - picked2[1], 2.0));
+	double a = sqrt(pow((picked[0] - picked2[0]), 2.0) + pow(picked[1] - picked2[1], 2.0));
+	double c = 4.0;
 
-		for (int j = 0; j <= number_of_points; j++)
-		{
-			double x_ellipse, y_ellipse, z_ellipse;
+	// Define the number of points in the ellipsoid mesh
+	int numPoints = 100;
 
-			double t_parameter = static_cast<double>(j) / number_of_points;
-
-			x_ellipse = picked2[0] + Semi_AxisX * cos(2 * vtkMath::Pi() * t_parameter);
-			y_ellipse = picked2[1] + Semi_AxisY * sin(2 * vtkMath::Pi() * t_parameter);
-			z_ellipse = picked2[2] + Semi_AxisZ * cos(2 * vtkMath::Pi() * t_parameter);
-
-			Ellipsoid_points->InsertNextPoint(x_ellipse, y_ellipse, z_ellipse);
+	// Create the points for the ellipsoid
+	for (int i = 0; i < numPoints; ++i) {
+		double theta = i * 2.0 * vtkMath::Pi() / numPoints;
+		for (int j = 0; j < numPoints; ++j) {
+			double phi = j * vtkMath::Pi() / numPoints;
+			double x = center[0] + a * sin(phi) * cos(theta);
+			double y = center[1] + b * sin(phi) * sin(theta);
+			double z = center[2] + c * cos(phi);
+			Ellipsoid_Points->InsertNextPoint(x, y, z);
 		}
-
-		Set_line_shape(Ellipsoid_LineSource, Ellipsoid_points, Ellipsoid_Mapper, Ellipsoid_Actor, renderer);
 	}
 
-	*/
+	for (int i = 0; i < 3; i++) {
+		ellipsoid_center[i] = center[i];
+	}
+
+	// Create the cells (triangles) for the ellipsoid
+	vtkSmartPointer<vtkCellArray> cells = vtkSmartPointer<vtkCellArray>::New();
+
+	for (int i = 0; i < 3; i++) {
+
+		for (int j = 0; j < 3; j++) {
+			EllipsoidPointsArray[i][j] = 0.0;
+
+		}
+	}
+
+
+
+	for (int i = 0; i < 3; i++) {
+
+		if (i == 0) {
+			EllipsoidPointsArray[i][0] = picked2[0];
+			EllipsoidPointsArray[i][1] = picked2[1];
+			EllipsoidPointsArray[i][2] = picked2[2];
+		}
+		if (i == 1) {
+			EllipsoidPointsArray[i][0] = picked3[0];
+			EllipsoidPointsArray[i][1] = picked3[1];
+			EllipsoidPointsArray[i][2] = picked3[2];
+		}
+		if (i == 2) {
+			EllipsoidPointsArray[i][0] = picked[0];
+			EllipsoidPointsArray[i][1] = picked[1];
+			EllipsoidPointsArray[i][2] = picked[2];
+		}
+
+	}
+
+	// Set the ellipsoid points and cells to the mapper and actor
+	Set_line_shape(Ellipsoid_LineSource,Ellipsoid_Points, Ellipsoid_Mapper, Ellipsoid_Actor, renderer);
+}
+*/
+void Draw_Ellipsoid() {
+	vtkSmartPointer<vtkPoints> Ellipsoid_Points = vtkSmartPointer<vtkPoints>::New();
+	double center[3] = { picked2[0], picked2[1], 1 };
+
+	// Define the semi-axes of the ellipsoid
+	double a = fabs(picked[0] - picked2[0]);
+	double b = fabs(picked3[1] - picked2[1]);
+	double c = (a+b)/2;
+
+	// Define the number of points in the ellipsoid mesh
+	int numPoints = 120;
+
+	// Create the points for the ellipsoid
+	for (int i = 0; i < numPoints; ++i) {
+		double theta = i * 2.0 * vtkMath::Pi() / numPoints;
+		for (int j = 0; j < numPoints; ++j) {
+			double phi = j * vtkMath::Pi() / numPoints;
+			double x = center[0] + a * cos(theta) * sin(phi);
+			double y = center[1] + b * sin(theta) * sin(phi);
+			double z = center[2] + c * cos(phi);
+			Ellipsoid_Points->InsertNextPoint(x, y, z);
+		}
+	}
+	for (int i = 0; i < 2; i++) {
+		ellipsoid_center[i] = center[i];
+	}
+	ellipsoid_center[2] = 2;
+
+	for (int i = 0; i < 3; i++) {
+
+		for (int j = 0; j < 3; j++) {
+			EllipsoidPointsArray[i][j] = 0.0;
+
+		}
+	}
+
+
+
+	for (int i = 0; i < 3; i++) {
+
+		if (i == 0) {
+			EllipsoidPointsArray[i][0] = picked2[0];
+			EllipsoidPointsArray[i][1] = picked2[1];
+			EllipsoidPointsArray[i][2] = picked2[2];
+		}
+		if (i == 1) {
+			EllipsoidPointsArray[i][0] = picked3[0];
+			EllipsoidPointsArray[i][1] = picked3[1];
+			EllipsoidPointsArray[i][2] = picked3[2];
+		}
+		if (i == 2) {
+			EllipsoidPointsArray[i][0] = picked[0];
+			EllipsoidPointsArray[i][1] = picked[1];
+			EllipsoidPointsArray[i][2] = picked[2];
+		}
+
+	}
+
+	// Set the ellipsoid points and cells to the mapper and actor
+	Set_line_shape(Ellipsoid_LineSource, Ellipsoid_Points, Ellipsoid_Mapper, Ellipsoid_Actor, renderer);
+
+
+}
 
 
 bool ReadFile(char name[100]) {
@@ -1866,9 +2028,9 @@ void Translation(vtkLineSource* shapeSource, vtkPolyDataMapper* shapemapper, dou
 	vtkSmartPointer<vtkPoints> oldPoints = vtkSmartPointer<vtkPoints>::New();
 
 	vtkSmartPointer<vtkPoints> newPoints = vtkSmartPointer<vtkPoints>::New();
+	
 
-
-
+	
 
 	oldPoints->DeepCopy(shapeSource->GetPoints());  // All other shapes 
 
@@ -1887,7 +2049,7 @@ void Translation(vtkLineSource* shapeSource, vtkPolyDataMapper* shapemapper, dou
 
 }
 
-void Transformation_translation_shape(string selected_shape, double translation_x, double translation_y)
+void Transformation_translation_shape(string selected_shape, double translation_x, double translation_y, double translation_z = 0)
 {
 
 
@@ -1898,6 +2060,8 @@ void Transformation_translation_shape(string selected_shape, double translation_
 	}
 	else if (selected_shape == "Ellipse")
 	{
+
+
 		Translation(Ellipse_lineSource, Ellipse_mapper, translation_x, translation_y);
 
 
@@ -1930,42 +2094,62 @@ void Transformation_translation_shape(string selected_shape, double translation_
 		Translation(lineSource, mapper, translation_x, translation_y);
 	}
 
+	else if (selected_shape == "Sphere")
+	{
+		Translation(Sphere_LineSource, Sphere_Mapper, translation_x, translation_y,translation_z);
+	}
+	else if (selected_shape == "Cube")
+	{
+		Translation(Cube_LineSource, Cube_Mapper, translation_x, translation_y,translation_z);
+	}
+	else if (selected_shape == "Ellipsoid")
+	{
+		Translation(Ellipsoid_LineSource, Ellipsoid_Mapper, translation_x, translation_y,translation_z);
+	}
+
 }
 
-void Transformation_rotating(vtkLineSource* shapeSource, vtkPolyDataMapper* mapper, double angleOfRotation)
+void Transformation_rotating(vtkLineSource* shapeSource, vtkPolyDataMapper* mapper, double angleOfRotation,int isThree_D=0)
 {
 	vtkSmartPointer<vtkPoints> newPoints = vtkSmartPointer<vtkPoints>::New();
-
-	//if (shapeSource == &(*lineSource))
-	//{
-	//	// If it is a line source, get the endpoints and put them in oldPoints
-
-	//	double point1[3];
-	//	double point2[3];
-	//	lineSource->GetPoint1(point1); 
-	//	lineSource->GetPoint2(point2);  
-	//	newPoints->InsertNextPoint(point1);
-	//	newPoints->InsertNextPoint(point2); 
-
-	//}
-
-
 	newPoints = shapeSource->GetPoints();
 
 
-
-	for (vtkIdType i = 0; i < newPoints->GetNumberOfPoints(); i++)
+	if (isThree_D)
 	{
-		double* point = newPoints->GetPoint(i);
+		
+		for (vtkIdType i = 0; i < newPoints->GetNumberOfPoints(); i++)
+		{
+			double* point = newPoints->GetPoint(i);
 
-		point[0] = point[0] * cos(vtkMath::RadiansFromDegrees(angleOfRotation)) - point[1] * sin(vtkMath::RadiansFromDegrees(angleOfRotation));
-		point[1] = point[0] * sin(vtkMath::RadiansFromDegrees(angleOfRotation)) + point[1] * cos(vtkMath::RadiansFromDegrees(angleOfRotation));
-		point[2] = 1;
-		newPoints->SetPoint(i, point);
+			point[0] = point[0] * cos(vtkMath::RadiansFromDegrees(angleOfRotation)) - point[1] * sin(vtkMath::RadiansFromDegrees(angleOfRotation));
+			point[1] = point[0] * sin(vtkMath::RadiansFromDegrees(angleOfRotation)) + point[1] * cos(vtkMath::RadiansFromDegrees(angleOfRotation));
+			point[2] = point[2];
+			newPoints->SetPoint(i, point);
+		}
+		shapeSource->SetPoints(newPoints);
+		shapeSource->Modified();
+		mapper->Update();
+
+
 	}
-	shapeSource->SetPoints(newPoints);
-	shapeSource->Modified();
-	mapper->Update();
+
+	else
+	{
+
+		for (vtkIdType i = 0; i < newPoints->GetNumberOfPoints(); i++)
+		{
+			double* point = newPoints->GetPoint(i);
+
+			point[0] = point[0] * cos(vtkMath::RadiansFromDegrees(angleOfRotation)) - point[1] * sin(vtkMath::RadiansFromDegrees(angleOfRotation));
+			point[1] = point[0] * sin(vtkMath::RadiansFromDegrees(angleOfRotation)) + point[1] * cos(vtkMath::RadiansFromDegrees(angleOfRotation));
+			point[2] = 1;
+			newPoints->SetPoint(i, point);
+		}
+		shapeSource->SetPoints(newPoints);
+		shapeSource->Modified();
+		mapper->Update();
+	}
 }
 
 void Transformation_Rotation_shape(string selected_shape, double Angle_rotation)
@@ -1974,12 +2158,19 @@ void Transformation_Rotation_shape(string selected_shape, double Angle_rotation)
 
 	if (selected_shape == "Circle")
 	{
+		Transformation_translation_shape("Circle", -Circle_center[0], -Circle_center[1]);
 		Transformation_rotating(Circle_lineSource, Circle_mapper, Angle_rotation);
+		Transformation_translation_shape("Circle", Circle_center[0], Circle_center[1]);
 	}
 	else if (selected_shape == "Ellipse")
 	{
+
+		Transformation_translation_shape("Ellipse", -Ellipse_center[0], -Ellipse_center[1]);
+
 		Transformation_rotating(Ellipse_lineSource, Ellipse_mapper, Angle_rotation);
 
+
+		Transformation_translation_shape("Ellipse", Ellipse_center[0], Ellipse_center[1]);
 
 	}
 
@@ -1992,8 +2183,9 @@ void Transformation_Rotation_shape(string selected_shape, double Angle_rotation)
 
 	else if (selected_shape == "Regular Polygon")
 	{
+		Transformation_translation_shape("Regular Polygon", -RegPolyg_center[0], -RegPolyg_center[1]);
 		Transformation_rotating(Regpolygon_linesource, Regpolygon_mapper, Angle_rotation);
-
+		Transformation_translation_shape("Regular Polygon", RegPolyg_center[0], RegPolyg_center[1]);
 
 	}
 
@@ -2005,23 +2197,44 @@ void Transformation_Rotation_shape(string selected_shape, double Angle_rotation)
 	}
 	else if (selected_shape == "Arc")
 	{
+		Transformation_translation_shape("Arc", -Arc_center[0], -Arc_center[1]);
 		Transformation_rotating(Arc_lineSource, Arc_mapper, Angle_rotation);
-
+		Transformation_translation_shape("Arc", Arc_center[0], Arc_center[1]);
 	}
 	else if (selected_shape == "Line")
 	{
+		Transformation_translation_shape("Line", -line_center[0], -line_center[1]);
 		Transformation_rotating(lineSource, mapper, Angle_rotation);
+		Transformation_translation_shape("Line", line_center[0], line_center[1]);
+	}
+	else if (selected_shape == "Sphere")
+	{
+		//Transformation_translation_shape("Sphere", -sphere_center[0], -sphere_center[1], -sphere_center[2]);
+		Transformation_rotating(Sphere_LineSource, Sphere_Mapper, Angle_rotation,1);
+		//Transformation_translation_shape("Sphere", sphere_center[0], sphere_center[1], sphere_center[2]);
 
+	}
+	else if (selected_shape == "Cube")
+	{
+		//Transformation_translation_shape("Cube", -cube_center[0], -cube_center[1],-cube_center[2]);
+		Transformation_rotating(Cube_LineSource, Cube_Mapper, Angle_rotation,1);
+		//Transformation_translation_shape("Cube", cube_center[0], cube_center[1],cube_center[2]);
+	}
+	else if (selected_shape == "Ellipsoid")
+	{
+		//Transformation_translation_shape("Ellipsoid", -ellipsoid_center[0], -ellipsoid_center[1],-ellipsoid_center[2]);
+		Transformation_rotating(Ellipsoid_LineSource, Ellipsoid_Mapper, Angle_rotation,1);
+		//Transformation_translation_shape("Ellipsoid", ellipsoid_center[0], ellipsoid_center[1],ellipsoid_center[2]);
 	}
 
 }
 
-void transformation_scaling(vtkLineSource* shapeSource, double x_axis, double y_axis, double z_axis = 1)
+void transformation_scaling(vtkLineSource* shapeSource, double x_axis, double y_axis, double z_axis = 0)
 {
 	vtkSmartPointer<vtkPoints> oldPoints = vtkSmartPointer<vtkPoints>::New();
 
 	vtkSmartPointer<vtkPoints> newPoints = vtkSmartPointer<vtkPoints>::New();
-
+	
 
 
 	oldPoints->DeepCopy(shapeSource->GetPoints());
@@ -2033,7 +2246,7 @@ void transformation_scaling(vtkLineSource* shapeSource, double x_axis, double y_
 
 		point[0] *= x_axis;
 		point[1] *= y_axis;
-		point[2] = 1;
+		point[2] *= z_axis;
 		newPoints->SetPoint(i, point);
 	}
 
@@ -2042,18 +2255,23 @@ void transformation_scaling(vtkLineSource* shapeSource, double x_axis, double y_
 
 }
 
-void Transformation_Scaling_shape(string selected_shape, double x_scale, double y_scale, double z_scale = 1)
+void Transformation_Scaling_shape(string selected_shape, double x_scale, double y_scale, double z_scale = 0)
 {
 
 
 	if (selected_shape == "Circle")
 	{
-		transformation_scaling(Circle_lineSource, x_scale, y_scale);
+
+		Transformation_translation_shape("Circle", -Circle_center[0], -Circle_center[1]); 
+		transformation_scaling(Circle_lineSource, x_scale, y_scale); 
+		Transformation_translation_shape("Circle", Circle_center[0], Circle_center[1]); 
+		
 	}
 	else if (selected_shape == "Ellipse")
 	{
+		Transformation_translation_shape("Ellipse", -Ellipse_center[0], -Ellipse_center[1]);
 		transformation_scaling(Ellipse_lineSource, x_scale, y_scale);
-
+		Transformation_translation_shape("Ellipse", Ellipse_center[0], Ellipse_center[1]);
 	}
 
 	else if (selected_shape == "Polyline")
@@ -2063,7 +2281,11 @@ void Transformation_Scaling_shape(string selected_shape, double x_scale, double 
 
 	else if (selected_shape == "Regular Polygon")
 	{
-		transformation_scaling(Regpolygon_linesource, x_scale, y_scale);
+		Transformation_translation_shape("Regular Polygon", -RegPolyg_center[0], -RegPolyg_center[1]); 
+		transformation_scaling(Regpolygon_linesource, x_scale, y_scale); 
+		Transformation_translation_shape("Regular Polygon", RegPolyg_center[0], RegPolyg_center[1]); 
+
+	
 	}
 
 	else if (selected_shape == "Polygon")
@@ -2073,32 +2295,78 @@ void Transformation_Scaling_shape(string selected_shape, double x_scale, double 
 	}
 	else if (selected_shape == "Arc")
 	{
-		transformation_scaling(Arc_lineSource, x_scale, y_scale);
+		Transformation_translation_shape("Arc", -Arc_center[0], -Arc_center[1]); 
+		transformation_scaling(Arc_lineSource, x_scale, y_scale); 
+		Transformation_translation_shape("Arc", Arc_center[0], Arc_center[1]); 
+
 
 	}
 	else if (selected_shape == "Line")
 	{
-		transformation_scaling(lineSource, x_scale, y_scale);
+		Transformation_translation_shape("Line", -line_center[0], -line_center[1]); 
+		transformation_scaling(lineSource, x_scale, y_scale); 
+		Transformation_translation_shape("Line", line_center[0], line_center[1]); 
+	
+	}
+
+	else if (selected_shape == "Sphere")
+	{
+		Transformation_translation_shape("Sphere", -sphere_center[0], -sphere_center[1], -sphere_center[2]);
+		transformation_scaling(Sphere_LineSource, x_scale, y_scale,z_scale);
+		Transformation_translation_shape("Sphere", sphere_center[0], sphere_center[1], sphere_center[2]);
+	}
+	else if (selected_shape == "Cube")
+	{
+
+		Transformation_translation_shape("Cube", -cube_center[0], -cube_center[1], -cube_center[2]);
+		transformation_scaling(Cube_LineSource, x_scale, y_scale,z_scale);
+
+		Transformation_translation_shape("Cube", cube_center[0], cube_center[1], cube_center[2]);
+	}
+	else if (selected_shape == "Ellipsoid")
+	{
+		Transformation_translation_shape("Ellipsoid", -ellipsoid_center[0], -ellipsoid_center[1], -ellipsoid_center[2]);
+		transformation_scaling(Ellipsoid_LineSource, x_scale, y_scale,z_scale);
+		Transformation_translation_shape("Ellipsoid", ellipsoid_center[0], ellipsoid_center[1], ellipsoid_center[2]);
+
 	}
 
 }
 
 // line has only 2 points, so there is no meaning for most of the transformations on the line(2 points) !!!!
-void transformation_shearing(vtkLineSource* shapeSource, double shearingConstant)
+void transformation_shearing(vtkLineSource* shapeSource, double shearingConstant,double shearing_3d= 0, int isThree_D = 0)
 {
 	vtkSmartPointer<vtkPoints>newPoints = shapeSource->GetPoints();
 
-	for (vtkIdType i = 0; i < newPoints->GetNumberOfPoints(); i++)
+	if (isThree_D)
 	{
-		double* point = newPoints->GetPoint(i);
-		point[0] += shearingConstant * point[1];
-		newPoints->SetPoint(i, point);
+		for (vtkIdType i = 0; i < newPoints->GetNumberOfPoints(); i++)
+		{
+			double* point = newPoints->GetPoint(i);
+			point[0] = point[0];
+			point[1] = point[1] + point[0] * shearingConstant;
+			point[2] = point[2] + point[0] * shearingConstant;
+			newPoints->SetPoint(i, point);
+
+		}
+
+		shapeSource->SetPoints(newPoints);
+		shapeSource->Modified();
 
 	}
+	
+	else {
+		for (vtkIdType i = 0; i < newPoints->GetNumberOfPoints(); i++)
+		{
+			double* point = newPoints->GetPoint(i);
+			point[0] += shearingConstant * point[1];
+			newPoints->SetPoint(i, point);
 
-	shapeSource->SetPoints(newPoints);
-	shapeSource->Modified();
+		}
 
+		shapeSource->SetPoints(newPoints);
+		shapeSource->Modified();
+	}
 }
 
 
@@ -2108,12 +2376,16 @@ void Transformation_Shearing_shape(string selected_shape, double shear_x)
 
 	if (selected_shape == "Circle")
 	{
-		transformation_shearing(Circle_lineSource, shear_x);
+		Transformation_translation_shape("Circle", -Circle_center[0], -Circle_center[1]); 
+		transformation_shearing(Circle_lineSource, shear_x); 
+		Transformation_translation_shape("Circle", Circle_center[0], Circle_center[1]);
+	
 	}
 	else if (selected_shape == "Ellipse")
 	{
+		Transformation_translation_shape("Ellipse", -Ellipse_center[0], -Ellipse_center[1]);
 		transformation_shearing(Ellipse_lineSource, shear_x);
-
+		Transformation_translation_shape("Ellipse", Ellipse_center[0], Ellipse_center[1]);
 	}
 
 	else if (selected_shape == "Polyline")
@@ -2123,23 +2395,58 @@ void Transformation_Shearing_shape(string selected_shape, double shear_x)
 
 	else if (selected_shape == "Regular Polygon")
 	{
-		transformation_shearing(Regpolygon_linesource, shear_x);
+		Transformation_translation_shape("Regular Polygon", -RegPolyg_center[0], -RegPolyg_center[1]);
+		transformation_shearing(Regpolygon_linesource, shear_x); 
+		Transformation_translation_shape("Regular Polygon", RegPolyg_center[0], RegPolyg_center[1]);
+	
 	}
 
-	else if (selected_shape == "Polygon")
+	else if (selected_shape == "Polygon")  // Need to get center and apply translation, shearing(Transformation) , translation
 	{
 		transformation_shearing(Polygon_lineSource, shear_x);
 
 	}
 	else if (selected_shape == "Arc")
 	{
-		transformation_shearing(Arc_lineSource, shear_x);
+		
+			Transformation_translation_shape("Arc", -Arc_center[0], -Arc_center[1]);
+			transformation_shearing(Arc_lineSource, shear_x); 
+			Transformation_translation_shape("Arc", Arc_center[0], Arc_center[1]);
+		
 
 	}
 	else if (selected_shape == "Line")
 	{
-		transformation_shearing(lineSource, shear_x);
+		Transformation_translation_shape("Line", -line_center[0], -line_center[1]);  
+		transformation_shearing(lineSource, shear_x);  
+		Transformation_translation_shape("Line", line_center[0], line_center[1]);  
+		
 	}
+	else if (selected_shape == "Sphere")
+
+	{
+		Transformation_translation_shape("Sphere", -sphere_center[0], -sphere_center[1], -sphere_center[2]);
+		transformation_shearing(Sphere_LineSource, shear_x,1);
+		Transformation_translation_shape("Sphere", sphere_center[0], sphere_center[1], sphere_center[2]);
+	}
+
+	else if (selected_shape == "Cube")
+	{
+
+		Transformation_translation_shape("Cube", -cube_center[0], -cube_center[1], -cube_center[2]);
+		transformation_shearing(Cube_LineSource, shear_x,1);
+
+		Transformation_translation_shape("Cube", cube_center[0], cube_center[1], cube_center[2]);
+	}
+	
+	else if (selected_shape == "Ellipsoid")
+	{
+		Transformation_translation_shape("Ellipsoid", -ellipsoid_center[0], -ellipsoid_center[1], -ellipsoid_center[2]);
+		transformation_shearing(Ellipsoid_LineSource, shear_x,1);
+		Transformation_translation_shape("Ellipsoid", ellipsoid_center[0], ellipsoid_center[1], ellipsoid_center[2]);
+
+	}
+	
 
 }
 
@@ -2271,22 +2578,23 @@ namespace {
 				DrawPoint();
 
 			}
-
+             
 			if (isSphere && flag == 2) {
 				DrawSphere();
 				Update_Shape("Sphere");
 				renderWindow->Render();
 
 				flag = 0;
-				return;
+				return; 
 			}
+		
 			if (isCube && flag == 2) {
 				DrawCube();
 				Update_Shape("Cube");
 				renderWindow->Render();
 
 				flag = 0;
-				return;
+				return; 
 			}
 
 			if (isCircle && flag == 2) {
@@ -2322,7 +2630,7 @@ namespace {
 
 
 				Draw_Ellipse();
-				//	Shapes_drawn.insert("Ellipse");
+			
 				Update_Shape("Ellipse");
 				renderWindow->Render();
 				flag = 0;
@@ -2624,6 +2932,7 @@ int main(int argc, char* argv[])
 			isCircle = 0;
 			FlagLineWriteFirstTime = 0;
 			isCube = 0;
+			
 			break;
 
 
@@ -2652,7 +2961,7 @@ int main(int argc, char* argv[])
 			}
 
 			else {
-
+				
 				countIsPolygon++;
 				isLine = 0;
 				isEllipse = 0;
@@ -2733,7 +3042,7 @@ int main(int argc, char* argv[])
 					//layoutContainer.show();
 			break;
 		case 'P':
-
+		
 			if (selectedText[4] == 'l') {
 				countIsLine++;
 				isLine = 0;
@@ -2786,7 +3095,6 @@ int main(int argc, char* argv[])
 		}
 
 
-
 		renderWindow->Render();
 		});
 
@@ -2834,6 +3142,7 @@ int main(int argc, char* argv[])
 		{
 			Translation_x = QInputDialog::getDouble(nullptr, "Translation_x", "Translation in x ");
 			Translation_y = QInputDialog::getDouble(nullptr, "Translation_y", "Translation in y");
+			Translation_z = QInputDialog::getDouble(nullptr, "Translation_z", "Translation in z");
 		}
 		else if (selectedTransformation == "Rotation")
 		{
@@ -2843,14 +3152,14 @@ int main(int argc, char* argv[])
 
 		else if (selectedTransformation == "Shearing")
 		{
-			Shearing_x = QInputDialog::getDouble(nullptr, "Shearing_x ", "Shearing in x");
-
+			Shearing_x = QInputDialog::getDouble(nullptr, "Shearing_x ", "Shearing in x factor 1 ");
 		}
 
 		else if (selectedTransformation == "Scaling")
 		{
 			Scale_x = QInputDialog::getDouble(nullptr, "Scale_x ", "Scaling x");
 			Scale_y = QInputDialog::getDouble(nullptr, "Scale_y ", "Scaling in y");
+			Scale_z = QInputDialog::getDouble(nullptr, "Scale_z ", "Scaling in z");
 		}
 
 
@@ -2894,7 +3203,7 @@ int main(int argc, char* argv[])
 				string shape_str = shape;
 
 				if (selectedTransformation == "Translation") {
-					Transformation_translation_shape(shape_str, Translation_x, Translation_y);
+					Transformation_translation_shape(shape_str, Translation_x, Translation_y,Translation_z);
 				}
 
 				else  if (selectedTransformation == "Rotation")
@@ -2904,7 +3213,7 @@ int main(int argc, char* argv[])
 
 				else if (selectedTransformation == "Scaling")
 				{
-					Transformation_Scaling_shape(shape_str, Scale_x, Scale_y);
+					Transformation_Scaling_shape(shape_str, Scale_x, Scale_y,Scale_z);
 				}
 				else if (selectedTransformation == "Shearing")
 				{
@@ -2924,7 +3233,7 @@ int main(int argc, char* argv[])
 			if (!last_shape.empty())
 			{
 				if (selectedTransformation == "Translation") {
-					Transformation_translation_shape(last_shape, Translation_x, Translation_y);
+					Transformation_translation_shape(last_shape, Translation_x, Translation_y, Translation_z);
 
 				}
 
@@ -2935,7 +3244,7 @@ int main(int argc, char* argv[])
 
 				else if (selectedTransformation == "Scaling")
 				{
-					Transformation_Scaling_shape(last_shape, Scale_x, Scale_y);
+					Transformation_Scaling_shape(last_shape, Scale_x, Scale_y,Scale_z);
 				}
 
 				else if (selectedTransformation == "Shearing")
@@ -2954,7 +3263,7 @@ int main(int argc, char* argv[])
 			std::string selectedShape = Shapes_combobox->currentText().toStdString();
 
 			if (selectedTransformation == "Translation") {
-				Transformation_translation_shape(selectedShape, Translation_x, Translation_y);
+				Transformation_translation_shape(selectedShape, Translation_x, Translation_y,Translation_z);
 			}
 			else  if (selectedTransformation == "Rotation")
 			{
@@ -2963,7 +3272,7 @@ int main(int argc, char* argv[])
 
 			else if (selectedTransformation == "Scaling")
 			{
-				Transformation_Scaling_shape(selectedShape, Scale_x, Scale_y);
+				Transformation_Scaling_shape(selectedShape, Scale_x, Scale_y,Scale_z);
 			}
 			else if (selectedTransformation == "Shearing")
 			{
