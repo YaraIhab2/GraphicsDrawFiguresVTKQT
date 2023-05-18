@@ -20,7 +20,6 @@ find_package(VTK COMPONENTS
   GUISupportQt
   RenderingQt
 InteractionStyle
-CommonDataModel
 )
 
 if (NOT VTK_FOUND)
