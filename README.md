@@ -3,7 +3,7 @@ This computer graphics project, built using C++, VTK (Visualization Toolkit), Op
 ## Table of Contents
 
 - [Features](#Features)
-- [Preview](#Preview)
+- [Animation](#Animation)
 - [Installation](#Installation)
 - [Usage](#Usage)
 
@@ -16,7 +16,8 @@ This computer graphics project, built using C++, VTK (Visualization Toolkit), Op
 - Applying transformations on drawn shapes (Translation , Rotation , Shearing , Scaling)
 - Editing specific shapes based on user choice (all shapes , specific shape , last shape)
 
-
+## Animation
+![main widow](/Video.gif)
 
 ## Project Setup and Execution Instructions
 
