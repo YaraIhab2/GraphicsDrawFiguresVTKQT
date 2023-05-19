@@ -72,7 +72,11 @@ Make sure to replace `<repository_url>` with the URL of your project's repositor
 | Sharif Ehab | [@Sharif_Ehab](https://github.com/SharifEhab) | 
 
 
+## Acknowledgements
 
+Submitted to: Dr. Ahmed Elbaily & Eng. Laila
+
+All rights reserved © 2023 to Team 8 - HealthCare Engineering and Management, Cairo University (Class 2025)
 
 
 
