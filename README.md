@@ -71,7 +71,8 @@ Make sure to replace `<repository_url>` with the URL of your project's repositor
 | ---- | ------ |
 | Yara Ihab | [@Yara_Ihab](https://github.com/YaraIhab2) | 
 | Sharif Ehab | [@Sharif_Ehab](https://github.com/SharifEhab) | 
-
+| Omar Elbehairy | [@Omar_Elbehairy](https://github.com/omarelbehairy) | 
+| Rawan Osama | [@Rawan_Osama](https://github.com/Rawanosamaa) | 
 
 ## Acknowledgements
 
